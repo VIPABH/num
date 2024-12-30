@@ -10,6 +10,8 @@ import telebot
 import requests
 from bs4 import BeautifulSoup
 
+bot_token = os.getenv('BOT_TOKEN')
+bot = telebot.TeleBot(bot_token)
 
 url = "https://ar.wikipedia.org/w/api.php"
 
@@ -106,8 +108,6 @@ def start_search(message):
     searching_state[message.chat.id] = False
 
 
-bot_token = os.getenv('BOT_TOKEN')
-bot = telebot.TeleBot(bot_token)
 @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
 def ashouau(message):
     url = "https://t.me/VIPABH/1213"  
