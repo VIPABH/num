@@ -1,4 +1,4 @@
-from main import ABH
+from __init__ import ABH
 
 abh = [
     "ها",
