@@ -1,10 +1,11 @@
-from modules.module1 import function1
-from modules.module2 import function2
+# main.py
+from models import some_function  # استيراد دالة من ملف models.py
+from memes import another_function  # استيراد دالة من ملف memes.py
 
 def main():
-    print("Starting project...")
-    function1()
-    function2()
+    print("This is the main program!")
+    some_function()
+    another_function()
 
 if __name__ == "__main__":
     main()
