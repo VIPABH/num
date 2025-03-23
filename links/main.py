@@ -5,7 +5,7 @@ from code.module2 import function2
 def main():
     print("This is the main program!")
     some_function()
-    another_function()
+    function2()
 
 if __name__ == "__main__":
     main()
