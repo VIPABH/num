@@ -1,5 +1,5 @@
 # main.py
-from module1 import some_function
+from code.module1 import some_function
 from module2 import another_function
 
 def main():
