@@ -1,4 +1,3 @@
-# main.py
 from modules.module1 import function1
 from modules.module2 import function2
 
