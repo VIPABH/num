@@ -1,6 +1,7 @@
 import os
 from telethon import TelegramClient, events, Button
-from .. import *
+from code.module1 import some_function
+from code.module2 import another_function
 try:
     api_id = os.getenv('API_ID')
     api_hash = os.getenv('API_HASH')
