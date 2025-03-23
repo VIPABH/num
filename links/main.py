@@ -1,22 +1,13 @@
-from code.module1 import some_function
-from code.module2 import function2
-print("Running main.py...")
-some_function()
-another_function()  # تشغيل الوظيفة من module2.py
+from code import ABH, some_function, another_function  # ✅ استيراد ABH و الوظائف المطلوبة
 
-# تشغيل البوت
-print("Starting Telegram bot...")
-# from telethon import TelegramClient
-# import os
-# api_id = os.getenv('API_ID')      
-# api_hash = os.getenv('API_HASH')  
-# bot_token = os.getenv('BOT_TOKEN')
-# ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-# print('its run')
+print("✅ Running main.py...")
+
 def main():
-    print("This is the main program!")
-    some_function()
-    function2()
+    print("✅ This is the main program!")
+    reply()         
+    reply_abh()      
+
 if __name__ == "__main__":
     main()
-# ABH.run_until_disconnected()
+    print("✅ Starting Telegram bot...")
+    ABH.run_until_disconnected()
