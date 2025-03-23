@@ -1,7 +1,6 @@
 # main.py
 from module1 import some_function
-from module2 import some_function
-
+from module2 import another_function
 
 def main():
     print("This is the main program!")
