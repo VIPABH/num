@@ -1,5 +1,5 @@
 import os
-from code import ABH, some_function, another_function
+from code import ABH, some_function
 from telethon import events
 import asyncio
 
