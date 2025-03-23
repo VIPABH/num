@@ -2,7 +2,7 @@
 from .code import code
 from .code import code8
 
-def main():
+async def main():
     print("This is the main entry point of the 'links' package")
     code()  # استدعاء دالة code
     code8()  # استدعاء دالة code8
