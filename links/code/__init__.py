@@ -14,4 +14,3 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 
 # استيراد الدوال لجعلها متاحة عند استيراد `code`
 from .module1 import reply
-from .module2 import reply_abh
