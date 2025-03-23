@@ -1,7 +1,5 @@
-# main.py
-# from code.module1 import some_function
-# from code.module2 import function2
-from code import *
+from code.module1 import some_function
+from code.module2 import function2
 print("Running main.py...")
 some_function()  # تشغيل الوظيفة من module1.py
 another_function()  # تشغيل الوظيفة من module2.py
