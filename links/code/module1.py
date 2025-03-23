@@ -1,8 +1,10 @@
-from __init__ import ABH
+import random
+from . import ABH  # ✅ استيراد ABH من __init__.py بشكل صحيح
+from telethon import events, Button
 
 abh = [
     "ها",
-    "تفظل",
+    "تفضل",
     "كول",
     "اسمعك",
     "شرايد",
@@ -10,6 +12,7 @@ abh = [
     "https://t.me/VIPABH/1214",
     "https://t.me/VIPABH/1215"
 ]
+
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def reply(event):
     if event.is_reply:
@@ -19,6 +22,7 @@ async def reply(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
+
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
