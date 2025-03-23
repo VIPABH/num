@@ -13,5 +13,5 @@ if not api_id or not api_hash or not bot_token:
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 
 # استيراد الدوال لجعلها متاحة عند استيراد `code`
-from .module1 import some_function
-from .module2 import another_function
+from .module1 import reply
+from .module2 import reply_abh
