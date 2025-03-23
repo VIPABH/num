@@ -24,4 +24,4 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 # if __name__ == "__main__":
 #     main()
 #     print("Starting Telegram bot...")
-    ABH.run_until_disconnected()  # تشغيل البوت فقط في `main.py`
+ABH.run_until_disconnected()  # تشغيل البوت فقط في `main.py`
