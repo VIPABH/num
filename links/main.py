@@ -1,12 +1,24 @@
-from code import ABH, reply  # ✅ استيراد ABH و الوظائف المطلوبة
+import os
+from code import ABH, some_function, another_function
+from telethon import events
+import asyncio
 
 print("✅ Running main.py...")
 
-def main():
+# دالة رئيسية مخصصة للمهام غير المتزامنة
+async def main():
     print("✅ This is the main program!")
-    reply()         
+
+    # تشغيل الوظائف المتزامنة
+    reply()
+    reply_abh()
+
+    # التأكد من أن البوت يعمل
+    print("✅ Starting Telegram bot...")
+
+    # تشغيل البوت وانتظار الأحداث
+    await ABH.run_until_disconnected()
 
 if __name__ == "__main__":
-    main()
-    print("✅ Starting Telegram bot...")
-    ABH.run_until_disconnected()
+    # استخدام asyncio لتشغيل الوظيفة الرئيسية
+    asyncio.run(main())
