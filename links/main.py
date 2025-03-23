@@ -1,7 +1,6 @@
 # main.py
 from code.module1 import some_function
 from code.module2 import function2
-from code.__init__ import ABH  # استيراد ABH من links/__init__.py
 from telethon import TelegramClient
 import os
 api_id = os.getenv('API_ID')      
