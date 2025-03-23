@@ -1,6 +1,7 @@
 # main.py
-from models import some_function
-from memes import another_function
+from models1 import some_function
+from models2 import some_function
+
 
 def main():
     print("This is the main program!")
