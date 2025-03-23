@@ -7,6 +7,8 @@ async def main():
     code()  # استدعاء دالة code
     code8()  # استدعاء دالة code8
     await l313l.connect()
-
+async def startup_process():
+    await load_plugins("code")
+    await load_plugins("code8")
 if __name__ == '__main__':
     main()
