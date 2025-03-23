@@ -1,5 +1,5 @@
-from .links.code.code import code 
-from .links.code.code import code8
+from .code import code
+from .code import code8
 def main():
     print("This is the main entry point of the 'links' package")
 
