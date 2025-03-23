@@ -1,7 +1,7 @@
 # main.py
 from code.module1 import some_function
 from code.module2 import function2
-from links import ABH  # استيراد ABH من links/__init__.py
+from code.__init__.py import ABH  # استيراد ABH من links/__init__.py
 
 def main():
     print("This is the main program!")
