@@ -1,4 +1,4 @@
-from code import ABH, some_function, another_function  # ✅ استيراد ABH و الوظائف المطلوبة
+from code import ABH, reply, reply_abh  # ✅ استيراد ABH و الوظائف المطلوبة
 
 print("✅ Running main.py...")
 
