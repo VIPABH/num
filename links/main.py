@@ -1,6 +1,15 @@
 # main.py
-from code.module1 import some_function
-from code.module2 import function2
+# from code.module1 import some_function
+# from code.module2 import function2
+from links import *
+print("Running main.py...")
+some_function()  # تشغيل الوظيفة من module1.py
+another_function()  # تشغيل الوظيفة من module2.py
+
+# تشغيل البوت
+print("Starting Telegram bot...")
+ABH.run_until_disconnected()
+
 from telethon import TelegramClient
 import os
 api_id = os.getenv('API_ID')      
