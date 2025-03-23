@@ -1,4 +1,4 @@
-from links.main import ABH
+from main import ABH
 
 abh = [
     "ها",
