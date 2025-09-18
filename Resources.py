@@ -9,6 +9,25 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json, asyncio
 from ABH import ABH
+async def info(e, msg_type):
+    f = 'info.json'
+    if not os.path.exists(f):
+        with open(f, 'w', encoding='utf-8') as file:
+            json.dump({}, file, ensure_ascii=False, indent=4)
+    with open(f, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    chat = str(e.chat_id)
+    user_id = str(e.sender_id)
+    if chat not in data:
+        data[chat] = {}
+    if user_id not in data[chat]:
+        data[chat][user_id] = {}
+    if msg_type not in data[chat][user_id]:
+        data[chat][user_id][msg_type] = 0
+    data[chat][user_id][msg_type] += 1
+    with open(f, 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    return data[chat][user_id]
 WHITELIST_FILE = "whitelist.json"
 whitelist_lock = asyncio.Lock()
 async def ads(group_id: int, user_id: int) -> None:
