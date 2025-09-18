@@ -243,7 +243,7 @@ async def LC(group_id: int) -> int | None:
                 return int(group_config["hint_gid"])
         return None
 report_data = {}
-# @ABH.on(events.MessageEdited)
+@ABH.on(events.MessageEdited)
 async def edited(event):
     if not event.is_group or not event.message.edit_date:
         return
