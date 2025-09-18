@@ -24,6 +24,7 @@ from telethon.tl.types import (
 )
 def get_message_type(msg:Message)->str:
     if msg is None:
+        print('none')
         return
     if msg.message and not msg.media:
         return "الرسائل"
