@@ -16,14 +16,14 @@ async def info(e, msg_type):
             json.dump({}, file, ensure_ascii=False, indent=4)
     with open(f, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    if msg_type is None:
-        return data[chat][user_id]
     chat = str(e.chat_id)
     user_id = str(e.sender_id)
     if chat not in data:
         data[chat] = {}
     if user_id not in data[chat]:
         data[chat][user_id] = {}
+    if msg_type is None:
+        return data[chat][user_id]
     if msg_type not in data[chat][user_id]:
         data[chat][user_id][msg_type] = 0
     data[chat][user_id][msg_type] += 1
