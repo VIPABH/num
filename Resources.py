@@ -16,7 +16,7 @@ async def info(e, msg_type):
             json.dump({}, file, ensure_ascii=False, indent=4)
     with open(f, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    if msg_type None:
+    if msg_type is None:
         return data[chat][user_id]
     chat = str(e.chat_id)
     user_id = str(e.sender_id)
