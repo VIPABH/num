@@ -3,6 +3,7 @@ from Resources import *
 from Program import *
 from count import *
 from games import *
+from group import *
 from ABH import *
 @ABH.on(events.NewMessage)
 async def litsin_to_all(e):
@@ -17,7 +18,11 @@ async def litsin_to_all(e):
   await faster_reult(e)
   await monitor_messages(e)
   await get_message_type(e)
-  # if text == '':
+  if text == 'معلومات' or text == 'معلوماتي':
+    msg_type = get_message_type(m)
+    user_stats=await info(e,msg_type)
+    stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
+    await e.reply(f"معلوماتك 👇 \n{stats_str}")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
   await callback_handler(e)
