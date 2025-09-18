@@ -21,7 +21,20 @@ async def info(e, msg_type):
     if chat not in data:
         data[chat] = {}
     if user_id not in data[chat]:
-        data[chat][user_id] = {}
+        data[chat][user_id] = {
+            "الرسائل": 0,
+            "الصور": 0,
+            "GIF": 0,
+            "الفويس نوت": 0,
+            "الفيديوهات": 0,
+            "الستيكرات": 0,
+            "الفويسات": 0,
+            "الصور": 0,
+            "الصوتيات": 0,
+            "الملفات": 0,
+            "المواقع": 0,
+            "الاستفتاءات": 0,
+            }
     if msg_type is None:
         return data[chat][user_id]
     if msg_type not in data[chat][user_id]:
