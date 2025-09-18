@@ -17,12 +17,12 @@ async def litsin_to_all(e):
   await faster_reult(e)
   await faster_reult(e)
   await monitor_messages(e)
-  # get_message_type(e)
-  # if text == 'معلومات' or text == 'معلوماتي':
-  #   msg_type = get_message_type(e)
-  #   user_stats=await info(e,msg_type)
-  #   stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
-  #   await e.reply(f"معلوماتك 👇 \n{stats_str}")
+  m=e.message
+  msg_type=get_message_type(m)
+  if text == 'معلوماتي' or text == 'معلومات'
+    user_stats=await info(e,msg_type)
+    stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
+    await e.reply(f"إحصائياتك الحالية:\n{stats_str}")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
   await callback_handler(e)
