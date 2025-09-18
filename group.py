@@ -59,13 +59,6 @@ def get_message_type(msg: Message) -> str:
     if isinstance(msg.media, MessageMediaPoll):
         return "الاستفتاءات"
     return "اخرئ"
-@ABH.on(events.NewMessage(pattern='معلومات'))
-async def track_messages(e):
-    m=e.message
-    msg_type=get_message_type(m)
-    user_stats=await info(e,msg_type)
-    stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
-    await e.reply(f"إحصائياتك الحالية:\n{stats_str}")
 @ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
     r = await e.get_reply_message()
