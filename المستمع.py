@@ -20,7 +20,7 @@ async def litsin_to_all(e):
   m=e.message
   msg_type=get_message_type(m)
   await info(e,msg_type)
-  if text == 'معلوماتي' or text == 'معلومات'
+  if text == 'معلوماتي' or text == 'معلومات':
     user_stats=await info(e,None)
     stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
     await e.reply(f"إحصائياتك الحالية:\n{stats_str}")
