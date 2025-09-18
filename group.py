@@ -13,14 +13,16 @@ from other import botuse
 from Resources import *
 from Program import chs
 from Resources import info
+from telethon import events
+from Resources import info
+from ABH import ABH
 from telethon.tl.types import (
     MessageExtendedMediaPreview, DocumentAttributeAudio, DocumentAttributeSticker,
     Message, MessageMediaPhoto, MessageMediaDocument, MessageMediaGeo,
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
-def get_message_type(e):
-    msg=e.message
+def get_message_type(msg:Message)->str:
     if msg is None:
         return
     if msg.message and not msg.media:
@@ -33,7 +35,7 @@ def get_message_type(e):
     if isinstance(msg.media,MessageMediaDocument):
         for attr in msg.media.document.attributes:
             if isinstance(attr,DocumentAttributeAnimated):
-                return "GIF"
+                return "الgif"
         for attr in msg.media.document.attributes:
             if isinstance(attr,DocumentAttributeVideo):
                 if getattr(attr,"round_message",False):
@@ -57,6 +59,13 @@ def get_message_type(e):
     if isinstance(msg.media,MessageMediaPoll):
         return "الاستفتاءات"
     return
+@ABH.on(events.NewMessage(pattern='معلومات'))
+async def track_messages(e):
+    m=e.message
+    msg_type=get_message_type(m)
+    user_stats=await info(e,msg_type)
+    stats_str="\n".join(f"{k}: {v}" for k,v in user_stats.items())
+    await e.reply(f"إحصائياتك الحالية:\n{stats_str}")
 @ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
     r = await e.get_reply_message()
