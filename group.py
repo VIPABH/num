@@ -24,7 +24,7 @@ from telethon.tl.types import (
 )
 def get_message_type(msg: Message) -> str:
     if msg is None:
-        return "اخرى"
+        return
     if msg.message and not msg.media:
         return "الرسائل"
     if isinstance(msg.media, MessageExtendedMediaPreview) or isinstance(msg.media, MessageExtendedMedia):
@@ -35,12 +35,12 @@ def get_message_type(msg: Message) -> str:
     if isinstance(msg.media, MessageMediaDocument):
         for attr in msg.media.document.attributes:
             if isinstance(attr, DocumentAttributeAnimated):
-                return "الgif"
+                return "GIF"
         for attr in msg.media.document.attributes:
             if isinstance(attr, DocumentAttributeVideo):
                 if getattr(attr, "round_message", False):
                     return "الفويس نوت"
-                return "الفيديو"
+                return "الفيديوهات"
         for attr in msg.media.document.attributes:
             if isinstance(attr, DocumentAttributeSticker):
                 return "الستيكرات"
@@ -58,7 +58,7 @@ def get_message_type(msg: Message) -> str:
         return "المواقع"
     if isinstance(msg.media, MessageMediaPoll):
         return "الاستفتاءات"
-    return "اخرئ"
+    return
 @ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
     r = await e.get_reply_message()
