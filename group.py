@@ -22,7 +22,6 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
-
 def get_message_type(msg: Message) -> str:
     if msg is None:
         return "اخرى"
