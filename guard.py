@@ -242,7 +242,25 @@ async def LC(group_id: int) -> int | None:
             if group_config and "hint_gid" in group_config:
                 return int(group_config["hint_gid"])
         return None
-
+report_data = {}
+# @ABH.on(events.MessageEdited)
+async def edited(event):
+    if not event.is_group or not event.message.edit_date:
+        return
+    msg = event.message
+    chat_id = event.chat_id
+    has_media = msg.media
+    has_document = msg.document
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        return
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    if not (has_media or has_document or has_url):
+        return
+    uid = event.sender_id
+    perms = await ABH.get_permissions(chat_id, uid)
+    if perms.is_admin:
+        return
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
