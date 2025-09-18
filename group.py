@@ -20,7 +20,7 @@ from telethon.tl.types import (
     MessageMediaPoll, MessageExtendedMedia,
 )
 def get_message_type(e):
-    m=e.message
+    msg=e.message
     if msg is None:
         return
     if msg.message and not msg.media:
