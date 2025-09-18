@@ -16,6 +16,7 @@ async def litsin_to_all(e):
   await faster_reult(e)
   await faster_reult(e)
   await monitor_messages(e)
+  await get_message_type(e)
   # if text == '':
 @ABH.on(events.CallbackQuery)
 async def litson(e):
