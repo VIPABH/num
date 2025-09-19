@@ -23,6 +23,7 @@ async def math_handler(event):
  correct_answer=num1*num2
  math_sessions[uid]=correct_answer
  await event.reply(f"ما ناتج: {num1} × {num2} ؟")
+@ABH.on(events.CallbackQuery(data=b"new_math"))
 async def new_math(event):
  if not event.is_group:
   return
@@ -35,6 +36,7 @@ async def new_math(event):
  math_sessions[uid]=correct_answer
  await event.edit(f"ما ناتج: {num1} × {num2} ؟")
  await react(event, '👍')
+@ABH.on(events.CallbackQuery(data=b"ignore_math"))
 async def ignore_math(event):
  if not event.is_group:
   return
@@ -43,6 +45,7 @@ async def ignore_math(event):
   del math_sessions[id]
  await event.edit("تم تجاهل السؤال.")
  await react(event, '👍')
+@ABH.on(events.NewMessage)
 async def check_math_answer(event):
  eventuid=str(event.sender_id)
  if not event.is_group:
@@ -62,6 +65,17 @@ async def check_math_answer(event):
    await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
    await react(event, '😁')
   del math_sessions[eventuid]
+@ABH.on(events.CallbackQuery(data=b'moneymuch'))
+async def show_money(event):
+ if not event.is_group:
+  return
+ uid=str(event.sender_id)
+ gid=str(event.chat_id)
+ if uid in points:
+  user_points=points[uid]
+  await event.answer(f"فلوسك {user_points} دينار",alert=True)
+ else:
+  await event.answer("ليس لديك نقاط.",alert=True)
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
     if not event.is_group:
@@ -93,6 +107,7 @@ async def answer_football(event):
         await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=a)
     if os.path.exists(file_path):
         os.remove(file_path)
+@ABH.on(events.NewMessage)
 async def answer_handler(event):
     sender = await event.get_sender()
     user_id = sender.id if sender else event.sender_id
@@ -241,6 +256,7 @@ async def rings(event):
         parse_mode="Markdown",
         buttons=markup
     )
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
 async def handle_rings(event):
     global number2
     chat_id = event.chat_id
@@ -345,8 +361,8 @@ async def show_number(event):
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
-    if not event.is_group:
-        return
+    #if not event.is_group:
+        #return
     type = "اكس او"
     await botuse(type)
     chat_id = event.chat_id
@@ -364,7 +380,7 @@ async def xo(event):
         "board": [" "] * 9,
         "restart_confirmations": {}
     }
-    markup = [[Button.inline("ابدأ اللعبة", b"startx")]]
+    markup = [[Button.inline("ابدأ اللعبة", b"start")]]
     await event.reply(
         f"أهلاً [{t1}](https://t.me/{username1})! تم تسجيلك في لعبة X/O، أنت اللاعب الأول ودورك هو X.",
         file="https://t.me/VIPABH/1216",
@@ -547,6 +563,7 @@ async def quest(event):
         "start_time": time.time()
     }
     await event.reply(f"{quest['question']}")
+@ABH.on(events.NewMessage)
 async def check_quist(event):
     if not event.text:
         return
@@ -663,6 +680,7 @@ async def sport(event):
         "waiting_for_answer": True
     }
     await event.reply(f"{question['question']}")
+@ABH.on(events.NewMessage)
 async def check_sport(event):
     if not event.text:
         return
@@ -861,6 +879,7 @@ async def faster_done(event):
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
         is_on = False
+@ABH.on(events.NewMessage)
 async def faster_reult(event):
     if not event.is_group:
         return
@@ -985,6 +1004,7 @@ async def show_players(event):
         user = await ABH.get_entity(uid)
         mentions.append(f"[{user.first_name}](tg://user?id={uid})")
     await event.respond("👥 اللاعبون المسجلون\n" + "\n".join(mentions), parse_mode='md')
+@ABH.on(events.NewMessage(incoming=True))
 async def monitor_messages(event):
     if not event.is_group:
         return
