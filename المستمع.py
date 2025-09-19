@@ -20,22 +20,22 @@ async def litsin_to_all(e):
   m = e.message
   msg_type = get_message_type(m)
   await info(e, msg_type)
-  if text in ('معلوماتي', 'معلومات'):
+  if text in ('معلوماتي', 'معلومات', 'احصائياتي'):
       user_stats = await info(e, None)
       stats_str = "\n".join(
-          f"{i+1} ◉ ↔ {k}: {v}"
-          for i, (k, v) in enumerate(user_stats.items())
+          f"◉ {k}: {v}"
+          for k, v in user_stats.items()
       )
       await e.reply(f"📊 إحصائياتك الحالية:\n\n{stats_str}")
-  elif text == 'معلوماته':
+  elif text in ('احصائياتي', 'معلوماتي'):
       x = await e.get_reply_message()
       if x:
           user_stats = await info(x, None)
           stats_str = "\n".join(
-              f"{i+1} ⟶ {k} : {v}"
-              for i, (k, v) in enumerate(user_stats.items())
+              f"◉ {k}: {v}"
+              for k, v in user_stats.items()
           )
-          await e.reply(f"📊 إحصائياته:\n\n{stats_str}")
+          await e.reply(f"📊 {e.text}:\n\n{stats_str}")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
   await callback_handler(e)
