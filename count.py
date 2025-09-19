@@ -2,8 +2,8 @@ from ABH import ABH #type: ignore
 from datetime import datetime
 from telethon import events
 from other import botuse
-import os, json, pytz
 from Resources import *
+import os, json, pytz
 from Program import *
 DATA_FILE = "uinfo.json"
 DATA_FILE_WEAK = "uinfoWEAK.json"
@@ -147,28 +147,20 @@ async def الاسبوعي(event):
         top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     x = await event.reply("\n".join(top_users))
     await react(event, "👍")
-async def show_my_res(event):
-    type = "رسائلي"
-    await botuse(type)
-    unm1 = str(event.sender_id)
-    guid1 = str(event.chat_id)
-    if guid1 in uinfo and unm1 in uinfo[guid1]:
-        await react(event, "👍")
-        msg_count = uinfo[guid1][unm1]
-        await chs(event, f'رسائلك {msg_count}')
-@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل|رسائلي)$'))
+@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|الرسائل|رسائلي)$'))
 async def his_res(event):
-    if event .text == 'رسائلي':
-        await show_my_res(event)
-        return
+    if event.text in ('رسائلي', 'الرسائل'):
+        unm1 = str(event.sender_id)
+        guid1 = str(event.chat_id)
+    else:
+      r = await event.get_reply_message()  
+      if not r:
+          await react(event, "🤔")
+          return
+      unm1 = str(r.sender_id)
+      guid1 = str(event.chat_id)
     type = "رسائله"
     await botuse(type)
-    r = await event.get_reply_message()  
-    if not r:
-        await react(event, "🤔")
-        return
-    unm1 = str(r.sender_id)
-    guid1 = str(event.chat_id)
     if guid1 in uinfo and unm1 in uinfo[guid1]:
         msg_count = uinfo[guid1][unm1]
         await react(event, "👍")
