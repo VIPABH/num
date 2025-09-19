@@ -166,7 +166,7 @@ async def his_res(event):
         الاسبوعي = WEAK[guid1][unm1]
         x = await info(event, None)
         await hint(f'{x}')
-        الكلي = x[guid1][unm1]['الرسائل']
+        الكلي = x.get("الرسائل", 0)
         await react(event, "👍")
         await chs(event, f'{event.text} \n اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
