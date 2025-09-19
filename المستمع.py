@@ -34,6 +34,8 @@ async def litsin_to_all(e):
               f"◉ {k}: {v}"
               for k, v in user_stats.items())
           await e.reply(f"📊 {e.text}:\n\n{stats_str}")
+  elif text == 'حافر':
+    await e.reply(f"['حافر']((https://t.me/x04ou))")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
   await callback_handler(e)
