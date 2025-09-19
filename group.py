@@ -35,7 +35,7 @@ def get_message_type(msg: Message) -> str:
     if isinstance(msg.media, MessageMediaDocument):
         for attr in msg.media.document.attributes:
             if isinstance(attr, DocumentAttributeAnimated):
-                return "GIF"
+                return "🎬 GIF"
         for attr in msg.media.document.attributes:
             if isinstance(attr, DocumentAttributeVideo):
                 if getattr(attr, "round_message", False):
