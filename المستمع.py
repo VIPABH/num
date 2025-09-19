@@ -21,9 +21,12 @@ async def litsin_to_all(e):
   msg_type=get_message_type(m)
   await info(e,msg_type)
   if text in ('معلوماتي', 'معلومات'):
-    user_stats = await info(e, None)
-    stats_str = "\n".join(f"{i+1} ↪ {k} = {v}" for i, (k, v) in enumerate(user_stats.items()))
-    await e.reply(f"إحصائياتك الحالية:\n{stats_str}")
+      user_stats = await info(e, None)
+      stats_str = "\n".join(
+          f"{i+1} 👇\n{k} = {v}"
+          for i, (k, v) in enumerate(user_stats.items())
+      )
+      await e.reply(f"إحصائياتك الحالية ↶\n{stats_str}")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
   await callback_handler(e)
