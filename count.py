@@ -165,6 +165,7 @@ async def his_res(event):
         msg_count = uinfo[guid1][unm1]
         الاسبوعي = WEAK[guid1][unm1]
         x = await info(event, None)
+        await hint(f'{x}')
         الكلي = x[guid1][unm1]['الرسائل']
         await react(event, "👍")
         await chs(event, f'{event.text} \n اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
