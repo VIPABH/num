@@ -163,8 +163,11 @@ async def his_res(event):
     await botuse(type)
     if guid1 in uinfo and unm1 in uinfo[guid1]:
         msg_count = uinfo[guid1][unm1]
+        الاسبوعي = WEAK[guid1][unm1]
+        x = await info(event, None)
+        الكلي = x[guid1][unm1]['الرسائل']
         await react(event, "👍")
-        await chs(event, f'{event.text} {msg_count}')
+        await chs(event, f'{event.text} \n اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
     if not event.is_group:
