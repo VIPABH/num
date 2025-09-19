@@ -7,34 +7,32 @@ from group import *
 from ABH import *
 @ABH.on(events.NewMessage)
 async def litsin_to_all(e):
-  text = e.text
-  await som(e)
-  await unified_handler(e)
   await check_math_answer(e)
+  await monitor_messages(e)
+  await unified_handler(e)
   await answer_handler(e)
+  await faster_reult(e)
+  await faster_reult(e)
   await check_quist(e)
   await check_sport(e)
-  await faster_reult(e)
-  await faster_reult(e)
-  await monitor_messages(e)
+  await som(e)
   m = e.message
+  text = e.text
   msg_type = get_message_type(m)
   await info(e, msg_type)
   if text in ('معلوماتي', 'معلومات', 'احصائياتي'):
       user_stats = await info(e, None)
       stats_str = "\n".join(
           f"◉ {k}: {v}"
-          for k, v in user_stats.items()
-      )
+          for k, v in user_stats.items())
       await e.reply(f"📊 إحصائياتك الحالية:\n\n{stats_str}")
-  elif text in ('احصائياتي', 'معلوماتي'):
+  elif text in ('احصائياته', 'معلوماته'):
       x = await e.get_reply_message()
       if x:
           user_stats = await info(x, None)
           stats_str = "\n".join(
               f"◉ {k}: {v}"
-              for k, v in user_stats.items()
-          )
+              for k, v in user_stats.items())
           await e.reply(f"📊 {e.text}:\n\n{stats_str}")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
