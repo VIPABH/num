@@ -21,7 +21,7 @@ async def litsin_to_all(e):
   msg_type=get_message_type(m)
   await info(e,msg_type)
 if text in ('معلوماتي', 'معلومات'):
-    user_stats = await info(e, None)
+    user_stats = info(e, None)
     stats_str = "\n".join(
         f"╭─〔 {i+1} 〕─────────────\n"
         f"│ {k} : {v}\n"
