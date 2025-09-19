@@ -168,7 +168,10 @@ async def his_res(event):
         await hint(f'{x}')
         الكلي = x.get("الرسائل", 0)
         await react(event, "👍")
-        await chs(event, f'{event.text} \n اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
+        await chs
+        (
+        event,
+        f'اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
     if not event.is_group:
