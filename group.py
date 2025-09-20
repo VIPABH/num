@@ -79,6 +79,7 @@ async def theft(e):
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
     rp = load_points()
+    print(rp)
     if not rp:
         await hint('لا يوجد احد في النقاط')
         return
