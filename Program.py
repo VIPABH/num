@@ -166,10 +166,7 @@ async def remove_secondary_dev(event):
     chat_id = str(event.chat_id)
     user_id = str(entity.id)
     print(x)
-    if chat_id in x:
-        await chs(event, "المجموعة ما بيها مطورين ثانويين .")
-        return
-    elif user_id in x[chat_id]:
+    if user_id in x[chat_id]:
         await chs(event, "عزيزي ابن هاشم هذا مو مطور ثانوي .")
         return
     dev = f"{event.chat_id}:{entity.id}"
