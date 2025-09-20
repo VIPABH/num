@@ -225,8 +225,8 @@ async def boxing(event):
     mention2 = f"[{user2_entity.first_name}](tg://user?id={user2_id})"
     winner_id = random.choice([user1_id, user2_id])
     loser_id = user2_id if winner_id == user1_id else user1_id
-    points[str(winner_id)][gid]['points'] += count
-    points[str(loser_id)][gid]['points'] -= count
+    points[str(winner_id)] += count
+    points[str(loser_id)] -= count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
