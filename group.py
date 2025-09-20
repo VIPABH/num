@@ -115,15 +115,15 @@ async def theft(e):
     await react(e, '🎉')
     user_data[str(e.sender_id)] = now
     save_user_data(user_data)
-USER_DATA_FILE = "trade.json"
-def tlo():
-    if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
-    return {}
-def save_user_data(data):
-    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
+# USER_DATA_FILE = "trade.json"
+# def tlo():
+#     if os.path.exists(USER_DATA_FILE):
+#         with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+#             return json.load(file)
+#     return {}
+# def save_user_data(data):
+#     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
+#         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     if not event.is_group:
@@ -132,7 +132,7 @@ async def trade(event):
     await botuse(type)
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
-    user_data = tlo()
+    user_data = load_user_data()
     last_play_time = user_data.get(user_id, {}).get("last_play_time", 0)
     current_time = int(time.time())
     time_diff = current_time - last_play_time
@@ -175,7 +175,7 @@ async def trade(event):
         await react(event, '😁')
     if user_id not in user_data:
         user_data[user_id] = {}
-    user_data[user_id]["last_play_time"] = current_time
+    user_data['تداول'][user_id]["last_play_time"] = current_time
     save_user_data(user_data)
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
@@ -263,10 +263,10 @@ async def boxing(event):
         f"💰 الجائزة: {count} نقطة 🎉"
     )
     await react(event, '🎉')
-    user_data['مضاربة'][str(user1_id)] = user_data.get('مضاربة', {}).get(str(user1_id), {})
-    user_data['مضاربة'][str(user1_id)]["boxed"] = current_time
-    user_data['مضاربة'][str(user2_id)] = user_data.get('مضاربة', {}).get(str(user2_id), {})
-    user_data['مضاربة'][str(user2_id)]["attacked"] = current_time
+    user_data[str(user1_id)] = user_data.get(str(user1_id), {})
+    user_data[str(user1_id)]["boxed"] = current_time
+    user_data[str(user2_id)] = user_data.get(str(user2_id), {})
+    user_data[str(user2_id)]["attacked"] = current_time
     save_user_data(user_data)
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
