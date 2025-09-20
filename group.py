@@ -78,10 +78,10 @@ async def theft(e):
     if k:
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
-    m = points[id]
-    if not m:
-        await hint('لا يوجد احد في النقاط')
-        return
+    if id in points:
+        m = points[id] 
+    else:
+        m = 0
     if m > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
         return
