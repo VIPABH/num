@@ -133,7 +133,9 @@ async def trade(event):
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     user_data = load_user_data()
-    last_play_time = user_data['تداول'][user_id]['last_play_time']
+    user_data.setdefault('تداول', {})
+    user_data['تداول'].setdefault(user_id, {})
+    last_play_time = user_data['تداول'][user_id].get('last_play_time', 0)
     current_time = int(time.time())
     time_diff = current_time - last_play_time
     if time_diff < 10 * 60:
@@ -173,9 +175,7 @@ async def trade(event):
             f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
         )
         await react(event, '😁')
-    if user_id not in user_data:
-        user_data[user_id] = {}
-    user_data['تداول'][user_id]["last_play_time"] = current_time
+    user_data['تداول'][user_id]['last_play_time'] = current_time
     save_user_data(user_data)
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
