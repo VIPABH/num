@@ -263,10 +263,10 @@ async def boxing(event):
         f"💰 الجائزة: {count} نقطة 🎉"
     )
     await react(event, '🎉')
-    user_data[str(user1_id)] = user_data.get(str(user1_id), {})
-    user_data[str(user1_id)]["boxed"] = current_time
-    user_data[str(user2_id)] = user_data.get(str(user2_id), {})
-    user_data[str(user2_id)]["attacked"] = current_time
+    user_data['مضاربة'][str(user1_id)] = user_data.get('مضاربة', {}).get(str(user1_id), {})
+    user_data['مضاربة'][str(user1_id)]["boxed"] = current_time
+    user_data['مضاربة'][str(user2_id)] = user_data.get('مضاربة', {}).get(str(user2_id), {})
+    user_data['مضاربة'][str(user2_id)]["attacked"] = current_time
     save_user_data(user_data)
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
