@@ -86,7 +86,10 @@ async def theft(e):
     last_time = user_data.get(str(e.sender_id), 0)
     now = int(time.time())
     if now - last_time < 600:
-        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {600 - (now - last_time)} ثانية')
+        remaining = 600 - (now - last_time)
+        minutes = remaining // 60
+        seconds = remaining % 60
+        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {minutes:02d}:{seconds:02d} دقيقة/ثانية')
         return
     s = save(None, 'secondary_devs.json')
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
