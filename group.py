@@ -86,7 +86,7 @@ async def theft(e):
         await chs(e, f'عذرا بس {m} فلوسه قليله')
         return
     await botuse('سرقة')
-    p = random.choice([7000, 8000, 9000, 10000])
+    p = فلوس // 10
     delpoints(id, e.chat_id, points, p)
     add_points(e.sender_id, e.chat_id, points, p)
     await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
