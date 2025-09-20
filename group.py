@@ -65,6 +65,10 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
+    if not e.is_group:
+        return
+    type = "سرقة"
+    await botuse(type)
     r = await e.get_reply_message()
     if not r:
         await react(e, '🤔')
@@ -89,7 +93,7 @@ async def theft(e):
         remaining = 600 - (now - last_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {minutes:02d}:{seconds:02d} دقيقة/ثانية')
+        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {minutes:02d}:{seconds:02d} دقيقة')
         return
     s = save(None, 'secondary_devs.json')
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
