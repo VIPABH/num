@@ -78,7 +78,7 @@ async def theft(e):
     if k:
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
-    m = points[uid]
+    m = points[id]
     if not m:
         await hint('لا يوجد احد في النقاط')
         return
