@@ -82,6 +82,12 @@ async def theft(e):
     if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
         return
+    user_data = tiftsave()
+    last_time = user_data.get(str(e.sender_id), 0)
+    now = int(time.time())
+    if now - last_time < 600:
+        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {600 - (now - last_time)} ثانية')
+        return
     s = save(None, 'secondary_devs.json')
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
     if k:
@@ -100,9 +106,7 @@ async def theft(e):
     add_points(e.sender_id, e.chat_id, points, p)
     await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
     await react(e, '🎉')
-    t = int(time.time())
-    user_data = tiftsave()
-    user_data[str(e.sender_id)] = t
+    user_data[str(e.sender_id)] = now
     save_user_data(user_data)
 USER_DATA_FILE = "trade.json"
 def tlo():
