@@ -1,21 +1,16 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from top import points, delpoints, add_points
 from ABH import ABH, events #type: ignore
-import asyncio, os, json, time, random
 from datetime import datetime, timedelta
+import asyncio, os, json, time, random
 from hijri_converter import Gregorian
 from googletrans import Translator
-from telethon import Button, types
 from num2words import num2words
-from ABH import ABH, events
+from telethon import Button
 from other import botuse
 from Resources import *
 from Program import chs
-from Resources import info
-from telethon import events
-from Resources import info
-from ABH import ABH
+from top import *
 from telethon.tl.types import (
     MessageExtendedMediaPreview, DocumentAttributeAudio, DocumentAttributeSticker,
     Message, MessageMediaPhoto, MessageMediaDocument, MessageMediaGeo,
@@ -83,11 +78,11 @@ async def theft(e):
     if k:
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
-    rp = points(id)
+    rp = load_points()
     if not rp:
-        await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
+        await hint('لا يوجد احد في النقاط')
         return
-    if not rp > 10000:
+    if not rp[id] > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
         return
     await botuse('سرقة')
