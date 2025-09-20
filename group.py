@@ -190,7 +190,8 @@ async def boxing(event):
         seconds = remaining % 60
         s = await event.get_sender()
         x = await ment(s)
-        await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
+        rx = await ment(await ABH.get_entity(user1_id))
+        await event.reply(f"عزيزي {x} لا يمكنك مضاربة {rx} انتظر {minutes:02}:{seconds:02} دقيقة.")
         await react(event, '😐')
         return
     last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
