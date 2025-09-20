@@ -54,6 +54,15 @@ def get_message_type(msg: Message) -> str:
     if isinstance(msg.media, MessageMediaPoll):
         return "الاستفتاءات"
     return
+USER_DATA_FILE = "thift.json"
+def tiftsave():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    return {}
+def save_user_data(data):
+    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
     r = await e.get_reply_message()
@@ -79,7 +88,7 @@ async def theft(e):
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
     if id in points:
-        فلوس = points[id] 
+        فلوس = points[id]
     else:
         فلوس = 0
     if فلوس > 10000:
@@ -90,6 +99,11 @@ async def theft(e):
     delpoints(id, e.chat_id, points, p)
     add_points(e.sender_id, e.chat_id, points, p)
     await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
+    await react(e, '🎉')
+    t = int(time.time())
+    user_data = tiftsave()
+    user_data[str(e.sender_id)] = t
+    save_user_data(user_data)
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
