@@ -133,7 +133,7 @@ async def trade(event):
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     user_data = load_user_data()
-    last_play_time = user_data.get(user_id, {}).get("last_play_time", 0)
+    last_play_time = user_data['تداول'][user_id]['last_play_time']
     current_time = int(time.time())
     time_diff = current_time - last_play_time
     if time_diff < 10 * 60:
