@@ -173,7 +173,7 @@ async def boxing(event):
         await react(event, '🤔')
         return
     try:
-        count = int(event.pattern_match.group(1))
+        count = int(event.pattern_match.group(1)) or points[str(event.sender_id)]
     except ValueError:
         await event.reply('تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
         await react(event, '🤔')
@@ -201,16 +201,16 @@ async def boxing(event):
         await event.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
         await react(event, '😐')
         return
-    if str(user1_id) not in points or gid not in points[str(user1_id)]:
+    if str(user1_id) not in points:
         await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
         await react(event, '💔')
         return
-    if str(user2_id) not in points or gid not in points[str(user2_id)]:
+    if str(user2_id) not in points:
         await event.reply('أنت لا تملك نقاط.')
         await react(event, '😐')
         return
-    mu1 = points[str(user1_id)][gid]['points']
-    mu2 = points[str(user2_id)][gid]['points']
+    mu1 = points[str(user1_id)]
+    mu2 = points[str(user2_id)]
     if count > mu1:
         await event.reply('فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
         await react(event, '😐')
