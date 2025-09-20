@@ -165,6 +165,7 @@ async def remove_secondary_dev(event):
     x = save(None, filename="secondary_devs.json")
     chat_id = str(event.chat_id)
     user_id = str(entity.id)
+    print(x)
     if chat_id in x:
         await chs(event, "المجموعة ما بيها مطورين ثانويين .")
         return
