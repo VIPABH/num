@@ -79,10 +79,10 @@ async def theft(e):
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
     if id in points:
-        m = points[id] 
+        فلوس = points[id] 
     else:
-        m = 0
-    if m > 10000:
+        فلوس = 0
+    if فلوس > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
         return
     await botuse('سرقة')
