@@ -67,6 +67,21 @@ def save_user_data(data):
 async def theft(e):
     if not e.is_group:
         return
+    user_id = str(e.sender_id)
+    user_data = load_user_data()
+    user_data.setdefault('سرقة', {})
+    user_data['سرقة'].setdefault(user_id, {})
+    last_play_time = user_data['سرقة'][user_id].get('last_play_time', 0)
+    current_time = int(time.time())
+    time_diff = current_time - last_play_time
+    if time_diff < 10 * 60:
+        remaining = 10 * 60 - time_diff
+        minutes = remaining // 60
+        seconds = remaining % 60
+        formatted_time = f"{minutes:02}:{seconds:02}"
+        await e.reply(f"يجب عليك الانتظار {formatted_time} قبل السرقة مجددًا.")
+        await react(e, '😐')
+        return
     type = "سرقة"
     await botuse(type)
     r = await e.get_reply_message()
@@ -86,15 +101,6 @@ async def theft(e):
     if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
         return
-    user_data = tiftsave()
-    last_time = user_data.get(str(e.sender_id), 0)
-    now = int(time.time())
-    if now - last_time < 600:
-        remaining = 600 - (now - last_time)
-        minutes = remaining // 60
-        seconds = remaining % 60
-        await e.reply(f'ما تكدر تسرق بعد، لازم تنتظر {minutes:02d}:{seconds:02d} دقيقة')
-        return
     s = save(None, 'secondary_devs.json')
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
     if k:
@@ -113,17 +119,8 @@ async def theft(e):
     add_points(e.sender_id, e.chat_id, points, p)
     await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
     await react(e, '🎉')
-    user_data[str(e.sender_id)] = now
+    user_data['سرقة'][user_id]['last_play_time'] = current_time
     save_user_data(user_data)
-# USER_DATA_FILE = "trade.json"
-# def tlo():
-#     if os.path.exists(USER_DATA_FILE):
-#         with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
-#             return json.load(file)
-#     return {}
-# def save_user_data(data):
-#     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
-#         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     if not event.is_group:
