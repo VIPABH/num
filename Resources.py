@@ -1,3 +1,4 @@
+
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
@@ -9,6 +10,29 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json, asyncio
 from ABH import ABH
+def create(filename):
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as file:
+            json.dump({}, file, ensure_ascii=False, indent=4)
+        return True
+    return False
+def res(gid):
+    create('res.json')
+    with open('res.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    if ":" not in gid:
+        return data
+    parts = gid.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id not in data:
+        data[chat_id] = []
+    if dev_id_num not in data[chat_id]:
+        data[chat_id].append(dev_id_num)
+    with open('res.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    return data
 async def info(e, msg_type):
     f = 'info.json'
     if not os.path.exists(f):
