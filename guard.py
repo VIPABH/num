@@ -138,7 +138,7 @@ async def restrict_user(event):
         until_date=now + 20 * 60,
         send_messages=True
     )
-    res(f"{chat_id}:{r.sender_id}")
+    res(event)
     try:
         await ABH(EditBannedRequest(channel=int(chat_id), participant=int(r.sender_id), banned_rights=rights))
         type = "تقييد عام"
