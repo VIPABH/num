@@ -25,15 +25,15 @@ async def delrestrict(e):
         return
     r = await e.get_reply_message()
     if not r or not r.sender_id:
-        await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
+        await chs(e, "الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
     if not delres(chat_id=e.chat_id, user_id=r.sender_id):
-        await e.reply("هذا المستخدم ليس مقيداً حالياً.")
+        await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
     m = await ment(r)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
     await botuse("الغاء تقييد عام")
-    await send(e, f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}')
+    await send(e, f'#الغاء_تقييد_عام\n👤 \n تم الغاء تقييد االمستخدم (  {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون: ( {await mention(e)} ايديه ~ ( `{e.sender_id}` ) )')
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = str(event.chat_id)
@@ -149,7 +149,7 @@ async def restrict_user(event):
         await r.delete()
         await event.delete()
     except Exception as e:
-        await hint(e)
+        # await hint(e)
         await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
