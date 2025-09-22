@@ -33,6 +33,7 @@ async def delrestrict(e):
         return
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(r.sender_id)))
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
+        await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
         await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
         return
     else:
