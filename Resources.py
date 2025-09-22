@@ -311,9 +311,20 @@ async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
     return f"[{name}](tg://user?id={user_id})"
-async def ment(sender):
-    name = sender.first_name
-    user_id = sender.id
+async def ment(entity):
+    if hasattr(entity, "first_name"):
+        name = entity.first_name or "غير معروف"
+        user_id = entity.id
+    elif hasattr(entity, "sender_id"):
+        if entity.sender:
+            name = entity.sender.first_name or "غير معروف"
+            user_id = entity.sender.id
+        else:
+            sender = await entity.get_sender()
+            name = sender.first_name or "غير معروف"
+            user_id = sender.id
+    else:
+        return "غير معروف"
     return f"[{name}](tg://user?id={user_id})"
 football = [
         {
