@@ -24,13 +24,9 @@ def res(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         d = json.load(file)
-    gid, user_id = e.chat_id, e.sender_id
-    if gid is None:
+    if e is None:
         return d
-    if ":" not in gid:
-        return d
-    chat_id, user_id = gid.split(":", 1)
-    chat_id, user_id = str(chat_id), str(user_id)
+    chat_id, user_id = str(e.chat_id), str(e.sender_id)
     if chat_id not in d:
         d[chat_id] = {}
     end_time = time.time() + 20*60
