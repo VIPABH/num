@@ -1,4 +1,3 @@
-
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
@@ -36,8 +35,7 @@ def res(gid):
 async def info(e, msg_type):
     f = 'info.json'
     if not os.path.exists(f):
-        with open(f, 'w', encoding='utf-8') as file:
-            json.dump({}, file, ensure_ascii=False, indent=4)
+        create(f)
     with open(f, 'r', encoding='utf-8') as file:
         data = json.load(file)
     chat = str(e.chat_id)
