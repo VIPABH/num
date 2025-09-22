@@ -35,9 +35,9 @@ async def timerun(event):
         الساعة=الآن.strftime("%I:%M %p")
         الرسالة=f"🕒 وقت التشغيل {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد {الساعة}"
         await event.reply(الرسالة)
-print(f'anymous is working at {hour} ✓')
 def main():
     ABH.start(bot_token=bot_token)
     ABH.run_until_disconnected()
+    print(f'anymous is working at {hour} ✓')
 if __name__ == "__main__":
     main()
