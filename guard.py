@@ -134,12 +134,6 @@ async def restrict_user(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
     sender = await r.get_sender()
     name = await ment(sender)
-    try:
-        participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
-        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return
-    except:
-        return
     now = int(time.time())
     restriction_duration = 20 * 60
     user_to_restrict = await r.get_sender()
