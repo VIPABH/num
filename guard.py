@@ -233,8 +233,13 @@ async def edited(event):
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
+    chat_obj = await event.get_chat()
     mention_text = await mention(event)
-    رابط = await link(event)
+    if getattr(chat_obj, "username", None):
+        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
+    else:
+        clean_id = str(chat_obj.id).replace("-100", "")
+        رابط = f"https://t.me/c/{clean_id}/{event.id}"
     buttons = [
         [
             Button.inline(' نعم', data=f"yes:{uid}"),
