@@ -212,7 +212,7 @@ async def dodemote(event, target_user_id=None):
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         await react(event, "💔")
-        return
+        return False
     try:
         pp = await ABH(GetParticipantRequest(int(chat_id), int(target_user_id)))
         participant = pp.participant
@@ -220,14 +220,14 @@ async def dodemote(event, target_user_id=None):
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
         await event.reply("والله مابيه حيل اعذرني يخوي")
         await react(event, "💔")
-        return
+        return False
     x = await ABH.get_me()
     if hasattr(participant, "promoted_by") and participant.promoted_by != x.id:
         user = await ABH.get_entity(participant.promoted_by)
         menti = await ment(user)
         await chs(event, f"خلي {menti} ينزله من المشرفين، مو شغلي 😅")
         await react(event, "🤣")
-        return
+        return False
     try:
         await ABH(EditAdminRequest(
             channel=int(chat_id),
@@ -255,6 +255,7 @@ async def dodemote(event, target_user_id=None):
         await ABH.send_message(wfffp, f"خطأ عند تنزيل المشرف: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
         await react(event, "💔")
+        return False
 @ABH.on(events.NewMessage(pattern='^مخفي نزلني|تنزيل مشرف|مخفي نزل(ه|ة)$'))
 async def demote_admin(event):
     if not event.is_group:
@@ -296,8 +297,10 @@ async def demote_admin(event):
         await chs(event, "ما اكدر انزله لان هو المالك.")
         await react(event, "🤣")
         return
-    await dodemote(event, target_user_id)
-    await chs(event, "تم تنزيل المستخدم من المشرفين.")
+    ء = await dodemote(event, target_user_id)
+    if ء:
+        await chs(event, "تم تنزيل المستخدم من المشرفين.")
+        return
     # type = "اوامر الرفع"
     # await botuse(type)
     # await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`\n `رفع معاون` بالرد \n حتى ترفع الشخص معاون \n `تنزيل معاون` بالرد \n حتى تنزل الشخص من المعاونين \n `المعاونين` حتى تشوف قائمة المعاونين بالمجموعة \n `رفع معاون` بالرد على مستخدم \n راح ينرفع المستخدم داخل البوت\n \n `المعاونين` علمود تشوف المرفوعين  \n `ترقية` حتى ترفعه مشرف بالمجموعة')
