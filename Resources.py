@@ -20,13 +20,14 @@ def create(filename):
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
     return True
-def res(e):
+async def res(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         d = json.load(file)
     if e is None:
         return d
-    chat_id, user_id = str(e.chat_id), str(e.sender_id)
+    r = await e.get_reply_message()
+    chat_id, user_id = str(e.chat_id), str(r.sender_id)
     if chat_id not in d:
         d[chat_id] = {}
     duration = 20 * 60
