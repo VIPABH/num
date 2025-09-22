@@ -6,8 +6,8 @@ from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.errors import ChatForwardsRestrictedError
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
+import pytz, os, json, asyncio, time
 import google.generativeai as genai
-import pytz, os, json, asyncio
 from ABH import ABH
 def create(filename):
     if not os.path.exists(filename):
@@ -15,23 +15,57 @@ def create(filename):
             json.dump({}, file, ensure_ascii=False, indent=4)
         return True
     return False
-def res(gid):
+import json
+import os
+import time
+
+def create(filename):
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+    return True
+import json
+import os
+import time
+
+def create(filename):
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+    return True
+def res(gid=None):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
+    if gid is None:
+        return data
     if ":" not in gid:
         return data
-    parts = gid.split(":", 1)
-    if len(parts) != 2:
-        return data
-    chat_id, dev_id_num = parts
-    if str(chat_id) not in data:
-        data[str(chat_id)] = []
-    if str(dev_id_num) not in data[str(chat_id)]:
-        data[str(chat_id)].append(str(dev_id_num))
+    chat_id, dev_id_num = gid.split(":", 1)
+    chat_id = str(chat_id)
+    dev_id_num = str(dev_id_num)
+    t = time.time()
+    if chat_id not in data:
+        data[chat_id] = {}
+    if dev_id_num not in data[chat_id]:
+        data[chat_id][dev_id_num] = t
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
     return data
+def del_res(chat_id, dev_id_num):
+    create('res.json')
+    with open('res.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    chat_id = str(chat_id)
+    dev_id_num = str(dev_id_num)
+    if chat_id in data and dev_id_num in data[chat_id]:
+        del data[chat_id][dev_id_num]
+        if not data[chat_id]:
+            del data[chat_id]
+        with open('res.json', 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+        return True
+    return False
 async def info(e, msg_type):
     f = 'info.json'
     if not os.path.exists(f):
@@ -311,20 +345,9 @@ async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
     return f"[{name}](tg://user?id={user_id})"
-async def ment(entity):
-    if hasattr(entity, "first_name"):
-        name = entity.first_name or "غير معروف"
-        user_id = entity.id
-    elif hasattr(entity, "sender_id"):
-        if entity.sender:
-            name = entity.sender.first_name or "غير معروف"
-            user_id = entity.sender.id
-        else:
-            sender = await entity.get_sender()
-            name = sender.first_name or "غير معروف"
-            user_id = sender.id
-    else:
-        return "غير معروف"
+async def ment(sender):
+    name = sender.first_name
+    user_id = sender.id
     return f"[{name}](tg://user?id={user_id})"
 football = [
         {
