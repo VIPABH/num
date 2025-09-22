@@ -9,7 +9,7 @@ from top import points, delpoints
 from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
-async def delres(e):
+async def delrestrict(e):
     id = e.sender_id
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(e.chat_id, id)
@@ -38,12 +38,12 @@ async def delres(e):
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
-    if not restriction_end_times.get(chat_id):
+    if not res(None):
         await event.reply(" لا يوجد حالياً أي مستخدم مقيد.")
         return
     msg = "📋 قائمة المقيدين عام:\n\n"
     expired_users = []
-    for user_id, end_time in list(restriction_end_times[chat_id].items()):
+    for user_id, end_time in res(None).items():
         try:
             user = await ABH.get_entity(user_id)
             name = f"[{user.first_name}](tg://user?id={user_id})"
@@ -160,25 +160,23 @@ async def monitor_messages(event):
     user_id = event.sender_id
     chat_id = event.chat_id
     now = int(time.time())
-    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
-        end_time = res_
-        if now < end_time:
-            remaining = end_time - now
-            await event.delete()
-            try:
-                
-                rights = ChatBannedRights(
-                    until_date=now + remaining,
-                    send_messages=True
-                )
-                await ABH(EditBannedRequest(channel=int(chat_id), participant=int(user_id), banned_rights=rights))
-                rrr = await mention(event)
-                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
-                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
-                type = "تقييد مستخدمين"
-                await botuse(type)
-            except:
-                pass
+    all_data = res(None)
+    if chat_id in all_data and user_id in all_data[chat_id]:
+        end_time = all_data[chat_id][user_id]
+        try:
+            remaining = end_time - now  
+            rights = ChatBannedRights(
+                until_date=now + remaining,
+                send_messages=True
+            )
+            await ABH(EditBannedRequest(channel=int(chat_id), participant=int(user_id), banned_rights=rights))
+            rrr = await mention(event)
+            c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
+            await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+            type = "تقييد مستخدمين"
+            await botuse(type)
+        except:
+            pass
 WHITELIST_FILE = "whitelist.json"
 whitelist_lock = asyncio.Lock()
 async def ads(group_id: int, user_id: int) -> None:
