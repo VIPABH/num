@@ -38,6 +38,7 @@ async def litsin_to_all(e):
     await e.reply("[حيثُ الجمال](https://t.me/x04ou)")
 @ABH.on(events.CallbackQuery)
 async def litson(e):
+  await promoti(e)
   await callback_handler(e)
   await callbacklist(e)
   data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
