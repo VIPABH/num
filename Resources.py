@@ -9,60 +9,61 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from ABH import ABH
-WHITELIST_FILE = "whitelist.json"
-whitelist_lock = asyncio.Lock()
-async def ads(group_id: int, user_id: int) -> None:
-    async with whitelist_lock:
-        data = {}
-        if os.path.exists(WHITELIST_FILE):
-            try:
-                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-        group_key = str(group_id)
-        group_list = data.get(group_key, [])
-        if user_id not in group_list:
-            group_list.append(user_id)
-            data[group_key] = group_list
-            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-async def lw(group_id: int) -> list[int]:
-    async with whitelist_lock:
-        if not os.path.exists(WHITELIST_FILE):
-            return []
-        try:
-            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except json.JSONDecodeError:
-            return []
-        return data.get(str(group_id), [])
-CONFIG_FILE = "vars.json"
-config_lock = asyncio.Lock()
-async def configc(group_id: int, hint_cid: int) -> None:
-    async with config_lock:
-        config = {}
-        if os.path.exists(CONFIG_FILE):
-            try:
-                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-            except json.JSONDecodeError:
-                config = {}
-        config[str(group_id)] = {"hint_gid": int(hint_cid)}
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump(config, f, ensure_ascii=False, indent=4)
-async def LC(group_id: int) -> int | None:
-    async with config_lock:
-        if os.path.exists(CONFIG_FILE):
-            try:
-                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-            except json.JSONDecodeError:
-                return None
-            group_config = config.get(str(group_id))
-            if group_config and "hint_gid" in group_config:
-                return int(group_config["hint_gid"])
-        return None
+WARN_FILE = "warns.json"
+def load_warns():
+    if os.path.exists(WARN_FILE):
+        with open(WARN_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+def save_warns(warns_data):
+    with open(WARN_FILE, "w", encoding="utf-8") as f:
+        json.dump(warns_data, f, ensure_ascii=False, indent=2)
+def add_warning(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str not in warns:
+        warns[chat_id_str] = {}
+    if user_id_str not in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
+    warns[chat_id_str][user_id_str] += 1
+    current_warns = warns[chat_id_str][user_id_str]
+    if current_warns >= 3:
+        warns[chat_id_str][user_id_str] = 0
+    save_warns(warns)
+    return current_warns
+def del_warning(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        if warns[chat_id_str][user_id_str] > 0:
+            warns[chat_id_str][user_id_str] -= 1
+            save_warns(warns)
+            return warns[chat_id_str][user_id_str]
+    return 0
+def zerowarn(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
+        save_warns(warns)
+        return 0
+    return 0
+def count_warnings(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        return warns[chat_id_str][user_id_str]
+    return 0
+async def send(e, m):
+    c = e.chat_id
+    l = await LC(str(c))
+    if not l:
+        return
+    await ABH.send_message(l, m)
 def create(filename):
     if not os.path.exists(filename):
         with open(filename, 'w', encoding='utf-8') as file:
