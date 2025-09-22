@@ -75,8 +75,8 @@ async def notAssistantres(event):
     if redas.get(lock_key) != "True":
         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
         return
-    chat_id = event.chat_id
-    user_id = event.sender_id
+    chat_id = int(event.chat_id)
+    user_id = int(event.sender_id)
     sender = await event.get_sender()
     chat = await event.get_chat()
     r = await event.get_reply_message()
