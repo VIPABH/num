@@ -39,12 +39,12 @@ def res(gid=None):
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
     return data
-def delres(chat_id, dev_id_num):
+def delres(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
-    chat_id = str(chat_id)
-    dev_id_num = str(dev_id_num)
+    chat_id = str(e.chat_id)
+    dev_id_num = str(e.sender_id)
     if chat_id in data and dev_id_num in data[chat_id]:
         del data[chat_id][dev_id_num]
         if not data[chat_id]:
