@@ -27,10 +27,6 @@ async def delres(e):
     if not r or not r.sender_id:
         await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
-    # participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
-    # if not isinstance(participant.participant, ChannelParticipantBanned):
-    #     await e.reply("المستخدم غير مقيد.")
-    #     return
     del restriction_end_times[e.chat_id][r.sender_id]
     await ABH(EditBannedRequest(
         e.chat_id,
@@ -39,7 +35,9 @@ async def delres(e):
     ))
     x = await r.get_sender()
     m = await ment(x)
-    await e.reply(f"تم إلغاء التقييد العام عن {m}")
+    await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
+    await botuse("الغاء تقييد عام")
+    await send(f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}', e)
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = event.chat_id
@@ -629,16 +627,16 @@ async def warnssit(e):
     if len(parts) == 3:
         if not is_assistant(e.chat_id, e.sender_id):
             return await e.answer('🌚')
-            النوع, target_id, chat_id = parts
-            msg = await e.get_message()
-            t = msg.text
-            if النوع == "zerowarn":
-                await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
-                zerowarn(target_id, chat_id)
-            elif النوع == 'delwarn':
-                d = del_warning(target_id, chat_id)
-                m = await mention(e)
-                await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
+        النوع, target_id, chat_id = parts
+        msg = await e.get_message()
+        t = msg.text
+        if النوع == "zerowarn":
+            await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
+            zerowarn(target_id, chat_id)
+        elif النوع == 'delwarn':
+            d = del_warning(target_id, chat_id)
+            m = await mention(e)
+            await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
