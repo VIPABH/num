@@ -30,8 +30,7 @@ async def delres(e):
     if not delres(e):
         await e.reply("هذا المستخدم ليس مقيداً حالياً.")
         return
-    x = await r.get_sender()
-    m = await ment(x)
+    m = await ment(r)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
     await botuse("الغاء تقييد عام")
     await send(f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}', e)
