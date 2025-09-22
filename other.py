@@ -147,7 +147,6 @@ async def add_assistant(event):
         await event.reply(f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
     else:
         await event.reply(f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
-
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
@@ -339,7 +338,7 @@ def ask_ai(q):
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     x = event.text
-    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع", "مخفي غادر"]
+    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع", "مخفي غادر", "مخفي نزلني"]
     if not user_q or x in ignore_phrases:
         return
     type = "ai"
@@ -833,7 +832,6 @@ async def forward_whisper(event):
     })
     save_sent_log()
     l[sender_id] = False
-@ABH.on(events.NewMessage)
 async def top(event):
     if event.text == "اوامر التوب":
         await event.reply('**اوامر التوب كآلاتي** \n * `توب اليومي` | `المتفاعلين` \n ل اظهار توب اكثر 10 اشخاص تفاعل \n `رسائلي` ل اظهار رسائلك من بدايه اليوم \n `رسائلة`  ل اظهار رسائل الشخص من بداية اليوم')
