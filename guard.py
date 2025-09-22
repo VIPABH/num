@@ -187,8 +187,8 @@ async def monitor_messages(event):
                 del all_data[str(chat_id)]
             with open('res.json', 'w', encoding='utf-8') as f:
                 json.dump(all_data, f, ensure_ascii=False, indent=4)
-            return
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(r.sender_id)))
+                return
+        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(int(user_id))))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await event.delete()
             return
