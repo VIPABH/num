@@ -25,10 +25,10 @@ def res(gid):
     if len(parts) != 2:
         return data
     chat_id, dev_id_num = parts
-    if chat_id not in data:
-        data[chat_id] = []
-    if dev_id_num not in data[chat_id]:
-        data[chat_id].append(dev_id_num)
+    if str(chat_id) not in data:
+        data[str(chat_id)] = []
+    if str(dev_id_num) not in data[str(chat_id)]:
+        data[str(chat_id)].append(str(dev_id_num))
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
     return data
