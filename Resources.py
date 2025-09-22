@@ -20,26 +20,24 @@ def create(filename):
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
     return True
-def res(gid=None, duration=None):
+def res(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
-        data = json.load(file)
+        d = json.load(file)
+    gid, user_id = e.chat_id, e.sender_id
     if gid is None:
-        return data
+        return d
     if ":" not in gid:
-        return data
-    chat_id, dev_id_num = gid.split(":", 1)
-    chat_id, dev_id_num = str(chat_id), str(dev_id_num)
-    if chat_id not in data:
-        data[chat_id] = {}
-    if duration:
-        end_time = time.time() + duration
-        data[chat_id][dev_id_num] = end_time
-    else:
-        data[chat_id][dev_id_num] = time.time()
+        return d
+    chat_id, user_id = gid.split(":", 1)
+    chat_id, user_id = str(chat_id), str(user_id)
+    if chat_id not in d:
+        d[chat_id] = {}
+    end_time = time.time() + 20*60
+    d[chat_id][user_id] = end_time
     with open('res.json', 'w', encoding='utf-8') as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
-    return data
+        json.dump(d, file, ensure_ascii=False, indent=4)
+    return d
 def delres(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
