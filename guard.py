@@ -1,5 +1,5 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
-from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
@@ -27,15 +27,9 @@ async def delres(e):
     if not r or not r.sender_id:
         await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
-    if not restriction_end_times.get(e.chat_id) or r.sender_id not in restriction_end_times[e.chat_id]:
+    if not delres(e):
         await e.reply("هذا المستخدم ليس مقيداً حالياً.")
         return
-    del restriction_end_times[e.chat_id][r.sender_id]
-    await ABH(EditBannedRequest(
-        e.chat_id,
-        r.sender_id,
-        ChatBannedRights(until_date=None)
-    ))
     x = await r.get_sender()
     m = await ment(x)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
@@ -131,12 +125,12 @@ async def restrict_user(event):
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    sender = await r.get_sender()
     name = await ment(r)
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(r.sender_id)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
+
             return
     except:
         return
@@ -168,7 +162,7 @@ async def monitor_messages(event):
     chat_id = event.chat_id
     now = int(time.time())
     if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
-        end_time = restriction_end_times[event.chat_id][user_id]
+        end_time = res_
         if now < end_time:
             remaining = end_time - now
             await event.delete()
