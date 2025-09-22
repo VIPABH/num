@@ -162,7 +162,7 @@ async def monitor_messages(event):
     now = int(time.time())
     all_data = res(None)
     if chat_id in all_data and user_id in all_data[chat_id]:
-        end_time = all_data[chat_id][user_id]
+        end_time = all_data[str(chat_id)][str(user_id)]
         try:
             remaining = end_time - now  
             rights = ChatBannedRights(
