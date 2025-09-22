@@ -1,191 +1,69 @@
-from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
-from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
-from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from other import is_assistant, botuse, is_owner
-from telethon import events, Button
-from Program import r as redas, chs
-import os, asyncio, re, json, time
-from top import points, delpoints
-from Resources import *
+from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
+from telethon.tl.functions.channels import GetParticipantRequest
+from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.functions.messages import SendReactionRequest
+from telethon.tl.functions.messages import GetFullChatRequest
+from telethon.errors import ChatForwardsRestrictedError
+from telethon.tl.types import ChatParticipantCreator
+from telethon.tl.types import ReactionEmoji
+import google.generativeai as genai
+import pytz, os, json, asyncio
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
-async def delres(e):
-    id = e.sender_id
-    x = save(None, filename="secondary_devs.json")
-    a = await is_owner(e.chat_id, id)
-    z = await can_ban_users(e.chat_id, id)
-    s = save(None, "secondary_devs.json")
-    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
-    if not (
-        a
-        or z
-        or k
-    ):
-        await e.reply("ليس لديك صلاحيات كافية.")
-        return
-    r = await e.get_reply_message()
-    if not r or not r.sender_id:
-        await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
-        return    
-    if not restriction_end_times.get(e.chat_id) or r.sender_id not in restriction_end_times[e.chat_id]:
-        await e.reply("هذا المستخدم ليس مقيداً حالياً.")
-        return
-    del restriction_end_times[e.chat_id][r.sender_id]
-    await ABH(EditBannedRequest(
-        e.chat_id,
-        r.sender_id,
-        ChatBannedRights(until_date=None)
-    ))
-    x = await r.get_sender()
-    m = await ment(x)
-    await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
-    await botuse("الغاء تقييد عام")
-    await send(e, f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}')
-@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
-async def list_restricted(event):
-    chat_id = event.chat_id
-    now = int(time.time())
-    if not restriction_end_times.get(chat_id):
-        await event.reply(" لا يوجد حالياً أي مستخدم مقيد.")
-        return
-    msg = "📋 قائمة المقيدين عام:\n\n"
-    expired_users = []
-    for user_id, end_time in list(restriction_end_times[chat_id].items()):
-        try:
-            user = await ABH.get_entity(user_id)
-            name = f"[{user.first_name}](tg://user?id={user_id})"
-            remaining = end_time - now
-            if remaining > 0:
-                minutes, seconds = divmod(remaining, 60)
-                msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
-            else:
-                expired_users.append(user_id)
-        except Exception as e:
-            msg += f"مستخدم غير معروف — `{user_id}`\n"
-            await hint(e)
-    for user_id in expired_users:
-        restriction_end_times[chat_id].pop(user_id, None)
-    if msg.strip() == "📋 قائمة المقيدين عام:":
-        msg = " لا يوجد حالياً أي مستخدم مقيد."
-    await event.reply(msg, link_preview=False)
-async def notAssistantres(event):
-    if not event.is_group:
-        return
-    lock_key = f"lock:{event.chat_id}:تقييد"
-    if redas.get(lock_key) != "True":
-        await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
-        return
-    chat_id = event.chat_id
-    user_id = event.sender_id
-    sender = await event.get_sender()
-    chat = await event.get_chat()
-    r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
-    rs = await r.get_sender()
-    target_name = await ment(rs)
-    user_points = points[str(user_id)]
-    if user_points < 1000000:
-        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
-    try:
-        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
-        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
-    except Exception as e:
-        return await hint(e)
-    user_to_restrict = await r.get_sender()
-    user_id = user_to_restrict.id
-    now = int(time.time())
-    restriction_duration = 60
-    rights = ChatBannedRights(
-        until_date=now + restriction_duration,
-        send_messages=True
-    )      
-    try:
-        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
-    except Exception as e:
-        await event.reply("ياريت اقيده بس ماكدر 🥲")
-        await hint(e)
-    await botuse("تقييد ميم")
-    sender_name = await ment(sender)
-    delpoints(event.sender_id, chat_id, points, 10000000)
-    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000000 دينار من ثروتك."
-    await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
-restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern=r'^(تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة)'))
-async def restrict_user(event):
-    if not event.is_group:
-        return
-    # lock_key = f"lock:{event.chat_id}:تقييد"
-    # x = redas.get(lock_key) == "True"
-    # if not x:
-    #     await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
-    #     return
-    chat_id = str(event.chat_id)
-    user_id = event.sender_id
-    text = event.text
-    if not is_assistant(chat_id, user_id) or text == "تقييد ميم":
-        await notAssistantres(event)
-        # await chs(event, 'شني خالي كبينه انت مو معاون')
-        return
-    r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    # sender = await r.get_sender()
-    sender = r
-    name = await ment(sender)
-    try:
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=sender.id))
-        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            await chs(event, f'تم كتم {name} مدة 20 دقيقه')
-            res(f"{chat_id}:{r.sender_id}")
-            return
-    except:
-        return
-    now = int(time.time())
-    rights = ChatBannedRights(
-        until_date=now + 20 * 60,
-        send_messages=True
-    )
-    await ABH(EditBannedRequest(channel=int(chat_id), participant=sender.id, banned_rights=rights))
-    res(f"{chat_id}:{r.sender_id}")
-    await botuse("تقييد عام")
-    # sender = await r.get_sender()
-    rrr = await ment(sender)
-    c = f"تم تقييد {rrr} لمدة 20 دقيقة."
-    await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-    await send(event, f'#تقييد_عام\n👤 المستخدم: {rrr} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(event)} الايدي ~ {event.sender_id}')
-    try:
-        await r.delete()
-        await event.delete()
-    except Exception as e:
-        await hint(e)
-        await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
-@ABH.on(events.NewMessage)
-async def monitor_messages(event):
-    if not event.is_group:
-        return
-    user_id = event.sender_id
-    now = int(time.time())
-    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
-        end_time = restriction_end_times[event.chat_id][user_id]
-        if now < end_time:
-            remaining = end_time - now
-            await event.delete()
-            try:
-                # chat = await event.get_chat()
-                rights = ChatBannedRights(
-                    until_date=now + remaining,
-                    send_messages=True
-                )
-                await ABH(EditBannedRequest(channel=int(event.chat_id), participant=user_id, banned_rights=rights))
-                rrr = await mention(event)
-                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
-                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
-                type = "تقييد مستخدمين"
-                await botuse(type)
-            except:
-                pass
+def create(filename):
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as file:
+            json.dump({}, file, ensure_ascii=False, indent=4)
+        return True
+    return False
+def res(gid):
+    create('res.json')
+    with open('res.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    if ":" not in gid:
+        return data
+    parts = gid.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if str(chat_id) not in data:
+        data[str(chat_id)] = []
+    if str(dev_id_num) not in data[str(chat_id)]:
+        data[str(chat_id)].append(str(dev_id_num))
+    with open('res.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    return data
+async def info(e, msg_type):
+    f = 'info.json'
+    if not os.path.exists(f):
+        create(f)
+    with open(f, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    chat = str(e.chat_id)
+    user_id = str(e.sender_id)
+    if chat not in data:
+        data[chat] = {}
+    if user_id not in data[chat]:
+        data[chat][user_id] = {
+            "الرسائل": 0,
+            "الصور": 0,
+            "المتحركات": 0,
+            "الفويس نوت": 0,
+            "الفيديوهات": 0,
+            "الستيكرات": 0,
+            "الفويسات": 0,
+            "الصوتيات": 0,
+            "الملفات": 0,
+            "المواقع": 0,
+            "الاستفتاءات": 0
+        }
+    if msg_type is None:
+        return data[chat][user_id]
+    if msg_type not in data[chat][user_id]:
+        data[chat][user_id][msg_type] = 0
+    data[chat][user_id][msg_type] += 1
+    with open(f, 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    return data[chat][user_id]
 WHITELIST_FILE = "whitelist.json"
 whitelist_lock = asyncio.Lock()
 async def ads(group_id: int, user_id: int) -> None:
@@ -240,419 +118,922 @@ async def LC(group_id: int) -> int | None:
             if group_config and "hint_gid" in group_config:
                 return int(group_config["hint_gid"])
         return None
-report_data = {}
-@ABH.on(events.MessageEdited)
-async def edited(event):
-    if not event.is_group or not event.message.edit_date:
-        return
-    msg = event.message
-    chat_id = event.chat_id
-    has_media = msg.media
-    has_document = msg.document
-    chat_dest = await LC(chat_id)
-    if not chat_dest:
-        return
-    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    if not (has_media or has_document or has_url):
-        return
-    uid = event.sender_id
-    perms = await ABH.get_permissions(chat_id, uid)
-    if perms.is_admin:
-        return
-    whitelist = await lw(chat_id)
-    if event.sender_id in whitelist:
-        return
-    chat_obj = await event.get_chat()
-    mention_text = await mention(event)
-    if getattr(chat_obj, "username", None):
-        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
-    else:
-        clean_id = str(chat_obj.id).replace("-100", "")
-        رابط = f"https://t.me/c/{clean_id}/{event.id}"
-    buttons = [
-        [
-            Button.inline(' نعم', data=f"yes:{uid}"),
-            Button.inline(' لا', data=f"no:{uid}")
-        ]
-    ]
-    date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
-    date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
-    sent_msg = await ABH.send_message(
-        int(chat_dest),
-        f"""تم تعديل رسالة مشتبه بها:
-المستخدم: {mention_text}  
-[رابط الرسالة]({رابط})  
-معرفه: `{uid}`
-هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟  
-تاريخ النشر - {date_posted}
-تاريخ التعديل - {date_edited}
-""",
-        buttons=buttons,
-        link_preview=True
-    )
-    report_data[sent_msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
-    await asyncio.sleep(60)
-    if uid in whitelist:
-        await sent_msg.delete()
-        return
-@ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
-async def yes_callback(event):
-    try:
-        msg = await event.get_message()
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
-        if uid and الرابط and mention_text:
-            m = await mention(event)
-            await event.edit(
-                f"""تم تأكيد أن المستخدم {mention_text} ملغم.
-                [رابط الرسالة]({الرابط})
-                معرفه: `{uid}`
-                تاريخ النشر - {date_posted}
-                تاريخ التعديل - {date_edited}
-                بواسطه {m}
-    """)
-        await event.answer(' تم تسجيل المستخدم كملغّم.')
-    except Exception as e:
-        await hint(e)
-@ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
-async def no_callback(event):
-    try:
-        msg = await event.get_message()
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
-        if uid and الرابط and mention_text:
-            m = await mention(event)
-            await event.edit(
-                f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
-                [رابط الرسالة]({الرابط})
-                ايديه `{uid}`
-                تاريخ النشر - {date_posted}
-                تاريخ التعديل - {date_edited}
-                بواسطه {m}
-    """)
-        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
-        await ads(group, uid)
-    except Exception as e:
-        await hint(e)
-@ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
-async def add_hintchannel(event):
-    chat_id = event.chat_id
-    user_id = event.sender_id
-    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
-        return
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
+async def link(e):
+    chat = e.chat_id
+    id = e.id
+    c = str(chat).replace('-100', '')
+    x = f'https://t.me/c/{c}/{id}'
+    chat = await e.get_chat()
+    name = getattr(chat, "title", "محادثة خاصة")
+    return f"[{name}]({x})"
+async def username(event):
+    if event.sender and event.sender.username:
+        return event.sender.username
     s = await event.get_sender()
-    type = "اضافة قناة التبليغات"
-    await botuse(type)
-    if not event.is_group:
-        return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
+    if getattr(s, "usernames", None):
+        for u in s.usernames:
+            if u and u.username:
+                return u.username
+    return None
+async def try_forward(event):
+    gidvar = await LC(event.chat_id)
     r = await event.get_reply_message()
-    if not r:
-        return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
-    cid_text = r.raw_text.strip()
-    if cid_text.startswith("-100") and cid_text[4:].isdigit():
-        await configc(chat_id, cid_text)
-        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
-        n = await ment(s)
-        await ABH.send_message(int(cid_text), f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
-    else:
-        await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
-@ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
-async def show_hintchannel(event):
-    chat_id = event.chat_id
-    user_id = event.sender_id
-    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
-        return
-    type = "عرض قناة التبليغات"
-    await botuse(type)
-    chat_id = event.chat_id
-    c = await LC(chat_id)
-    if c:
-        await event.reply(f"︙قناة التبليغات لهذه المجموعة هي:\n`{c}`")
-    else:
-        await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
-banned_words = [
-    "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", "انيجمك", "الكواد",
-    "الفرخ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة","انزع", "انزعي", "خرب الله",
-    "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك", "الجبة",
-    "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", "تيل بيك", "كومبي",
-    "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض", "الجبه",
-    "تيز", "التيز", "الديوث", "كسمج", "بلبولك", "صدرج", "كسعرضك" , "الخنيث", "انزعو", "انزعوا",
-    "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", "خرب ابربك", 
-    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين", "مدوده",
-    "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", "دوده", 'دودة',
-    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
-    "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
-    "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", "منيوك",
-    "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 
-    "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
-    "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
-]
-def normalize_arabic(text):
-    text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
-    replace_map = {
-        'أ': 'ا',
-        'إ': 'ا',
-        'آ': 'ا',
-        'ى': 'ي',
-        'ؤ': 'و',
-        'ئ': 'ي',
-        'ة': 'ه',
-        'ى': '',
-        'ـ': '',
-        'ض': '',
-        '/': '',
-        '\\': '',
-        '|': '',
-        '.': '',
-        ',': '',
-        '’': '',
-        '_': '',
-        '-': '',
-        '$': '',
-        'ال': '',
-    }
-    for src, target in replace_map.items():
-        text = text.replace(src, target)    
-    text = re.sub(r'(.)\1+', r'\1', text)    
-    return text
-normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
-async def is_admin(chat, user_id):
     try:
-        participant = await ABH(GetParticipantRequest(chat, user_id))
-        x = isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
-        return x
+        await ABH.forward_messages(
+            entity=int(gidvar),
+            messages=r.id,
+            from_peer=r.chat_id
+)
+        return True
+    except ChatForwardsRestrictedError:
+        return False
     except:
         return False
-def contains_banned_word(message):
-    message = normalize_arabic(message)
-    words = message.split()
-    for word in words:
-        if word in normalized_banned_words:
-            return word
-    return None
-WARN_FILE = "warns.json"
-def load_warns():
-    if os.path.exists(WARN_FILE):
-        with open(WARN_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-def save_warns(warns_data):
-    with open(WARN_FILE, "w", encoding="utf-8") as f:
-        json.dump(warns_data, f, ensure_ascii=False, indent=2)
-def add_warning(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str not in warns:
-        warns[chat_id_str] = {}
-    if user_id_str not in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-    warns[chat_id_str][user_id_str] += 1
-    current_warns = warns[chat_id_str][user_id_str]
-    if current_warns >= 3:
-        warns[chat_id_str][user_id_str] = 0
-    save_warns(warns)
-    return current_warns
-def del_warning(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        if warns[chat_id_str][user_id_str] > 0:
-            warns[chat_id_str][user_id_str] -= 1
-            save_warns(warns)
-            return warns[chat_id_str][user_id_str]
-    return 0
-def zerowarn(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-        save_warns(warns)
-        return 0
-    return 0
-def count_warnings(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        return warns[chat_id_str][user_id_str]
-    return 0
-async def send(e, m):
-    c = e.chat_id
-    l = await LC(str(c))
-    if not l:
+developers = {}
+def delsave(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
         return
-    await ABH.send_message(l, m)
-@ABH.on(events.NewMessage)
-async def handler_res(event):
-    message_text = event.raw_text
-    user_id = event.sender_id
-    chat = event.chat_id
-    user_id = event.sender_id
-    now = int(time.time())
-    lock_key = f"lock:{event.chat_id}:تقييد"
-    x = redas.get(lock_key) == "True"
-    if not event.is_group or not event.raw_text or not x:
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id in data and dev_id_num in data[chat_id]:
+        data[chat_id].remove(dev_id_num)
+        if not data[chat_id]:
+            del data[chat_id]
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
+def save(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
         return
-    x = contains_banned_word(message_text)
-    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}:{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}:{user_id}')]
-    الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
-    xx = await event.get_sender()
-    ء = await ment(xx)
-    l = await link(event)
-    if not x:
-        return
-    await botuse('تحذير بسبب الفشار')
-    assis = is_assistant(chat, user_id)
-    if assis:
-        await send(
-            event,
-            f"⚠️ تم رصد مخالفة:\n"
-            f"👤 #المعاون: {ء} │ 🆔 `{user_id}`\n"
-            f"📝 الكلمة الممنوعة: `{x}`\n"
-            f"🔗 الرابط: {l}"
-        )
-        await try_forward(event)
-        await event.delete()
-        return
-    w = add_warning(user_id, chat)
-    now = int(time.time())
-    restriction_duration = 600
-    if w == 3:
-        if await is_admin(chat, user_id):
-            restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-            await event.respond(
-                f"🔇 تم كتم المشرف {ء}\n🆔 الايدي: `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة.",
-                buttons=الغاء
-                )
-            await try_forward(event)       
-            await send(
-                event,
-                f"🔇 تم كتم #المشرف:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
-            )
-            return
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id not in data:
+        data[chat_id] = []
+    if dev_id_num not in data[chat_id]:
+        data[chat_id].append(dev_id_num)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
+async def react(event, x):
+    try:    
+        await ABH(SendReactionRequest(
+            peer=event.chat_id,
+            msg_id=event.id,
+            reaction=[ReactionEmoji(emoticon=f'{x}')],
+            big=True
+        ))
+    except Exception as e:
+        await ABH(SendReactionRequest(
+            peer=event.chat_id,
+            msg_id=event.message.id,
+            reaction=[ReactionEmoji(emoticon=f'{x}')],
+            big=True
+        ))        
+def adj(filename: str, data: dict):
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                existing_data = json.load(f)
+            except json.JSONDecodeError:
+                existing_data = {}
+    else:
+        existing_data = {}
+    existing_data.update(data)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(existing_data, f, ensure_ascii=False, indent=2)
+async def can_add_admins(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.add_admins:
+                return True
+        return False
+    except:
+        return False
+async def can_ban_users(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.ban_users:
+                return True
+        return False
+    except:
+        return False
+async def get_owner(event, client=ABH):
+    try:
+        chat = await event.get_chat()
+        if getattr(chat, 'megagroup', False) or getattr(chat, 'broadcast', False):
+            result = await client(GetParticipantsRequest(
+                channel=await event.get_input_chat(),
+                filter=ChannelParticipantsAdmins(),
+                offset=0,
+                limit=100,
+                hash=0
+            ))
+            for participant in result.participants:
+                if isinstance(participant, ChannelParticipantCreator):
+                    return await client.get_entity(participant.user_id)
         else:
-            rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True)
-            await ABH(EditBannedRequest(channel=chat, participant=event.sender_id, banned_rights=rights))
-            restriction_end_times.setdefault(event.chat_id, {})[event.sender_id] = now + restriction_duration
-            await event.respond(
-                f"⛔ تم تقييد العضو:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة",
-                buttons=الغاء
-            )
-            await send(
-                event,
-                f"🔇 تم كتم العضو:\n👤 {ء} │ 🆔 `{user_id}`\n⚠️ السبب: كثرة المخالفات\n📝 أرسل: {x}\n🔗 الرابط: {l}",
-            )
-            return
-    else:
-        await event.respond(
-            f"⚠️ تم توجيه تحذير للعضو:\n👤 {ء} │ 🆔 `{user_id}`\n🚫 السبب: إرسال كلمة محظورة\n🔢 عدد التحذيرات: (3/{w})",
-            buttons=b
-            )
-        await send(
-            event,
-            f"""كلمة محظورة!
-            👤 من: {ء}
-            🆔 ايديه: `{user_id}`
-            ❗ الكلمة المحظورة: `{x}`
-            تم حذف الرسالة وتحذيره.
-            عدد التحذيرات: ( {w} / 3 )
-            """, 
-        )
-    await try_forward(event)
-    await event.delete()
-@ABH.on(events.NewMessage(pattern='^تحذير$'))
-async def warn_user(event):
-    if not event.is_group:
-        return
-    lc = await LC(event.chat_id)
-    chat_id = event.chat_id
+            full = await client(GetFullChatRequest(chat.id))
+            if full.full_chat.participants:
+                for participant in full.full_chat.participants.participants:
+                    if isinstance(participant, ChatParticipantCreator):
+                        return await client.get_entity(participant.user_id)
+    except Exception as e:
+        await hint(f"Error in get_owner: {e}")
+        return None
+    return None
+timezone = pytz.timezone('Asia/Baghdad')
+GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
+genai.configure(api_key=GEMINI)
+model = genai.GenerativeModel("gemini-1.5-flash")
+group = -1001784332159
+hint_gid = -1002168230471
+bot = "Anymous"
+wfffp = 1910015590
+async def hint(e):
+    await ABH.send_message(wfffp, str(e))
+async def mention(event):
+    name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
-    x = save(None, filename="secondary_devs.json")
-    a = await is_owner(event.chat_id, user_id)
-    if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
-        await chs(event, 'شني خالي كبينه ')
-        return
-    r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
-    target_id = r.sender_id
-    if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
-        await chs(event, 'غراب يكول لغراب وجهك اسود')
-        return
-    if is_assistant(chat_id, target_id):
-        await chs(event, 'هييييييه متكدر تحذر المعاون')
-        return
-    w = add_warning(str(target_id), str(chat_id))
-    p = await r.get_sender()
-    x = await ment(p)
-    b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
-    l = await link(event)
-    await event.respond(
-        f'تم تحذير المستخدم {x} ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
-        buttons=b
-    )
-    restriction_duration = 900
-    await r.delete()
-    if w == 3 and await is_admin(chat_id, target_id):
-        now = int(time.time())
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-    elif w == 3 and not await is_admin(chat_id, target_id):
-        now = int(time.time())
-        rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True)
-        await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-        return
-    await botuse("تحذير مستخدمين")
-    المحذر= await mention(event)
-    await send(
-        event, 
-        f"🚨 ┇ #تـحـذيـر ┇ 🚨\n"
-        f"👤 المُحَذِّر:   {المحذر}\n"
-        f"👤 المُحَذَّر:   {x}\n"
-        f"🆔 الآيـدي:   `{target_id}`\n"
-        f"⚠️ التحذيرات:   {w} / 3\n"
-        f"🔗 رابط الرسالة:   {l}"
-    )
-    await try_forward(event)
-    await event.delete()
-@ABH.on(events.CallbackQuery)
-async def warnssit(e):
-    data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
-    parts = data.split(':')
-    if len(parts) == 3:
-        if not is_assistant(e.chat_id, e.sender_id):
-            return await e.answer('🌚')
-        النوع, target_id, chat_id = parts
-        msg = await e.get_message()
-        t = msg.text
-        if النوع == "zerowarn":
-            await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
-            zerowarn(target_id, chat_id)
-        elif النوع == 'delwarn':
-            d = del_warning(target_id, chat_id)
-            m = await mention(e)
-            await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
-@ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
-async def showwarns(e):
-    t = e.text
-    chat = e.chat_id
-    target_id = None
-    if t == 'تحذيراتي':
-        target_id = e.sender_id
-    else:
-        r = await e.get_reply_message()
-        if not r:
-            await chs(e, "⚠️ لازم ترد على رسالة الشخص")
-            return
-        target_id = r.sender_id
-    معاون = is_assistant(chat, target_id)
-    if معاون:
-        await chs(e, "لك شمعة ماكو تحذيرات")
-        return
-    w = count_warnings(int(target_id), int(chat))
-    await chs(e, f' ( 3/{w} )')
+    return f"[{name}](tg://user?id={user_id})"
+async def ment(sender):
+    name = sender.first_name
+    user_id = sender.id
+    return f"[{name}](tg://user?id={user_id})"
+football = [
+        {
+            "answer": "الميعوف",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/c/2219196756/21013"
+        },
+        {
+            "answer": "سالم الدوسري",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/54"
+        },
+        {
+            "answer": "العويس",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/56"
+        },
+        {
+            "answer": "علي البليهي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/58"
+        },
+        {
+            "answer": "جحفلي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/60"
+        },
+        {
+            "answer": "الشلهوب",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/62"
+        },
+        {
+            "answer": "محمد البريك",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/64"
+        },
+        {
+            "answer": "سعود",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/66"
+        },
+        {
+            "answer": "ياسر الشهراني",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/70"
+        },
+        {
+            "answer": ["كريستيانو رونالدو", 'رونالدو'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/72"
+        },
+        {
+            "answer": ["امبابي", 'مبابي', 'كيليان مبابي'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/74"
+        },
+        {
+            "answer": "مودريتش",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/76"
+        },
+        {
+            "answer": ["بنزيما", "كريم بنزيما"],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/78"
+        },
+        {
+            "answer": "نيمار",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/80"
+        },
+        {
+            "answer": ["ميسي", 'ليونيل ميسي'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/82"
+        },
+        {
+            "answer": ["راموس", 'سيرخيو راموس', 'سيرخيوس راموس'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/84"
+        },
+        {
+            "answer": "اشرف حكيمي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/86"
+        },
+        {
+            "answer": "ماركينيوس",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/88"
+        },
+        {
+            "answer": "محمد صلاح",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/90"
+        },
+        {
+            "answer": "هازارد",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/92"
+        },
+        {
+            "answer": "مالديني",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/94"
+        },
+        {
+            "answer": "انيستا",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/96"
+        },
+        {
+            "answer": "تشافي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/98"
+        },
+        {
+            "answer": ["بيكيه", 'جيرارد بيكيه'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/100"
+        },
+        {
+            "answer": ["بيل", 'غارث بيل'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/102"
+        },
+        {
+            "answer": "1995",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/104"
+        },
+        {
+            "answer": "1997",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/106"
+        },
+        {
+            "answer": "1998",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/108"
+        },
+        {
+            "answer": "1999",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/110"
+        },
+        {
+            "answer": "2002",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/112"
+        },
+        {
+            "answer": "2005",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/114"
+        },
+        {
+            "answer": "2007",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/116"
+        },
+        {
+            "answer": "2008",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/118"
+        },
+        {
+            "answer": "2009",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/120"
+        },
+        {
+            "answer": "2000",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/122"
+        },
+        {
+            "answer": "انشيلوتي",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/124"
+        },
+        {
+            "answer": "مورينيو",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/126"
+        },
+        {
+            "answer": "بيب غوارديولا",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/128"
+        },
+        {
+            "answer": "هيرفي رينارد",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/130"
+        },
+        {
+            "answer": "زيدان",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/132"
+        }
+]
+questions = [
+    "شلون تعمل هالشي؟",
+    "شلون تقضي وقتك بالفراغ؟",
+    "شلون تتحكم بالضغط؟",
+    "شلون تكون صبور؟",
+    "شلون تحافظ على التركيز؟",
+    "شلون تكون قوي نفسياً؟",
+    "شلون تسيطر على الغضب؟",
+    "شلون تدير وقتك بشكل فعال؟",
+    "شلون تكون ناجح في حياتك المهنية؟",
+    "شلون تطور مهاراتك الشخصية؟",
+    "شلون تدير الضغوطات في العمل؟",
+    "شلون تدير الامور المالية؟",
+    "شلون تتعلم لغة جديدة؟",
+    "شلون تكون مبدع في عملك؟",
+    "شلون تطور علاقاتك الاجتماعية؟",
+    "شلون تتغلب على التحديات؟",
+    "شلون تنظم حياتك بشكل منظم؟",
+    "شلون تحافظ على صحتك؟",
+    "شلون تحمي نفسك من الإجهاد؟",
+    "شلون تعتني بنفسك بشكل جيد؟",
+    "شلون تكون متفائل في الحياة؟",
+    "شلون تدير الوقت بين العمل والحياة الشخصية؟",
+    "شلون تتعامل مع الشكوك والتوتر؟",
+    "شلون تعطي قيمة لوقتك؟",
+    "شلون تدير التوتر في العلاقات العائلية؟",
+    "شلون تتعلم من الاخطاء؟",
+    "شلون تدير الصعوبات في الحياة؟",
+    "شلون تكون منظم في حياتك اليومية؟",
+    "شلون تحسن من تركيزك وانتباهك؟",
+    "شلون تطور مهاراتك الشخصية والاجتماعية؟",
+    "شلون تدير العمل في فريق؟",
+    "شلون تحسن من قدراتك التواصلية؟",
+    "شلون تكون منظم في الدراسة؟",
+    "شلون تكون فعال في استخدام التكنولوجيا؟",
+    "شلون تحافظ على توازنك بين العمل والحياة الشخصية؟",
+    "شلون تتعلم مهارات جديدة بسرعة؟",
+    "شلون تكون ملهماً للآخرين؟",
+    "شلون تدير الخلافات في العمل؟",
+    "شلون تكون مؤثراً في العروض التقديمية؟",
+    "شلون تحسن من قدراتك التفكير الإبداعي؟",
+    "شلون تطور قدراتك القيادية؟",
+    "شلون تكون متفائل في ظروف صعبة؟",
+    "شلون تدير التحولات في الحياة؟",
+    "شلون تتعلم من النجاحات والإخفاقات؟",
+    "شلون تكون مستعداً للتغيير؟",
+    "شلون تستمتع بالحياة؟",
+    "شلون تكون إنساناً محبوباً ومحترماً؟",
+    "شلون تتعلم من خبرات الآخرين؟",
+    "شلون تطور مهاراتك في التعلم الذاتي؟",
+    "شلون تحسن من قدراتك على اتخاذ القرارات؟",
+    "شلون تكون مبادراً في العمل؟",
+    "شلون تطور مهاراتك في حل المشكلات؟",
+    "شلون تستفيد من النقد البناء؟",
+    "شلون تطور ثقتك بالنفس؟",
+    "شلون تتعامل مع التغييرات في العمل؟",
+    "شلون تطور مهاراتك في التعاون والعمل الجماعي؟",
+    "شلون تتعامل مع الضغوطات في الحياة؟",
+    "شلونك؟",
+    "شنو اسمك؟",
+    "شنو جنسيتك؟",
+    "شنو عمرك؟",
+    "شنو لونك المفضل؟",
+    "شنو طبخة تحبها اكثر؟",
+    "شنو هوايتك المفضلة؟",
+    "شنو مكان سفرة اللي تحلم تروحله؟",
+    "شنو نوع السيارة اللي تفضلها؟",
+    "شنو نوع الموسيقى اللي تحب تستمع لها؟",
+    "شنو تحب تسوي في وقت الفراغ؟",
+    "شنو اكلتك المفضلة في الفطور؟",
+    "شنو اكلتك المفضلة في الغدا؟",
+    "شنو اكلتك المفضلة في العشا؟",
+    "شنو نوع الشاي اللي تحب تشربه؟",
+    "شنو نوع القهوة اللي تحب تشربها؟",
+    "شنو اكثر شيء مميز في ثقافة العراق؟",
+    "شنو نوع الافلام اللي تحب تشوفها؟",
+    "شنو البلدة العربية اللي تفضل تزورها؟",
+    "شنو نوع الهدية اللي تحب تتلقاها؟",
+    "شنو اهم شيء بالنسبة إليك في الصداقة؟",
+    "شنو الشيء اللي تشوفه عند العراقيين بشكل خاص؟",
+    "شنو الاكلة العراقية المفضلة عندك؟",
+    "شنو نوع الرياضة اللي تحب تمارسها؟",
+    "شنو مكان العراقي اللي تحب تزوره في العراق؟",
+    "شنو اكثر شيء تحبه في الطبيعة؟",
+    "شنو اللون اللي يحبه العراقيين كثير؟",
+    "شنو الشيء اللي يستفزك بسرعة؟",
+    "شنو الشيء اللي يخليك تفرح؟",
+    "شنو الشيء اللي تحس إنه اكثر شيء يعبر عن الهوية العراقية؟",
+    "شنو نوع الهاتف اللي تستخدمه؟",
+    "شنو الشيء اللي تحس فيه إنه مفقود في المجتمع العراقي؟",
+    "شنو اكثر مكان تحب تزوره في العراق؟",
+    "شنو النصيحة اللي تحب تعطيها لشخص صغير؟",
+    "شنو الشيء اللي يخليك تشعر بالراحة والهدوء؟",
+    "شنو الشيء اللي تحب تسويه بالعطلة؟",
+    "شنو الحيوان اللي تحبه اكثر؟",
+    "شنو الشيء اللي تحب تهديه لشخص عزيز عليك؟",
+    "شنو الشيء اللي تحس بإنجاز كبير إذا قمت به؟",
+    "شنو اكثر موقع التواصل الاجتماعي اللي تستخدمه؟",
+    "شنو الشيء اللي يحبه العراقيين في الاعياد والمناسبات؟",
+    "شنو الشيء اللي تحب تشوفه في العراق مطور ومتطور؟",
+    "شنو الشيء اللي تحب تشاركه مع الآخرين بشكل كبير؟",
+    "شنو اكثر موسم تحبه في العراق؟",
+    "شنو الشيء اللي تتمنى تغيره في العراق؟",
+    "شنو الشيء اللي تحب تستثمر فيه وقتك وجهدك؟",
+    "شنو الشيء اللي يميز العراق والعراقيين برايك؟",
+    "شنو نوع الفن اللي تحب تستمتع به؟",
+    "شنو الشيء اللي تحب تتعلمه في المستقبل؟",
+    "شنو اكثر شيء تحبه في الشتاء؟",
+    "شنو الشيء اللي يرفع معنوياتك بشكل سريع؟",
+    "شنو الشيء اللي تحب تهديه لنفسك؟",
+    "شنو الشيء اللي تتمنى تحققه في حياتك؟",
+     "منو افضل صديق عندك؟",
+    "منو شخصيتك المفضلة في الافلام؟",
+    "منو الشخص اللي تحب تسافر معه؟",
+    "منو الشخص اللي بتستشيره في قراراتك؟",
+    "منو اكثر شخص تحب تشوفه كل يوم؟",
+    "منو اكثر شخص غريب بتعرفه؟",
+    "منو الشخص اللي تحب تحجي معه لساعات؟",
+    "منو اكثر شخص قدوة بحياتك؟",
+    "منو الشخص اللي تثق فيه بشكل كامل؟",
+    "منو اكثر شخص ملهم في حياتك؟",
+    "منو الشخص اللي تتمنى تشوفه اليوم؟",
+    "منو الشخص اللي تحب تكون جارك؟",
+    "منو الشخص اللي بتتحدث معه كل يوم؟",
+    "منو الشخص اللي بتشتاقله كثير؟",
+    "منو الشخص اللي بتعتمد عليه في الصعوبات؟",
+    "منو الشخص اللي تحب تشاركه اسرارك؟",
+    "منو الشخص اللي بتقدر قيمته في حياتك؟",
+    "منو الشخص اللي تحب تطلب منه المشورة؟",
+    "منو الشخص اللي تحب تكون معه في المشاكل؟",
+    "منو الشخص اللي بتحسه اكثر شخص يفهمك؟",
+    "منو الشخص اللي تحب تحتفل معه في الاعياد؟",
+    "منو الشخص اللي تتوقعه اكثر شخص بيرحل عنك؟",
+    "منو الشخص اللي تحب تشترك معه في الهوايات؟",
+    "منو الشخص اللي تحب تشوفه بعد غياب طويل؟",
+    "منو الشخص اللي تتمنى تقدمله هدية مميزة؟",
+    "منو الشخص اللي تحب تذهب معه في رحلة استكشافية؟",
+    "منو الشخص اللي تحب تحجي معه عن مشاكلك العاطفية؟",
+    "منو الشخص اللي تتمنى تكون له نفس قدراتك ومهاراتك؟",
+    "منو الشخص اللي تحب تقابله وتشتغل معه في المستقبل؟",
+    "منو الشخص اللي تحب تحتفل معه بنجاحك وإنجازاتك؟",
+    "منو الشخص اللي بتتذكره بكل سعادة عندما تراجع صورك القديمة؟",
+    "منو الشخص اللي تحب تشاركه تجاربك ومغامراتك في الحياة؟",
+    "منو الشخص اللي تحب تسمع نصائحه وتطبقها في حياتك؟",
+    "منو الشخص اللي تحب تشوفه ضحكته بين الفينة والاخرى؟",
+    "منو الشخص اللي تعتبره اكثر شخص يدعمك ويحفزك على تحقيق اهدافك؟",
+    "منو الشخص اللي تحب تشوفه محقق نجاحاته ومستقبله المشرق؟",
+    "منو الشخص اللي تحب تشكره على وجوده في حياتك ودعمه المستمر؟",
+    "منو الشخص اللي تحب تقدمله هدية تذكارية لتخليك تذكره للابد؟",
+    "منو الشخص اللي تحب تشكره على دعمه الكبير لك في مشوارك الدراسي؟",
+    "منو الشخص اللي تتمنى تعرفه في المستقبل وتصير صداقتكم مميزة؟",
+    "منو الشخص اللي تحب تشاركه لحظات الفرح والسعادة في حياتك؟",
+    "منو الشخص اللي تعتبره اكثر شخص يستحق منك كل الحب والاحترام؟",
+    "منو الشخص اللي تحب تشاركه اسرارك وتحجي له كل شيء بدون تردد؟",
+    "منو الشخص اللي تتمنى تحضر معه حفلة موسيقية لفرقتك المفضلة؟",
+    "منو الشخص اللي تحب تتنافس معه في لعبة او رياضة تحبها؟",
+    "منو الشخص اللي تحب تشوفه مبتسماً ومتفائلاً في الحياة؟",
+    "شوكت تفتح المحل؟",
+    "شوكت بتروح على العمل؟",
+    "شوكت تكون مستعد للمقابلة؟",
+    "شوكت بتنوم بالليل؟",
+    "شوكت بتصحى بالصبح؟",
+    "شوكت بتسافر؟",
+    "شوكت بتعود من العمل؟",
+    "شوكت بتعمل رياضة؟",
+    "شوكت بتذاكر للامتحان؟",
+    "شوكت بتنظف البيت؟",
+    "شوكت بتقرا الكتاب؟",
+    "شوكت تكون فاضي للتسوق؟",
+    "شوكت بتنطر الباص؟",
+    "شوكت بتعود من السفر؟",
+    "شوكت بتشتري الهدية؟",
+    "شوكت بتتقابل مع صديقك؟",
+    "شوكت بتحضر الحفلة؟",
+    "شوكت بتتعشى؟",
+    "شوكت بتتناول الفطور؟",
+    "شوكت بتسافر في العطلة؟",
+    "شوكت بترجع للمنزل؟",
+    "شوكت تخلص المشروع؟",
+    "شوكت بتتخرج من الجامعة؟",
+    "شوكت بتبدا العمل؟",
+    "شوكت بتفتح المحل؟",
+    "شوكت تنتهي الدورة التدريبية؟",
+    "شوكت بتتزوج؟",
+    "شوكت بترتب الغرفة؟",
+    "شوكت تتعلم الموسيقى؟",
+    "شوكت بترتب الوثائق؟",
+    "شوكت بتسجل في النادي الرياضي؟",
+    "شوكت تستلم الطلبية؟",
+    "شوكت بتشوف الطبيب؟",
+    "شوكت بتتناول الغداء؟",
+    "شوكت تكون مستعد للسفر؟",
+    "شوكت بتكمل المشروع؟",
+    "شوكت تخلص الواجب؟",
+    "شوكت تحصل على النتيجة؟",
+    "شوكت تتعلم اللغة الجديدة؟",
+    "شوكت بتحضر المؤتمر؟",
+    "شوكت بتنهي الكتاب؟",
+    "شوكت بتفتح المطعم؟",
+    "شوكت بتسافر في الإجازة؟",
+    "شوكت بتبدا التدريب؟",
+    "شوكت تخلص المشروع الفني؟",
+    "شوكت تنتهي الجلسة؟",
+    "شوكت تتعلم الطبخ؟",
+    "شوكت تستلم الشهادة؟",
+    "شوكت بتبدا الرحلة؟",
+    "شوكت بتنهي الاعمال المنزلية؟",
+    "شوكت تكون فاضي للقراءة؟",
+    "شوكت تستلم السيارة الجديدة؟",
+    "شوكت بتتناول العشاء؟",
+    "وين رايح؟",
+    "وين تسكن؟",
+    "وين بتشتغل؟",
+    "وين بتروح في ايام العطلة؟",
+    "وين تحب تسافر في العطلات؟",
+    "وين تحب تروح مع الاصدقاء؟",
+    "وين تكون في الساعة الثامنة صباحاً؟",
+    "وين تكون في الساعة العاشرة مساءً؟",
+    "وين تحب تتناول الإفطار؟",
+    "وين تحب تتسوق؟",
+    "وين تحب تتناول العشاء؟",
+    "وين تكون في الساعة الثانية ظهراً؟",
+    "وين تحب تمضي امسياتك؟",
+    "وين تحب تقضي ايام العطلة؟",
+    "وين تحب تزور المعالم السياحية؟",
+    "وين تحب تشتري الهدايا؟",
+    "وين تحب تتمرن وتمارس الرياضة؟",
+    "وين تحب تذهب للتسوق؟",
+    "وين تحب تقضي وقتك مع العائلة؟",
+    "وين تكون في الساعة الخامسة مساءً؟"
+]
+CHANNEL = 'theholyqouran'
+suras = {
+    ('سورة الفاتحة',): '1',
+    ('سورة البقرة',): '2',
+    ('سورة آل عمران', 'سورة ال عمران'): '3',
+    ('سورة النساء',): '4',
+    ('سورة المائده', 'سورة المائدة'): '5',
+    ('سورة الأنعام', 'سورة الانعام'): '6',
+    ('سورة الأعراف', 'سورة الاعراف'): '7',
+    ('سورة الأنفال', 'سورة الانفال'): '8',
+    ('سورة التوبة',): '9',
+    ('سورة يونس',): '10',
+    ('سورة هود',): '11',
+    ('سورة يوسف',): '12',
+    ('سورة الرعد',): '13',
+    ('سورة ابراهيم', 'سورة إبراهيم'): '14',
+    ('سورة الحجر',): '15',
+    ('سورة النحل',): '16',
+    ('سورة الاسراء', 'سورة الإسراء'): '17',
+    ('سورة الكهف',): '18',
+    ('سورة مريم',): '19',
+    ('سورة طه',): '20',
+    ('سورة الانبياء', 'سورة الأنبياء'): '21',
+    ('سورة الحج',): '22',
+    ('سورة المؤمنون', 'سورة المومنون'): '23',
+    ('سورة الفرقان',): '24',
+    ('سورة النور',): '25',
+    ('سورة الشعراء',): '26',
+    ('سورة العنكبوت',): '27',
+    ('سورة النمل',): '28',
+    ('سورة القصص',): '29',
+    ('سورة الروم',): '30',
+    ('سورة لقمان',): '31',
+    ('سورة السجدة',): '32',
+    ('سورة الأحزاب', 'سورة الاحزاب'): '33',
+    ('سورة سبأ', 'سورة سبا'): '34',
+    ('سورة فاطر',): '35',
+    ('سورة يس',): '36',
+    ('سورة الصافات',): '37',
+    ('سورة ص',): '38',
+    ('سورة الزمر',): '39',
+    ('سورة غافر',): '40',
+    ('سورة فصلت',): '41',
+    ('سورة الشورى',): '42',
+    ('سورة الزخرف',): '43',
+    ('سورة الدخان',): '44',
+    ('سورة الجاثية',): '45',
+    ('سورة الاحقاف', 'سورة الأحقاف'): '46',
+    ('سورة الفتح',): '47',
+    ('سورة محمد',): '48',
+    ('سورة الحجرات',): '49',
+    ('سورة الذاريات',): '50',
+    ('سورة ق',): '51',
+    ('سورة النجم',): '52',
+    ('سورة الطور',): '53',
+    ('سورة القمر',): '54',
+    ('سورة الرحمن',): '55',
+    ('سورة الواقعة',): '56',
+    ('سورة الحديد',): '57',
+    ('سورة المجادلة',): '58',
+    ('سورة الحشر',): '59',
+    ('سورة الممتحنة',): '60',
+    ('سورة الصف',): '61',
+    ('سورة الجمعة',): '62',
+    ('سورة المنافقون',): '63',
+    ('سورة التغابن',): '64',
+    ('سورة الطلاق',): '65',
+    ('سورة التحريم',): '66',
+    ('سورة الملك',): '67',
+    ('سورة القلم',): '68',
+    ('سورة الحاقة',): '69',
+    ('سورة المعارج',): '70',
+    ('سورة نوح',): '71',
+    ('سورة الجن',): '72',
+    ('سورة المزمل',): '73',
+    ('سورة المدثر',): '74',
+    ('سورة القيامة',): '75',
+    ('سورة الإنسان', 'سورة الانسان'): '76',
+    ('سورة المرسلات',): '77',
+    ('سورة النبا', 'سورة النبأ'): '80',
+    ('سورة النازعات',): '78',
+    ('سورة عبس',): '79',
+    ('سورة التكوير',): '81',
+    ('سورة الانفطار', 'سورة الإنفطار'): '82',
+    ('سورة المطففين',): '83',
+    ('سورة الانشقاق',): '84',
+    ('سورة البروج',): '85',
+    ('سورة الطارق',): '86',
+    ('سورة الاعلى', 'سورة الأعلى'): '87',
+    ('سورة الغاشية',): '88',
+    ('سورة الفجر',): '89',
+    ('سورة البلد',): '90',
+    ('سورة الشمس',): '91',
+    ('سورة الليل',): '92',
+    ('سورة الضحى',): '93',
+    ('سورة الشرح',): '94',
+    ('سورة التين',): '96',
+    ('سورة العلق',): '95',
+    ('سورة القدر',): '97',
+    ('سورة البينة',): '98',
+    ('سورة الزلزلة',): '99',
+    ('سورة العاديات',): '100',
+    ('سورة القارعة',): '101',
+    ('سورة التكاثر',): '102',
+    ('سورة العصر',): '103',
+    ('سورة الهمزة',): '104',
+    ('سورة الفيل',): '105',
+    ('سورة قريش',): '106',
+    ('سورة الماعون',): '107',
+    ('سورة الكوثر',): '108',
+    ('سورة الكافرون',): '109',
+    ('سورة النصر',): '110',
+    ('سورة المسد',): '111',
+    ('سورة الاخلاص', 'سورة الإخلاص'): '112',
+    ('سورة الفلق',): '113',
+    ('سورة الناس',): '114',
+}
+x_ar = {
+    '🇦🇫': 'افغانستان',
+    '🇦🇱': 'البانيا',
+    '🇩🇿': 'الجزائر',
+    '🇦🇸': 'ساموا الامريكيا',
+    '🇦🇩': 'اندورا',
+    '🇦🇴': 'انغولا',
+    '🇦🇮': 'انغويلا',
+    '🇦🇶': 'القارة القطبية الجنوبية',
+    '🇦🇬': 'انتيغوا وبربودا',
+    '🇦🇷': 'الارجنتين',
+    '🇦🇲': 'ارمينيا',
+    '🇦🇼': 'اوربا',
+    '🇦🇺': 'استراليا',
+    '🇦🇹': 'النمسا',
+    '🇦🇿': 'اذربيجان',
+    '🇧🇸': 'جزر الباهاما',
+    '🇧🇭': 'البحرين',
+    '🇧🇩': 'بنغلاديش',
+    '🇧🇧': 'باربادوس',
+    '🇧🇾': 'بيلاروس',
+    '🇧🇪': 'بلجيكا',
+    '🇧🇿': 'بليز',
+    '🇧🇯': 'بنين',
+    '🇧🇲': 'برمودا',
+    '🇧🇹': 'بوتان',
+    '🇧🇴': 'بوليفيا',
+    '🇧🇦': 'البوسنة والهرسك',
+    '🇧🇼': 'بوتسوانا',
+    '🇧🇷': 'البرازيل',
+    '🇧🇳': 'بروناي',
+    '🇧🇬': 'بلغاريا',
+    '🇧🇫': 'بوركينا فاسو',
+    '🇧🇮': 'بوروندي',
+    '🇰🇭': 'كمبوديا',
+    '🇨🇲': 'الكاميرون',
+    '🇨🇦': 'كندا',
+    '🇨🇻': 'الراس الاخضر',
+    '🇰🇾': 'جزر كايمان',
+    '🇨🇫': 'جمهورية افريقيا الوسطى',
+    '🇹🇩': 'تشاد',
+    '🇨🇱': 'تشيلي',
+    '🇨🇳': 'الصين',
+    '🇨🇴': 'كولومبيا',
+    '🇰🇲': 'جزر القمر',
+    '🇨🇬': 'الكونغو',
+    '🇨🇩': 'جمهورية الكونغو الديمقراطية',
+    '🇨🇷': 'كوستاريكا',
+    '🇭🇷': 'كرواتيا',
+    '🇨🇺': 'كوبا',
+    '🇨🇾': 'قبرص',
+    '🇨🇿': 'التشيك',
+    '🇩🇰': 'الدنمارك',
+    '🇩🇯': 'جيبوتي',
+    '🇩🇴': 'جمهورية الدومينيكان',
+    '🇪🇨': 'الاكوادور',
+    '🇪🇬': 'مصر',
+    '🇸🇻': 'السلفادور',
+    '🇪🇷': 'اريتريا',
+    '🇪🇪': 'استونيا',
+    '🇪🇹': 'اثيوبيا',
+    '🇫🇯': 'فيجي',
+    '🇫🇮': 'فنلندا',
+    '🇫🇷': 'فرنسا',
+    '🇬🇦': 'الغابون',
+    '🇬🇲': 'غامبيا',
+    '🇩🇪': 'المانيا',
+    '🇬🇭': 'غانا',
+    '🇬🇷': 'اليونان',
+    '🇬🇹': 'غواتيمالا',
+    '🇬🇳': 'غينيا',
+    '🇬🇼': 'غينيا بيساو',
+    '🇭🇳': 'هندوراس',
+    '🇭🇺': 'المجر',
+    '🇮🇸': 'ايسلاندا',
+    '🇮🇳': 'الهند',
+    '🇮🇩': 'اندونوسيا',
+    '🇮🇷': 'ايران',
+    '🇮🇶': 'العراق',
+    '🇮🇪': 'ايرلندا',
+    '🇮🇱': 'اسرائيل',
+    '🇮🇹': 'ايطاليا',
+    '🇯🇲': 'جامايكا',
+    '🇯🇵': 'اليابان',
+    '🇯🇴': 'الاردن',
+    '🇰🇿': 'كازاخستان',
+    '🇰🇪': 'كينيا',
+    '🇰🇼': 'الكويت',
+    '🇰🇬': 'قرغيزستان',
+    '🇱🇦': 'لاوس',
+    '🇱🇻': 'لاتفيا',
+    '🇱🇧': 'لبنان',
+    '🇱🇸': 'ليسوتو',
+    '🇱🇷': 'ليبيريا',
+    '🇱🇾': 'ليبيا',
+    '🇱🇹': 'ليتوانيا',
+    '🇱🇺': 'لوكسمبورغ',
+    '🇲🇰': 'مقدونيا الشمالية',
+    '🇲🇬': 'مدغشقر',
+    '🇲🇼': 'ملاوي',
+    '🇲🇾': 'ماليزيا',
+    '🇲🇻': 'المالديف',
+    '🇲🇱': 'مالي',
+    '🇲🇹': 'مالطا',
+    '🇲🇷': 'موريتانيا',
+    '🇲🇺': 'موريشيوس',
+    '🇲🇽': 'المكسيك',
+    '🇫🇲': 'ميكرونيزيا',
+    '🇲🇩': 'مولدوفا',
+    '🇲🇨': 'موناكو',
+    '🇲🇳': 'منغوليا',
+    '🇲🇪': 'الجبل الاسود',
+    '🇲🇦': 'المغرب',
+    '🇲🇿': 'موزمبيق',
+    '🇳🇦': 'ناميبيا',
+    '🇳🇵': 'نيبال',
+    '🇳🇱': 'هولندا',
+    '🇳🇿': 'نيوزيلندا',
+    '🇳🇮': 'نيكاراغوا',
+    '🇳🇪': 'النيجر',
+    '🇳🇬': 'نيجيريا',
+    '🇰🇵': 'كوريا الشمالية',
+    '🇳🇴': 'النرويج',
+    '🇴🇲': 'عمان',
+    '🇵🇰': 'باكستان',
+    '🇵🇦': 'بنما',
+    '🇵🇬': 'بابوا غينيا الجديدة',
+    '🇵🇾': 'باراغواي',
+    '🇵🇪': 'بيرو',
+    '🇵🇭': 'الفلبين',
+    '🇵🇱': 'بولندا',
+    '🇵🇹': 'البرتغال',
+    '🇶🇦': 'قطر',
+    '🇷🇴': 'رومانيا',
+    '🇷🇺': 'روسيا',
+    '🇷🇼': 'رواندا',
+    '🇸🇦': 'السعودية',
+    '🇸🇳': 'السنغال',
+    '🇷🇸': 'صربيا',
+    '🇸🇬': 'سنغافورة',
+    '🇸🇰': 'سلوفاكيا',
+    '🇸🇮': 'سلوفينيا',
+    '🇿🇦': 'جنوب افريقيا',
+    '🇰🇷': 'كوريا الجنوبية',
+    '🇪🇸': 'اسبانيا',
+    '🇱🇰': 'سريلانكا',
+    '🇸🇩': 'السودان',
+    '🇸🇷': 'سورينام',
+    '🇸🇪': 'السويد',
+    '🇨🇭': 'سويسرا',
+    '🇸🇾': 'سوريا',
+    '🇹🇯': 'طاجيكستان',
+    '🇹🇿': 'تنزانيا',
+    '🇹🇭': 'تايلاند',
+    '🇹🇱': 'تيمور الشرقية',
+    '🇹🇬': 'توغو',
+    '🇹🇴': 'تونغا',
+    '🇹🇳': 'تونس',
+    '🇹🇷': 'تركيا',
+    '🇹🇲': 'تركمانستان',
+    '🇺🇬': 'اوغندا',
+    '🇺🇦': 'اوكرانيا',
+    '🇦🇪': 'الامارات',
+    '🇬🇧': 'المملكة المتحدة',
+    '🇺🇸': 'الولايات المتحدة',
+    '🇺🇾': 'اوروغواي',
+    '🇺🇿': 'اوزباكستان',
+    '🇻🇳': 'فيتنام',
+    '🇾🇪': 'اليمن',
+    '🇿🇲': 'زامبيا',
+    '🇿🇼': 'زيمبابوي',
+}
