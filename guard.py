@@ -27,13 +27,28 @@ async def delrestrict(e):
     if not r or not r.sender_id:
         await chs(e, "الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
+    m = await ment(r)
     if not delres(chat_id=e.chat_id, user_id=r.sender_id):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
-    m = await ment(r)
-    await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
-    await botuse("الغاء تقييد عام")
+    participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(r.sender_id)))
+    if isinstance(participant.participant, (ChannelParticipantAdmin)):
+        await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
+        return
+    else:
+        rights = ChatBannedRights(
+            until_date=None,
+            send_messages=False
+        )
+        try:
+            await ABH(EditBannedRequest(channel=int(e.chat_id), participant=int(r.sender_id), banned_rights=rights))
+        except Exception as ex:
+            await chs(e, "لا يمكنني إلغاء تقييد هذا المستخدم.")
+            await hint(ex)
+            return
     await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المستخدم \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
+    await botuse("الغاء تقييد عام")
+    await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = str(event.chat_id)
