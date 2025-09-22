@@ -29,7 +29,8 @@ def res(e):
     chat_id, user_id = str(e.chat_id), str(e.sender_id)
     if chat_id not in d:
         d[chat_id] = {}
-    end_time = time.time() + 20*60
+    duration = 20 * 60
+    end_time = int(time.time()) + duration
     d[chat_id][user_id] = end_time
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(d, file, ensure_ascii=False, indent=4)
