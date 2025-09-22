@@ -1,10 +1,11 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
-from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from telethon.errors import UserNotParticipantError
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
-import os, asyncio, re, json, time
+import asyncio, re, json, time
 from top import points, delpoints
 from Resources import *
 from ABH import ABH
@@ -145,7 +146,7 @@ async def restrict_user(event):
             await r.delete()
             await event.delete()
             await res(event)
-            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{event.sender_id}` )')
+            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
             return
     except Exception as ex:
@@ -165,7 +166,7 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
+        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
         await r.delete()
         await event.delete()
     except Exception as ex:
@@ -223,19 +224,17 @@ async def edited(event):
     if not (has_media or has_document or has_url):
         return
     uid = event.sender_id
-    perms = await ABH.get_permissions(chat_id, uid)
-    if perms.is_admin:
+    try:
+        perms = await ABH.get_permissions(chat_id, uid)
+        if perms.is_admin:
+            return
+    except UserNotParticipantError:
         return
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
-    chat_obj = await event.get_chat()
     mention_text = await mention(event)
-    if getattr(chat_obj, "username", None):
-        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
-    else:
-        clean_id = str(chat_obj.id).replace("-100", "")
-        رابط = f"https://t.me/c/{clean_id}/{event.id}"
+    رابط = await link(event)
     buttons = [
         [
             Button.inline(' نعم', data=f"yes:{uid}"),
@@ -264,41 +263,35 @@ async def edited(event):
         return
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
-    try:
-        msg = await event.get_message()
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
-        if uid and الرابط and mention_text:
-            m = await mention(event)
-            await event.edit(
-                f"""تم تأكيد أن المستخدم {mention_text} ملغم.
-                [رابط الرسالة]({الرابط})
-                معرفه: `{uid}`
-                تاريخ النشر - {date_posted}
-                تاريخ التعديل - {date_edited}
-                بواسطه {m}
-    """)
-        await event.answer(' تم تسجيل المستخدم كملغّم.')
-    except Exception as e:
-        await hint(e)
+    msg = await event.get_message()
+    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
+    if uid and الرابط and mention_text:
+        m = await mention(event)
+        await event.edit(
+            f"""تم تأكيد أن المستخدم {mention_text} ملغم.
+            [رابط الرسالة]({الرابط})
+            معرفه: `{uid}`
+            تاريخ النشر - {date_posted}
+            تاريخ التعديل - {date_edited}
+            بواسطه {m}
+""")
+    await event.answer(' تم تسجيل المستخدم كملغّم.')
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
-    try:
-        msg = await event.get_message()
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
-        if uid and الرابط and mention_text:
-            m = await mention(event)
-            await event.edit(
-                f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
-                [رابط الرسالة]({الرابط})
-                ايديه `{uid}`
-                تاريخ النشر - {date_posted}
-                تاريخ التعديل - {date_edited}
-                بواسطه {m}
-    """)
-        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
-        await ads(group, uid)
-    except Exception as e:
-        await hint(e)
+    msg = await event.get_message()
+    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
+    if uid and الرابط and mention_text:
+        m = await mention(event)
+        await event.edit(
+            f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
+            [رابط الرسالة]({الرابط})
+            ايديه `{uid}`
+            تاريخ النشر - {date_posted}
+            تاريخ التعديل - {date_edited}
+            بواسطه {m}
+""")
+    await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
+    await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     chat_id = event.chat_id
@@ -340,6 +333,7 @@ banned_words = [
     "الفرخ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة","انزع", "انزعي", "خرب الله",
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك", "الجبة",
     "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", "تيل بيك", "كومبي",
+    "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 'زبري', 'بزبري',
     "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض", "الجبه",
     "تيز", "التيز", "الديوث", "كسمج", "بلبولك", "صدرج", "كسعرضك" , "الخنيث", "انزعو", "انزعوا",
     "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", "خرب ابربك", 
@@ -348,7 +342,6 @@ banned_words = [
     "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
     "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", "منيوك",
-    "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 
     "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
     "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
 ]
@@ -394,61 +387,6 @@ def contains_banned_word(message):
         if word in normalized_banned_words:
             return word
     return None
-WARN_FILE = "warns.json"
-def load_warns():
-    if os.path.exists(WARN_FILE):
-        with open(WARN_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-def save_warns(warns_data):
-    with open(WARN_FILE, "w", encoding="utf-8") as f:
-        json.dump(warns_data, f, ensure_ascii=False, indent=2)
-def add_warning(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str not in warns:
-        warns[chat_id_str] = {}
-    if user_id_str not in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-    warns[chat_id_str][user_id_str] += 1
-    current_warns = warns[chat_id_str][user_id_str]
-    if current_warns >= 3:
-        warns[chat_id_str][user_id_str] = 0
-    save_warns(warns)
-    return current_warns
-def del_warning(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        if warns[chat_id_str][user_id_str] > 0:
-            warns[chat_id_str][user_id_str] -= 1
-            save_warns(warns)
-            return warns[chat_id_str][user_id_str]
-    return 0
-def zerowarn(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-        save_warns(warns)
-        return 0
-    return 0
-def count_warnings(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        return warns[chat_id_str][user_id_str]
-    return 0
-async def send(e, m):
-    c = e.chat_id
-    l = await LC(str(c))
-    if not l:
-        return
-    await ABH.send_message(l, m)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     message_text = event.raw_text
