@@ -142,7 +142,6 @@ async def promoteADMIN(event):
         )
         return
     rights = promot[chat_id][target_user_id]['rights']
-    print(rights)
     buttons = [
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
@@ -157,7 +156,6 @@ async def promoteADMIN(event):
         caption=c,
         reply_to=event.id,
         buttons=buttons)
-@ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
     chat_id = event.chat_id
