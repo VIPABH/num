@@ -33,7 +33,7 @@ async def delrestrict(e):
     m = await ment(r)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
     await botuse("الغاء تقييد عام")
-    await send(e, f'#الغاء_تقييد_عام\n👤 \n تم الغاء تقييد المستخدم \n  (  {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  ( {await mention(e)} )  ايديه ~ ( `{e.sender_id}` )')
+    await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المستخدم \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = str(event.chat_id)
@@ -126,6 +126,7 @@ async def restrict_user(event):
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(r.sender_id)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            await send(e, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
 
             return
@@ -145,7 +146,7 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(event, f'#تقييد_عام\n👤 المستخدم: {rrr} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(event)} الايدي ~ `{event.sender_id}`')
+        await send(e, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
         await r.delete()
         await event.delete()
     except Exception as e:
