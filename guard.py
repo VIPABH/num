@@ -165,7 +165,7 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(e, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
+        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
         await r.delete()
         await event.delete()
     except Exception as e:
