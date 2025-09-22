@@ -143,9 +143,9 @@ async def restrict_user(event):
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await send(e, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
-
             return
-    except:
+    except Exception as ex:
+        await hint(ex)
         return
     now = int(time.time())
     rights = ChatBannedRights(
