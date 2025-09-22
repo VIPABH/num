@@ -132,6 +132,7 @@ async def restrict_user(event):
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
+    sender = await r.get_sender()
     name = await ment(r)
     try:
         participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
