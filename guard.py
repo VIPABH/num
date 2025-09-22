@@ -27,10 +27,10 @@ async def delres(e):
     if not r or not r.sender_id:
         await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
-    participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
-    if not isinstance(participant.participant, ChannelParticipantBanned):
-        await e.reply("المستخدم غير مقيد.")
-        return
+    # participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
+    # if not isinstance(participant.participant, ChannelParticipantBanned):
+    #     await e.reply("المستخدم غير مقيد.")
+    #     return
     del restriction_end_times[e.chat_id][r.sender_id]
     await ABH(EditBannedRequest(
         e.chat_id,
