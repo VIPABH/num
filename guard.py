@@ -169,7 +169,7 @@ async def restrict_user(event):
         await r.delete()
         await event.delete()
     except Exception as e:
-        # await hint(e)
+        await hint(e)
         await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
