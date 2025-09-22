@@ -1,4 +1,5 @@
 from telethon import events 
+from addanddel import *
 from Resources import *
 from Program import *
 from count import *
