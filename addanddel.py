@@ -284,6 +284,11 @@ async def demote_admin(event):
         await dodemote(event)
         await chs(event, "تم تنزيلك من المشرفين")
         return
+    r = await event.get_reply_message()
+    if not r:
+        await chs(event, 'لازم تسوي رد لشخص علمود انزله من المشرفين')
+        await react(event, "🤔")
+        return
     chat_id = event.chat_id
     user_id = r.sender_id
     isc = await can_add_admins(int(chat_id), user_id)
@@ -291,11 +296,6 @@ async def demote_admin(event):
     if event.sender_id != o.id and event.sender_id != 1910015590 and not isc and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
-        return
-    r = await event.get_reply_message()
-    if not r:
-        await chs(event, 'لازم تسوي رد لشخص علمود انزله من المشرفين')
-        await react(event, "🤔")
         return
     await dodemote(event)
     type = "اوامر الرفع"
