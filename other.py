@@ -614,63 +614,35 @@ async def add_toalert(event):
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
 @ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
-async def set_alert(event):
-    message_text = None
-    media = None
-    if event.reply_to_msg_id:
-        replied_msg = await event.get_reply_message()
-        message_text = replied_msg.text
-        media = replied_msg.media
-    else:
-        command_parts = event.raw_text.split(maxsplit=1)
-        if len(command_parts) > 1:
-            message_text = command_parts[1]
-        if event.media:
-            media = event.media
-    if not message_text and not media:
-        await event.reply("يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `/alert`.")
+async def forward_all(event):
+    if not event.reply_to_msg_id:
+        await event.reply("❌ يرجى الرد على رسالة لإعادة توجيهها.")
         return
-    await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
+    replied_msg = await event.get_reply_message()
+    await event.reply(f"🚀 جاري إعادة توجيه الرسالة إلى {len(alert_ids)} محادثة...")
     for dialog_id in list(alert_ids):
         try:
-            if media:
-                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-            else:
-                await ABH.send_message(dialog_id, f"{message_text}")
+            await ABH.forward_messages(dialog_id, replied_msg)
         except Exception as e:
-            await alert(f" فشل الإرسال إلى {dialog_id}")
+            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
             remove_user(dialog_id)
 @ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
-async def publish_to_groups(event):
-    message_text = None
-    media = None
-    if event.reply_to_msg_id:
-        replied_msg = await event.get_reply_message()
-        message_text = replied_msg.text
-        media = replied_msg.media
-    else:
-        command_parts = event.raw_text.split(maxsplit=1)
-        if len(command_parts) > 1:
-            message_text = command_parts[1]
-        if event.media:
-            media = event.media
-    if not message_text and not media:
-        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
+async def forward_groups(event):
+    if not event.reply_to_msg_id:
+        await event.reply("❌ يرجى الرد على رسالة لإعادة توجيهها.")
         return
+    replied_msg = await event.get_reply_message()
     sent_count = 0
     for dialog_id in list(alert_ids):
         try:
             if not str(dialog_id).startswith("-100"):
                 continue
-            if media:
-                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-            else:
-                await ABH.send_message(dialog_id, f"{message_text}")
+            await ABH.forward_messages(dialog_id, replied_msg)
             sent_count += 1
         except Exception as e:
             await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
             remove_user(dialog_id)
-    await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
+    await event.reply(f"✅ تم إعادة توجيه الرسالة إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
