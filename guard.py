@@ -33,7 +33,7 @@ async def delrestrict(e):
     m = await ment(r)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
     await botuse("الغاء تقييد عام")
-    await send(f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}', e)
+    await send(e, f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}')
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = str(event.chat_id)
