@@ -34,7 +34,7 @@ async def delrestrict(e):
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(r.sender_id)))
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
         await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
-        await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
+        await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
         return
     else:
         rights = ChatBannedRights(
@@ -47,7 +47,7 @@ async def delrestrict(e):
             await chs(e, "لا يمكنني إلغاء تقييد هذا المستخدم.")
             await hint(ex)
             return
-    await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المستخدم \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(e)} )  ايديه: ( `{e.sender_id}` )')
+    await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المستخدم \n اسمه: ( {m} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
     await botuse("الغاء تقييد عام")
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
@@ -145,7 +145,7 @@ async def restrict_user(event):
             await r.delete()
             await event.delete()
             await res(event)
-            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(event)} )  ايديه: ( `{event.sender_id}` )')
+            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{event.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
             return
     except Exception as ex:
@@ -165,7 +165,7 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n  اسمه: ( {await mention(event)} )  ايديه: ( `{event.sender_id}` )')
+        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
         await r.delete()
         await event.delete()
     except Exception as ex:
@@ -207,60 +207,6 @@ async def monitor_messages(event):
         await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
         type = "تقييد مستخدمين"
         await botuse(type)
-WHITELIST_FILE = "whitelist.json"
-whitelist_lock = asyncio.Lock()
-async def ads(group_id: int, user_id: int) -> None:
-    async with whitelist_lock:
-        data = {}
-        if os.path.exists(WHITELIST_FILE):
-            try:
-                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-        group_key = str(group_id)
-        group_list = data.get(group_key, [])
-        if user_id not in group_list:
-            group_list.append(user_id)
-            data[group_key] = group_list
-            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-async def lw(group_id: int) -> list[int]:
-    async with whitelist_lock:
-        if not os.path.exists(WHITELIST_FILE):
-            return []
-        try:
-            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except json.JSONDecodeError:
-            return []
-        return data.get(str(group_id), [])
-CONFIG_FILE = "vars.json"
-config_lock = asyncio.Lock()
-async def configc(group_id: int, hint_cid: int) -> None:
-    async with config_lock:
-        config = {}
-        if os.path.exists(CONFIG_FILE):
-            try:
-                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-            except json.JSONDecodeError:
-                config = {}
-        config[str(group_id)] = {"hint_gid": int(hint_cid)}
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump(config, f, ensure_ascii=False, indent=4)
-async def LC(group_id: int) -> int | None:
-    async with config_lock:
-        if os.path.exists(CONFIG_FILE):
-            try:
-                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-            except json.JSONDecodeError:
-                return None
-            group_config = config.get(str(group_id))
-            if group_config and "hint_gid" in group_config:
-                return int(group_config["hint_gid"])
-        return None
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
@@ -416,7 +362,6 @@ def normalize_arabic(text):
         'ؤ': 'و',
         'ئ': 'ي',
         'ة': 'ه',
-        'ى': '',
         'ـ': '',
         'ض': '',
         '/': '',
@@ -431,8 +376,8 @@ def normalize_arabic(text):
         'ال': '',
     }
     for src, target in replace_map.items():
-        text = text.replace(src, target)    
-    text = re.sub(r'(.)\1+', r'\1', text)    
+        text = text.replace(src, target)
+    text = re.sub(r'(.)\1+', r'\1', text)
     return text
 normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
 async def is_admin(chat, user_id):
