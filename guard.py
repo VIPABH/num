@@ -27,7 +27,7 @@ async def delrestrict(e):
     if not r or not r.sender_id:
         await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
-    if not delres(e):
+    if not delres(chat_id=e.chat_id, user_id=r.sender_id):
         await e.reply("هذا المستخدم ليس مقيداً حالياً.")
         return
     m = await ment(r)
