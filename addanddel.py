@@ -202,36 +202,36 @@ async def promoti(event):
                 [Button.inline("✅ تنفيذ", b'done')]
             ]
             await event.edit("اختر الصلاحيات:", buttons=buttons)
-async def dodemote(event):
+async def dodemote(event, target_user_id=None):
     chat_id = event.chat_id
-    user_id = event.sender_id
     if not event.is_group:
         return
+    if target_user_id is None:
+        target_user_id = event.sender_id
     me = await ABH.get_permissions(chat_id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         await react(event, "💔")
         return
     try:
-        pp = await ABH(GetParticipantRequest(int(chat_id), int(event.sender_id)))
+        pp = await ABH(GetParticipantRequest(int(chat_id), int(target_user_id)))
         participant = pp.participant
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
-        await event.reply(f"والله مابيه حيل اعذرني يخوي")
+        await event.reply("والله مابيه حيل اعذرني يخوي")
         await react(event, "💔")
         return
-
     x = await ABH.get_me()
-    if participant.promoted_by != x.id:
+    if hasattr(participant, "promoted_by") and participant.promoted_by != x.id:
         user = await ABH.get_entity(participant.promoted_by)
         menti = await ment(user)
-        await chs(event, f"خلي {menti} ينزله من المشرفين لدوخني توكل")
+        await chs(event, f"خلي {menti} ينزله من المشرفين، مو شغلي 😅")
         await react(event, "🤣")
         return
     try:
         await ABH(EditAdminRequest(
             channel=int(chat_id),
-            user_id=int(event.sender_id),
+            user_id=int(target_user_id),
             admin_rights=ChatAdminRights(
                 change_info=False,
                 post_messages=False,
@@ -270,21 +270,23 @@ async def demote_admin(event):
         await react(event, "🤔")
         return
     chat_id = event.chat_id
-    user_id = r.sender_id
-    isc = await can_add_admins(int(chat_id), user_id)
+    target_user_id = r.sender_id
+    isc = await can_add_admins(int(chat_id), target_user_id)
     o = await get_owner(event)
     x = save(None, 'secondary_devs.json')
-    if event.sender_id != o.id and event.sender_id != 1910015590 and not isc and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
+    if (event.sender_id != o.id 
+        and event.sender_id != 1910015590 
+        and not isc 
+        and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)])):
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
         return
-    target_user_id = r.sender_id
     try:
         pp = await ABH(GetParticipantRequest(chat_id, target_user_id))
         participant = pp.participant
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
-        await event.reply(f"والله مابيه حيل اعذرني يخوي")
+        await event.reply("والله مابيه حيل اعذرني يخوي")
         await react(event, "💔")
         return
     if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
@@ -295,7 +297,7 @@ async def demote_admin(event):
         await chs(event, "ما اكدر انزله لان هو المالك.")
         await react(event, "🤣")
         return
-    await dodemote(event)
+    await dodemote(event, target_user_id)
     # type = "اوامر الرفع"
     # await botuse(type)
     # await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`\n `رفع معاون` بالرد \n حتى ترفع الشخص معاون \n `تنزيل معاون` بالرد \n حتى تنزل الشخص من المعاونين \n `المعاونين` حتى تشوف قائمة المعاونين بالمجموعة \n `رفع معاون` بالرد على مستخدم \n راح ينرفع المستخدم داخل البوت\n \n `المعاونين` علمود تشوف المرفوعين  \n `ترقية` حتى ترفعه مشرف بالمجموعة')
