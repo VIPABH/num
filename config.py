@@ -26,7 +26,7 @@ if not os.path.exists(اسم_الملف):
     with open(اسم_الملف, "w", encoding="utf-8") as ملف:
         json.dump(وقت_التشغيل, ملف, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='وقت التشغيل'))
-async def time_run(event):
+async def timerun(event):
     if event.sender_id==wfffp:
         with open(اسم_الملف,"r",encoding="utf-8") as ملف:
             وقت_التشغيل=json.load(ملف)
