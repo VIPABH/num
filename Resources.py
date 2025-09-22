@@ -36,14 +36,15 @@ async def res(e):
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(d, file, ensure_ascii=False, indent=4)
     return d
-def delres(e):
+def delres(chat_id=None, user_id=None):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
-    chat_id = str(e.chat_id)
-    dev_id_num = str(e.sender_id)
-    if chat_id in data and dev_id_num in data[chat_id]:
-        del data[chat_id][dev_id_num]
+    if chat_id and user_id:
+        chat_id = str(chat_id)
+        user_id = str(user_id)
+    if chat_id in data and user_id in data[chat_id]:
+        del data[chat_id][user_id]
         if not data[chat_id]:
             del data[chat_id]
         with open('res.json', 'w', encoding='utf-8') as file:
