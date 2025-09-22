@@ -135,7 +135,7 @@ async def restrict_user(event):
     sender = await r.get_sender()
     name = await ment(r)
     try:
-        participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
+        participant = await ABH(GetParticipantRequest(channel=chat, participant=int(r.sender_id)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
             return
