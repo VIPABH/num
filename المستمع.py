@@ -5,6 +5,7 @@ from Program import *
 from count import *
 from games import *
 from group import *
+from other import *
 from ABH import *
 @ABH.on(events.NewMessage)
 async def litsin_to_all(e):
@@ -17,6 +18,7 @@ async def litsin_to_all(e):
   await check_quist(e)
   await check_sport(e)
   await som(e)
+  await top(e)
   m = e.message
   text = e.text
   msg_type = get_message_type(m)
