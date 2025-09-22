@@ -160,42 +160,53 @@ async def promoteADMIN(event):
 @ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
-    if data == 'empty':
-        await event.answer('الفارغ مو الزر , انت لا ضغطت', alert=True)
     chat_id = event.chat_id
     if chat_id in session:
-      initiator_id = session[chat_id]['pid']
-      target_user_id = session[chat_id]['top']
-      if event.sender_id != initiator_id:
-          await event.answer('ما تكدر تعدل شيء هنا', alert=True)
-          return
-      if chat_id in promot and target_user_id in promot[chat_id]:
-        rights = promot[chat_id][target_user_id]['rights']
-        print(rights)
-        if data == 'done':
-            await event.answer(' تم تنفيذ الترقية', alert=False)
-            await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
-            admin_rights = ChatAdminRights(
-                change_info=rights.get('change_info', False),
-                delete_messages=rights.get('delete_messages', False),
-                ban_users=rights.get('ban_users', False),
-                invite_users=rights.get('invite_users', False),
-                pin_messages=rights.get('pin_messages', False),
-                add_admins=rights.get('add_admins', False),
-                manage_call=rights.get('manage_call', False),
-                manage_topics = False,
-                anonymous = False,
-                post_stories = True,
-                edit_stories = True,
-                delete_stories =  True
-            )
-            c = 'مشرف'
-            await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
-            del session[chat_id]
-            del promot[chat_id][target_user_id]
+        initiator_id = session[chat_id]['pid']
+        target_user_id = session[chat_id]['top']
+        if event.sender_id != initiator_id:
+            await event.answer('ما تكدر تعدل شيء هنا', alert=True)
             return
-        rights[data] = True
-        await event.answer(f' تم تفعيل صلاحية: {data}', alert=False)
+        if chat_id in promot and target_user_id in promot[chat_id]:
+            rights = promot[chat_id][target_user_id]['rights']
+            if data == 'done':
+                await event.answer('تم تنفيذ الترقية', alert=False)
+                await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
+                admin_rights = ChatAdminRights(
+                    change_info=rights.get('change_info', False),
+                    delete_messages=rights.get('delete_messages', False),
+                    ban_users=rights.get('ban_users', False),
+                    invite_users=rights.get('invite_users', False),
+                    pin_messages=rights.get('pin_messages', False),
+                    add_admins=rights.get('add_admins', False),
+                    manage_call=rights.get('manage_call', False),
+                    manage_topics=False,
+                    anonymous=False,
+                    post_stories=True,
+                    edit_stories=True,
+                    delete_stories=True
+                )
+                c = 'مشرف'
+                await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
+                del session[chat_id]
+                del promot[chat_id][target_user_id]
+                return
+            current_value = rights.get(data, False)
+            new_value = not current_value
+            rights[data] = new_value
+            status = "مفعلة 👍" if new_value else "ملغية ❌"
+            await event.answer(f"تم تعديل صلاحية: {data} → {status}", alert=False)
+            buttons = [
+                [Button.inline(f"تغيير المعلومات {'👍' if rights.get('change_info') else '❌'}", b'change_info')],
+                [Button.inline(f"حذف الرسائل {'👍' if rights.get('delete_messages') else '❌'}", b'delete_messages')],
+                [Button.inline(f"حظر المستخدمين {'👍' if rights.get('ban_users') else '❌'}", b'ban_users')],
+                [Button.inline(f"دعوة مستخدمين {'👍' if rights.get('invite_users') else '❌'}", b'invite_users')],
+                [Button.inline(f"تثبيت الرسائل {'👍' if rights.get('pin_messages') else '❌'}", b'pin_messages')],
+                [Button.inline(f"إضافة مشرفين {'👍' if rights.get('add_admins') else '❌'}", b'add_admins')],
+                [Button.inline(f"إدارة المكالمات {'👍' if rights.get('manage_call') else '❌'}", b'manage_call')],
+                [Button.inline("✅ تنفيذ", b'done')]
+            ]
+            await event.edit("اختر الصلاحيات:", buttons=buttons)
 @ABH.on(events.NewMessage(pattern='اوامر الرفع'))
 async def promot_list(event):
     if not event.is_group:
