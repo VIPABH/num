@@ -15,19 +15,6 @@ def create(filename):
             json.dump({}, file, ensure_ascii=False, indent=4)
         return True
     return False
-import json
-import os
-import time
-
-def create(filename):
-    if not os.path.exists(filename):
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-    return True
-import json
-import os
-import time
-
 def create(filename):
     if not os.path.exists(filename):
         with open(filename, 'w', encoding='utf-8') as f:
@@ -52,7 +39,7 @@ def res(gid=None):
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
     return data
-def del_res(chat_id, dev_id_num):
+def delres(chat_id, dev_id_num):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
