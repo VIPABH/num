@@ -36,30 +36,28 @@ async def delrestrict(e):
     await send(f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}', e)
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
-    chat_id = event.chat_id
+    chat_id = str(event.chat_id)
     now = int(time.time())
-    if not await res(None):
-        await event.reply(" لا يوجد حالياً أي مستخدم مقيد.")
+    all_data = await res(None)
+    if chat_id not in all_data or not all_data[chat_id]:
+        await event.reply("لا يوجد حالياً أي مستخدم مقيد.")
         return
     msg = "📋 قائمة المقيدين عام:\n\n"
-    expired_users = []
-    for user_id, end_time in await res(None).items():
+    for user_id, end_time in list(all_data[chat_id].items()):
+        remaining = end_time - now
+        if remaining <= 0:
+            delres(chat_id=chat_id, user_id=user_id)
+            continue
         try:
-            user = await ABH.get_entity(user_id)
+            user = await ABH.get_entity(int(user_id))
             name = f"[{user.first_name}](tg://user?id={user_id})"
-            remaining = end_time - now
-            if remaining > 0:
-                minutes, seconds = divmod(remaining, 60)
-                msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
-            else:
-                expired_users.append(user_id)
+            minutes, seconds = divmod(int(remaining), 60)
+            msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
         except Exception as e:
             msg += f"مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
-    for user_id in expired_users:
-        restriction_end_times[chat_id].pop(user_id, None)
     if msg.strip() == "📋 قائمة المقيدين عام:":
-        msg = " لا يوجد حالياً أي مستخدم مقيد."
+        msg = "لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
     if not event.is_group:
