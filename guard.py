@@ -1,6 +1,6 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
+from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
-from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
@@ -40,7 +40,7 @@ async def delres(e):
     m = await ment(x)
     await chs(e, f"المستخدم ( {m} ) تم إلغاء تقييده.")
     await botuse("الغاء تقييد عام")
-    await send(e, f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}')
+    await send(f'#الغاء_تقييد_عام\n👤 المستخدم: {m} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(e)} الايدي ~ {e.sender_id}', e)
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = event.chat_id
@@ -75,8 +75,8 @@ async def notAssistantres(event):
     if redas.get(lock_key) != "True":
         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
         return
-    chat_id = int(event.chat_id)
-    user_id = int(event.sender_id)
+    chat_id = event.chat_id
+    user_id = event.sender_id
     sender = await event.get_sender()
     chat = await event.get_chat()
     r = await event.get_reply_message()
@@ -121,6 +121,7 @@ async def restrict_user(event):
     # if not x:
     #     await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
     #     return
+    chat = await event.get_chat()
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     text = event.text
@@ -131,35 +132,38 @@ async def restrict_user(event):
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    # sender = await r.get_sender()
-    sender = r
+    sender = await r.get_sender()
     name = await ment(sender)
     try:
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=sender.id))
+        participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
-            res(f"{chat_id}:{r.sender_id}")
             return
     except:
         return
     now = int(time.time())
+    restriction_duration = 20 * 60
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
     rights = ChatBannedRights(
-        until_date=now + 20 * 60,
+        until_date=now + restriction_duration,
         send_messages=True
     )
-    await ABH(EditBannedRequest(channel=int(chat_id), participant=sender.id, banned_rights=rights))
-    res(f"{chat_id}:{r.sender_id}")
-    await botuse("تقييد عام")
-    # sender = await r.get_sender()
-    rrr = await ment(sender)
-    c = f"تم تقييد {rrr} لمدة 20 دقيقة."
-    await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-    await send(event, f'#تقييد_عام\n👤 المستخدم: {rrr} ~ 🆔 الايدي: `{r.sender_id}`\n👤 بواسطة: {await mention(event)} الايدي ~ {event.sender_id}')
+    restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
     try:
+        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+        type = "تقييد عام"
+        await botuse(type)
+        ء = await r.get_sender()
+        rrr = await ment(ء)
+        c = f"تم تقييد {rrr} لمدة 20 دقيقة."
+        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        # خلي هنا ارسال رساله بقناة التبليغات
         await r.delete()
         await event.delete()
     except Exception as e:
         await hint(e)
+        # خلي هنا شرط يتحقق من وجود صلاحيه المسح و شرط عدم وجودها مع تحديد سبب عدم حذف الرساله
         await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
@@ -173,12 +177,12 @@ async def monitor_messages(event):
             remaining = end_time - now
             await event.delete()
             try:
-                # chat = await event.get_chat()
+                chat = await event.get_chat()
                 rights = ChatBannedRights(
                     until_date=now + remaining,
                     send_messages=True
                 )
-                await ABH(EditBannedRequest(channel=int(event.chat_id), participant=user_id, banned_rights=rights))
+                await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
                 rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
                 await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
