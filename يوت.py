@@ -42,22 +42,16 @@ def save_cache():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(audio_cache, f, ensure_ascii=False, indent=2)
 YDL_OPTIONS = {
-    'format': 'bestaudio',
+    'format': 'worstaudio',
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'noplaylist': True,
     'quiet': True,
     'cookiefile': f"{COOKIES_FILE}",
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'mp3',
-        'preferredquality': '128',
-    }],
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt|حمل) (.+)'))
 async def download_audio(event):
     lock_key = f"lock:{event.chat_id}:يوتيوب"
-    z = r.get(lock_key) == "True"
-    if not z and event.pattern_match.group(1) in ['يوت', 'yt']:
+    if not r.get(lock_key) == "True":
         return
     query = event.pattern_match.group(2)
     c = event.chat_id
@@ -71,7 +65,7 @@ async def download_audio(event):
             search_result = await asyncio.to_thread(
                 ydl.extract_info, f"ytsearch:{query}", download=False
             )
-            if 'entries' not in search_result or not search_result['entries']:
+            if not search_result.get('entries'):
                 await msg.edit("❌ لم يتم العثور على نتائج.")
                 return
             video_info = search_result['entries'][0]
@@ -105,7 +99,7 @@ async def download_audio(event):
         download_info = await asyncio.to_thread(
             ydl.extract_info, video_url, download=True
         )
-        file_path = ydl.prepare_filename(download_info).rsplit(".", 1)[0] + ".mp3"
+        file_path = ydl.prepare_filename(download_info)
         sent = await ABH.send_file(
             c,
             file=file_path,
