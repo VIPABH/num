@@ -50,19 +50,21 @@ YDL_OPTIONS = {
     'quiet': True,
     'cookiefile': f"{COOKIES_FILE}",
 }
+x = {}
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt|حمل) (.+)'))
 async def download_audio(event):
     if not event.is_group and event.text != 'حمل':
         return
     ydl = YoutubeDL(YDL_OPTIONS)
     lock_key = f"lock:{event.chat_id}:يوتيوب"
-    if not r.get(lock_key) == "True":
+    if not r.get(lock_key) == "True" and event.text != 'حمل':
         return
     query = event.pattern_match.group(2)
     c = event.chat_id
     b = Button.url('CHANNEL', 'https://t.me/X04OU')
     try:
         msg = await event.reply("⏳ جاري المعالجة ...")
+        x[event.id] = msg
         if query.startswith("http://") or query.startswith("https://"):
             video_url = query
         else:
