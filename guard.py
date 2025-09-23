@@ -119,6 +119,7 @@ async def notAssistantres(event):
     delpoints(event.sender_id, chat_id, points, 10000000)
     caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000000 دينار من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
+    await send(event, f"تم تقييد المستخدم {target_name} بواسطة {sender_name} تقييد ميم مدة 60 ث")
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r'^(تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة)'))
 async def restrict_user(event):
@@ -143,6 +144,7 @@ async def restrict_user(event):
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(r.sender_id)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            await try_forward(r)
             await r.delete()
             await event.delete()
             await res(event)
@@ -166,7 +168,8 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(event, f'#تقييد عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+        await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+        await try_forward(r)
         await r.delete()
         await event.delete()
     except Exception as ex:
@@ -206,6 +209,7 @@ async def monitor_messages(event):
         rrr = await mention(event)
         c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
         await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+        await send(event, f"#تقييد_عام \n تم اعادة تقييد {rrr} باقي على انتهاء وقت التقييد ** {remaining//60} دقيقة و {remaining%60} ثانية.** ")
         type = "تقييد مستخدمين"
         await botuse(type)
 report_data = {}
@@ -397,7 +401,6 @@ async def handler_res(event):
     message_text = event.raw_text
     user_id = event.sender_id
     chat = event.chat_id
-    user_id = event.sender_id
     now = int(time.time())
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
@@ -417,7 +420,8 @@ async def handler_res(event):
         await send(
             event,
             f"⚠️ تم رصد مخالفة:\n"
-            f"👤 #المعاون: {ء} │ 🆔 `{user_id}`\n"
+            f"👤 #المعاون: {ء}\n"
+            f"🆔 الآيدي: `{user_id}`\n"
             f"📝 الكلمة الممنوعة: `{x}`\n"
             f"🔗 الرابط: {l}"
         )
@@ -439,6 +443,7 @@ async def handler_res(event):
                 event,
                 f"🔇 تم كتم #المشرف:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
             )
+            await event.delete()
             return
         else:
             rights = ChatBannedRights(
@@ -454,6 +459,8 @@ async def handler_res(event):
                 event,
                 f"🔇 تم كتم العضو:\n👤 {ء} │ 🆔 `{user_id}`\n⚠️ السبب: كثرة المخالفات\n📝 أرسل: {x}\n🔗 الرابط: {l}",
             )
+            await try_forward(event)
+            await event.delete()
             return
     else:
         await event.respond(
