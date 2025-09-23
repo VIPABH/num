@@ -223,18 +223,14 @@ async def username(event):
     return None
 async def try_forward(event):
     gidvar = await LC(event.chat_id)
-    r = await event.get_reply_message()
-    try:
-        await ABH.forward_messages(
-            entity=int(gidvar),
-            messages=r.id,
-            from_peer=r.chat_id
-)
-        return True
-    except ChatForwardsRestrictedError:
+    if not gidvar:
         return False
-    except:
-        return False
+    await ABH.forward_messages(
+        entity=int(gidvar),
+        messages=event.id,
+        from_peer=event.chat_id
+    )
+    return True
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
     if filename is None:
