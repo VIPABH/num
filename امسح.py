@@ -24,13 +24,12 @@ async def delete_media(chat_id, event=None):
                 deleted_count += 1
             media_messages[chat_id] = []
             save_media_messages()
-            if event:
-                await chs(event, f'تم حذف {deleted_count} ب نجاح 🗑️')
-            else:
-                await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹')
         except:
             return
-@ABH.on(events.NewMessage)
+        if event:
+            await chs(event, f'تم حذف {deleted_count} ب نجاح 🗑️')
+        else:
+            await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹')
 async def store_media_messages(event):
     if not event.is_group:
         return
@@ -49,7 +48,7 @@ async def store_media_messages(event):
             z = r.get(lock_key) == "True"
             if not z:
                 return
-            if len(media_messages[chat_id]) >= 150:
+            if len(media_messages[chat_id]) >= 10:
                 await delete_media(chat_id)
                 return
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
@@ -61,7 +60,7 @@ async def delete_stored_media(event):
         return
     chat_id = str(event.chat_id)
     await delete_media(chat_id, event)
-@ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$', incoming=True))
+@ABH.on(events.NewMessage(pattern='^(عدد|كشف ميديا|كشف الميديا)$', incoming=True))
 async def count_media_messages(event):
     if not event.is_group:
         return
