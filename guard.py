@@ -443,6 +443,7 @@ async def handler_res(event):
                 event,
                 f"🔇 تم كتم #المشرف:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
             )
+            await try_forward(event)
             await event.delete()
             return
         else:
@@ -511,6 +512,7 @@ async def warn_user(event):
         buttons=b
     )
     restriction_duration = 900
+    await try_forward(r)
     await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
         now = int(time.time())
