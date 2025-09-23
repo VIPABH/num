@@ -225,10 +225,9 @@ async def try_forward(event):
     gidvar = await LC(event.chat_id)
     if not gidvar:
         return False
-    r = await event.get_reply_message()
     await ABH.forward_messages(
         entity=int(gidvar),
-        messages=r.id,
+        messages=event.id,
         from_peer=event.chat_id
     )
     return True
