@@ -1,6 +1,6 @@
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
-from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.messages import SendReactionRequest
 from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.errors import ChatForwardsRestrictedError
