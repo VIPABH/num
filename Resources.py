@@ -225,11 +225,14 @@ async def try_forward(event):
     gidvar = await LC(event.chat_id)
     if not gidvar:
         return False
-    await ABH.forward_messages(
-        entity=int(gidvar),
-        messages=event.id,
-        from_peer=event.chat_id
-    )
+        try:
+            await ABH.forward_messages(
+                entity=int(gidvar),
+                messages=event.id,
+                from_peer=event.chat_id
+            )
+            except:
+                return False
     return True
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
