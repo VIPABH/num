@@ -9,6 +9,8 @@ from ABH import ABH
 actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
+    if not event.is_group:
+        return
     if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'شني خالي كبينه انت مو معاون')
         return
@@ -50,13 +52,15 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt|حمل) (.+)'))
 async def download_audio(event):
+    if not event.is_group and event.text != 'حمل':
+        return
+    ydl = YoutubeDL(YDL_OPTIONS)
     lock_key = f"lock:{event.chat_id}:يوتيوب"
     if not r.get(lock_key) == "True":
         return
     query = event.pattern_match.group(2)
     c = event.chat_id
     b = Button.url('CHANNEL', 'https://t.me/X04OU')
-    ydl = YoutubeDL(YDL_OPTIONS)
     try:
         msg = await event.reply("⏳ جاري المعالجة ...")
         if query.startswith("http://") or query.startswith("https://"):
