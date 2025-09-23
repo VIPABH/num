@@ -231,8 +231,8 @@ async def try_forward(event):
                 messages=event.id,
                 from_peer=event.chat_id
             )
-            except:
-                return False
+        except:
+            return False
     return True
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
