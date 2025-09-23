@@ -55,13 +55,28 @@ x = {}
 async def download_audio(event):
     if not event.is_group and event.text != 'حمل':
         return
-    ydl = YoutubeDL(YDL_OPTIONS)
     lock_key = f"lock:{event.chat_id}:يوتيوب"
     if not r.get(lock_key) == "True" and event.text != 'حمل':
         return
     query = event.pattern_match.group(2)
     c = event.chat_id
     b = Button.url('CHANNEL', 'https://t.me/X04OU')
+    ydl = YoutubeDL(YDL_OPTIONS)
+    for video_id, val in audio_cache.items():
+        if query in val.get("queries", []):
+            await ABH.send_file(
+                c,
+                file=val["file_id"],
+                caption=f"[ENJOY DEAR](https://t.me/VIPABH_BOT)\n {val.get('title')}",
+                attributes=[DocumentAttributeAudio(
+                    duration=val.get("duration", 0),
+                    title=val.get("title"),
+                    performer='ANYMOUS'
+                )],
+                buttons=[b],
+                reply_to=event.message.id
+            )
+            return
     try:
         msg = await event.reply("⏳ جاري المعالجة ...")
         x[event.id] = msg
