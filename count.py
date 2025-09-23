@@ -46,6 +46,21 @@ async def unified_handler(event):
     count["اليومي"][guid][unm] += 1
     count["الاسبوعي"][guid][unm] += 1
     save_data(count)
+@ABH.on(events.NewMessage(pattern="^عدد (المتفاعلين|تفاعل)$"))
+async def show_interactions(e):
+    if not e.is_group:
+        return
+    t = e.text
+    if t == "عدد المتفاعلين":
+        await botuse(t)
+        guid = str(e.chat_id)
+        action = "اليومي"
+    else:
+        await botuse(t)
+        guid = str(e.chat_id)
+        action = "الاسبوعي"
+    if guid in count[action]:
+        await chs(e, f"تفاعل الاعضاء {action}: {len(count[action][guid])} عضو")
 @ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
 async def اليومي(event):
     if not event.is_group:
