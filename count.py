@@ -5,65 +5,21 @@ from other import botuse
 from Resources import *
 import os, json, pytz
 from Program import *
-DATA_FILE = "uinfo.json"
-DATA_FILE_WEAK = "uinfoWEAK.json"
-DAILY_RESET_FILE = "daily_reset.json"
-WEEKLY_RESET_FILE = "weekly_reset.json"
+DATA_FILE = "counts.json"
 def load_data():
-    if os.path.exists(DATA_FILE):
+    if not os.path.exists(DATA_FILE):
+        return {"اليومي": {}, "الاسبوعي": {}, "last_daily": "", "last_weekly": ""}
+    try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    return {}
+    except json.JSONDecodeError:
+        os.rename(DATA_FILE, DATA_FILE + ".broken")
+        return {"اليومي": {}, "الاسبوعي": {}, "last_daily": "", "last_weekly": ""}
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-def load_json(file_path, default_value=None):
-    if not os.path.exists(file_path):
-        return default_value
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except json.JSONDecodeError as e:
-        print(f"[تحذير] فشل تحميل JSON من {file_path} بسبب: {e}")
-        os.rename(file_path, file_path + ".broken")
-        return default_value
-def save_json(file_path, data):
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-def try_fix_json_file(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except json.JSONDecodeError as e:
-        print(f"[تحذير] فشل تحميل JSON بسبب: {e}")
-        print("[...] محاولة تصحيح الملف تلقائيًا")
-    fixed_lines = []
-    with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    for i in range(len(lines)):
-        temp = "".join(fixed_lines + lines[i + 1 :])
-        try:
-            json.loads(temp)
-            with open(file_path, "w", encoding="utf-8") as f_out:
-                f_out.write(temp)
-            return json.loads(temp)
-        except json.JSONDecodeError:
-            fixed_lines.append(lines[i])
-    return {}
-def last_daily_reset_date():
-    data = load_json(DAILY_RESET_FILE, {})
-    return data.get("date", None)
-def update_daily_reset_date(date_str):
-    save_json(DAILY_RESET_FILE, {"date": date_str})
-def last_reset_date():
-    data = load_json(WEEKLY_RESET_FILE, {})
-    return data.get("date", None)
-def update_reset_date(date_str):
-    save_json(WEEKLY_RESET_FILE, {"date": date_str})
-uinfo = load_json(DATA_FILE, {})
-WEAK = load_json(DATA_FILE_WEAK, {})
+count = load_data()
 async def unified_handler(event):
-    global uinfo, WEAK
     if not event.is_group:
         return
     baghdad_tz = pytz.timezone("Asia/Baghdad")
@@ -73,28 +29,23 @@ async def unified_handler(event):
     weekday = now.weekday()
     unm = str(event.sender_id)
     guid = str(event.chat_id)
-    if guid not in uinfo:
-        uinfo[guid] = {}
-    if guid not in WEAK:
-        WEAK[guid] = {}
-    if weekday == 4 and current_time == "00:00" and current_date != last_reset_date():
-        WEAK = {}
-        save_json(DATA_FILE_WEAK, WEAK)
-        update_reset_date(current_date)
-    if current_time == "00:00" and current_date != last_daily_reset_date():
-        for gid in uinfo:
-            for uid in uinfo[gid]:
-                uinfo[gid][uid] = 0
-        save_data(uinfo)
-        update_daily_reset_date(current_date)
-    if unm not in uinfo[guid]:
-        uinfo[guid][unm] = 0
-    uinfo[guid][unm] += 1
-    save_json(DATA_FILE, uinfo)
-    if unm not in WEAK[guid]:
-        WEAK[guid][unm] = 0
-    WEAK[guid][unm] += 1
-    save_json(DATA_FILE_WEAK, WEAK)
+    if current_time == "00:00" and current_date != count.get("last_daily"):
+        count["اليومي"] = {}
+        count["last_daily"] = current_date
+    if weekday == 4 and current_time == "00:00" and current_date != count.get("last_weekly"):
+        count["الاسبوعي"] = {}
+        count["last_weekly"] = current_date
+    if guid not in count["اليومي"]:
+        count["اليومي"][guid] = {}
+    if guid not in count["الاسبوعي"]:
+        count["الاسبوعي"][guid] = {}
+    if unm not in count["اليومي"][guid]:
+        count["اليومي"][guid][unm] = 0
+    if unm not in count["الاسبوعي"][guid]:
+        count["الاسبوعي"][guid][unm] = 0
+    count["اليومي"][guid][unm] += 1
+    count["الاسبوعي"][guid][unm] += 1
+    save_data(count)
 @ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
 async def اليومي(event):
     if not event.is_group:
@@ -102,12 +53,12 @@ async def اليومي(event):
     type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in uinfo or not uinfo[guid]:
+    if guid not in count or not count[guid]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
     sorted_users = sorted(
-        uinfo[guid].items(),
+        count[guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
@@ -128,12 +79,12 @@ async def الاسبوعي(event):
     type = "تفاعل"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in WEAK or not WEAK[guid]:
+    if guid not in count or not count[guid]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
     sorted_users = sorted(
-        WEAK[guid].items(),
+        count[guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
@@ -161,9 +112,9 @@ async def his_res(event):
       guid1 = str(event.chat_id)
     type = "رسائله"
     await botuse(type)
-    if guid1 in uinfo and unm1 in uinfo[guid1]:
-        msg_count = uinfo[guid1][unm1]
-        الاسبوعي = WEAK[guid1][unm1]
+    if guid1 in count and unm1 in count[guid1]:
+        msg_count = count[guid1][unm1]
+        الاسبوعي = count[guid1][unm1]
         x = await info(event, None)
         الكلي = x.get("الرسائل", 0)
         await react(event, "👍")
