@@ -61,14 +61,18 @@ async def show_interactions(e):
         action = "الاسبوعي"
     if guid in count[action]:
         await chs(e, f"تفاعل الاعضاء {action}: {len(count[action][guid])} عضو")
-@ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
+@ABH.on(events.NewMessage(pattern="^(توب اليومي|المتفاعلين|توب الاسبوعي|تفاعل)$"))
 async def اليومي(event):
     if not event.is_group:
         return
     type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in count or not count["اليومي"][guid]:
+    if event.text in ("توب اليومي", "المتفاعلين"):
+        action = "اليومي"
+    else:
+        action = "الاسبوعي"
+    if guid in count[action]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
@@ -87,32 +91,6 @@ async def اليومي(event):
         top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     x = await event.reply("\n".join(top_users))
     await react(event, "🌚")
-@ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
-async def الاسبوعي(event):
-    if not event.is_group:
-        return
-    type = "تفاعل"
-    await botuse(type)
-    guid = str(event.chat_id)
-    if guid not in count or not count["الاسبوعي"][guid]:
-        await event.reply("لا توجد بيانات لعرضها.")
-        await react(event, "💔")
-        return
-    sorted_users = sorted(
-        count["الاسبوعي"][guid].items(),
-        key=lambda x: x[1],
-        reverse=True
-    )[:10]
-    top_users = []
-    for idx, (uid, msg_count) in enumerate(sorted_users, 1):
-        try:
-            user = await event.client.get_entity(int(uid))
-            fname = user.first_name or "مجهول"
-        except:
-            fname = "مجهول"
-        top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
-    x = await event.reply("\n".join(top_users))
-    await react(event, "👍")
 @ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|الرسائل|رسائلي)$'))
 async def his_res(event):
     if event.text in ('رسائلي', 'الرسائل'):
