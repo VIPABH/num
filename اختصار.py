@@ -1,19 +1,7 @@
 import os, re, json, inspect, importlib
 from telethon import events
 from ABH import ABH
-SHORTCUTS_FILE = "shortcuts.json"
-def load_shortcuts():
-    if os.path.exists(SHORTCUTS_FILE):
-        try:
-            with open(SHORTCUTS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return {}
-    return {}
-def save_shortcuts(data):
-    with open(SHORTCUTS_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-shortcuts = load_shortcuts()
+OUTPUT_FILE = "shortcuts.json"
 COMMANDS = {}
 for file in os.listdir("."):
     if file.endswith(".py") and file != os.path.basename(__file__):
@@ -29,10 +17,10 @@ for file in os.listdir("."):
                     if isinstance(e, events.NewMessage) and e.pattern:
                         patterns.append(str(e.pattern))
                 if patterns:
-                    COMMANDS[name] = {
-                        "function": obj,
-                        "patterns": patterns
-                    }
+                    COMMANDS[name] = patterns
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    json.dump(COMMANDS, f, ensure_ascii=False, indent=4)
+print(f"✅ تم حفظ جميع الدوال والباترنات في {OUTPUT_FILE}")
 @ABH.on(events.NewMessage(pattern=r"^اضف اختصار (.+?) (.+)$"))
 async def add_shortcut_cmd(event):
     main, shortcut = event.pattern_match.group(1), event.pattern_match.group(2)
