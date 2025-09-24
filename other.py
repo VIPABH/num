@@ -549,7 +549,7 @@ async def take_screenshot(url, device="pc"):
             await asyncio.sleep(1)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
-        except Exception as e:
+        except Exception:
             screenshot_path = None
         finally:
             await browser.close()
@@ -572,8 +572,9 @@ async def screen_shot(event):
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
         await event.reply(f"✅ تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
-        await asyncio.sleep(60)
-        await event.delete()
+        for path in screenshot_paths:
+            if os.path.exists(path):
+                os.remove(path)
     else:
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
