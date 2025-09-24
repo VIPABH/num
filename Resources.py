@@ -3,12 +3,42 @@ from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.messages import SendReactionRequest
 from telethon.tl.functions.messages import GetFullChatRequest
-from telethon.errors import ChatForwardsRestrictedError
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from ABH import ABH
+async def auth(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    x = user_id == wfffp
+    y = is_assistant(chat_id, user_id)
+    participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
+    if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)) and y:
+        mention = await mention(event)
+        await event.respond(
+            f"📉 تم تنزيل {mention} من قائمة المعاونين \n"
+            "⚠️ السبب: ليس لديه مشرف."
+        )
+    devers = save(None, "secondary_devs.json")
+    z = str(user_id) in devers.get(str(chat_id), [])
+    if x or y or z:
+        return True
+    return False
+AUTH_FILE = 'assistant.json'
+if not os.path.exists(AUTH_FILE):
+    with open(AUTH_FILE, 'w') as f:
+        json.dump({}, f)
+def load_auth():
+    with open(AUTH_FILE, 'r') as f:
+        return json.load(f)
+def save_auth(data):
+    with open(AUTH_FILE, 'w') as f:
+        json.dump(data, f)
+def is_assistant(chat_id, user_id):
+    data = load_auth()
+    assistants = data.get(str(chat_id), [])
+    return user_id in assistants
 WARN_FILE = "warns.json"
 def load_warns():
     if os.path.exists(WARN_FILE):
