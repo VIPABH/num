@@ -8,10 +8,6 @@ from telethon import events, Button
 from Program import chs
 from Resources import *
 from ABH import ABH
-def is_assistant(chat_id, user_id):
-    data = load_auth()
-    assistants = data.get(str(chat_id), [])
-    return user_id in assistants
 async def creat_useFILE():
     if not os.path.exists('use.json'):
         with open('use.json', 'w', encoding='utf-8') as f:
