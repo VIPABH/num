@@ -22,6 +22,8 @@ async def xargame(e):
             await chs(e, f'{value}')
             await asyncio.sleep(3)
             await e.edit(f"ما اسم هذه الدولة؟")
+            await asyncio.sleep(60)
+            del x_arsessions[chat_id]
     elif t == x_arsessions[chat_id]:
         p = random.choice([1000, 5000])
         user_id = e.sender_id
