@@ -175,7 +175,6 @@ async def restrict_user(event):
     except Exception as ex:
         await hint(ex)
         await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
-@ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
         return
@@ -193,7 +192,7 @@ async def monitor_messages(event):
             with open('res.json', 'w', encoding='utf-8') as f:
                 json.dump(all_data, f, ensure_ascii=False, indent=4)
                 return
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(int(user_id))))
+        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await event.delete()
             return
