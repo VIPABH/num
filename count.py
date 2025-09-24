@@ -73,7 +73,7 @@ async def اليومي(event):
         await react(event, "💔")
         return
     sorted_users = sorted(
-        count[guid].items(),
+        count["اليومي"][guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
@@ -99,7 +99,7 @@ async def الاسبوعي(event):
         await react(event, "💔")
         return
     sorted_users = sorted(
-        count[guid].items(),
+        count["الاسبوعي"[[guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
@@ -128,12 +128,12 @@ async def his_res(event):
     type = "رسائله"
     await botuse(type)
     if guid1 in count and unm1 in count[guid1]:
-        msg_count = count[guid1][unm1]
-        الاسبوعي = count[guid1][unm1]
+        msg_count = count["اليومي"][guid1][unm1]
+        الاسبوعي = count["الاسبوعي"][guid1][unm1]
         x = await info(event, None)
         الكلي = x.get("الرسائل", 0)
         await react(event, "👍")
-        await chs(event, f'اليوميه: {msg_count} \n الاسبوعية: {الاسبوعي} \n الكليه: {الكلي}')
+        await chs(event, f'اليوميه: {msg_count}\nالاسبوعية: {الاسبوعي}\nالكليه: {الكلي}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
     if not event.is_group:
