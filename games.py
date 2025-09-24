@@ -6,6 +6,7 @@ from ABH import ABH #type: ignore
 from other import botuse
 from Resources import *
 from faker import Faker
+from Program import*
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
@@ -18,7 +19,9 @@ async def xargame(e):
         if not chat_id in x_arsessions:
             value, key = random.choice(list(x_ar.items()))
             x_arsessions[chat_id] = key
-            await e.reply(f"ما اسم هذه الدولة؟\n\n{value}")
+            await chs(e, f'{value}')
+            await asyncio.sleep(3)
+            await e.edit(f"ما اسم هذه الدولة؟")
     elif t == x_arsessions[chat_id]:
         p = random.choice([1000, 5000])
         user_id = e.sender_id
