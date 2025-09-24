@@ -2,8 +2,8 @@ from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from telethon.errors import UserNotParticipantError
-from other import is_assistant, botuse, is_owner
 from Program import r as redas, chs
+from other import botuse, is_owner
 from telethon import events, Button
 from top import points, delpoints
 import asyncio, re, json, time
