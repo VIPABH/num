@@ -127,7 +127,7 @@ async def his_res(event):
       guid1 = str(event.chat_id)
     type = "رسائله"
     await botuse(type)
-    if guid1 in count and unm1 in count[guid1]:
+    if guid1 in count and unm1 in count["الاسبوعي"][guid1] and count["اليومي"][guid1]:
         msg_count = count["اليومي"][guid1][unm1]
         الاسبوعي = count["الاسبوعي"][guid1][unm1]
         x = await info(event, None)
