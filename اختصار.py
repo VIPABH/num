@@ -2,8 +2,8 @@ import os, re, json, inspect, importlib
 from telethon import events
 from ABH import ABH
 OUTPUT_FILE = "shortcuts.json"
-COMMANDS = {}
 shortcuts = {}
+COMMANDS = {}
 for file in os.listdir("."):
     if file.endswith(".py") and file != os.path.basename(__file__):
         module_name = file[:-3]
@@ -11,7 +11,8 @@ for file in os.listdir("."):
         try:
             module = importlib.import_module(module_name)
             print(f"تم استيراد الوحدة: {module_name}")
-        except:
+        except Exception as e:
+            print(f"❌ فشل استيراد {file}: {e}")
             continue
         for name, obj in inspect.getmembers(module, inspect.iscoroutinefunction):
             print(f"جارٍ فحص الدالة: {name}")
@@ -20,8 +21,8 @@ for file in os.listdir("."):
                 for e in getattr(obj, "_events"):
                     print(f"جارٍ فحص الحدث: {e}")
                     if isinstance(e, events.NewMessage) and e.pattern:
-                        print(f"جارٍ إضافة الباترن: {e.pattern}")
                         patterns.append(str(e.pattern))
+                        print(f"جارٍ إضافة الباترن: {e.pattern}")
                 if patterns:
                     COMMANDS[name] = patterns
                     print(f"جارٍ إضافة الدالة: {name}")
