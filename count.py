@@ -68,7 +68,7 @@ async def اليومي(event):
     type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in count or not count[guid]:
+    if guid not in count or not count["اليومي"][guid]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
@@ -94,7 +94,7 @@ async def الاسبوعي(event):
     type = "تفاعل"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in count or not count[guid]:
+    if guid not in count or not count["الاسبوعي"][guid]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
