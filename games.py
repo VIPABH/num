@@ -16,7 +16,7 @@ async def xargame(e):
         type = "اعلام"
         await botuse(type)
         if not chat_id in x_arsessions:
-            key, value = random.choice(list(x_ar.items()))
+            value, key = random.choice(list(x_ar.items()))
             x_arsessions[chat_id] = key
             await e.reply(f"ما اسم هذه الدولة؟\n\n{value}")
     elif t == x_arsessions[chat_id]:
