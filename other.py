@@ -554,7 +554,8 @@ async def take_screenshot(url, device="pc"):
         finally:
             await browser.close()
     return screenshot_path
-@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين(?:\s+(.*))?'))
+
+@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين(?:\s*(.*))?'))
 async def screen_shot(event):
     type = "سكرين"
     await botuse(type)
