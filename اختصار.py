@@ -3,21 +3,29 @@ from telethon import events
 from ABH import ABH
 OUTPUT_FILE = "shortcuts.json"
 COMMANDS = {}
+shortcuts = {}
+
 for file in os.listdir("."):
     if file.endswith(".py") and file != os.path.basename(__file__):
         module_name = file[:-3]
+        print(f"جارٍ استيراد الوحدة: {module_name}")
         try:
             module = importlib.import_module(module_name)
+            print(f"تم استيراد الوحدة: {module_name}")
         except:
             continue
         for name, obj in inspect.getmembers(module, inspect.iscoroutinefunction):
+            print(f"جارٍ فحص الدالة: {name}")
             if hasattr(obj, "_events"):
                 patterns = []
                 for e in getattr(obj, "_events"):
+                    print(f"جارٍ فحص الحدث: {e}")
                     if isinstance(e, events.NewMessage) and e.pattern:
+                        print(f"جارٍ إضافة الباترن: {e.pattern}")
                         patterns.append(str(e.pattern))
                 if patterns:
                     COMMANDS[name] = patterns
+                    print(f"جارٍ إضافة الدالة: {name}")
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     json.dump(COMMANDS, f, ensure_ascii=False, indent=4)
 print(f"✅ تم حفظ جميع الدوال والباترنات في {OUTPUT_FILE}")
