@@ -95,20 +95,6 @@ async def whisper_scanmeme(event):
         await event.reply(f"الهمسة 👇\n \n **{x}**")
     else: 
         await event.reply("ماكدرت اكشفها💔")
-AUTH_FILE = 'assistant.json'
-if not os.path.exists(AUTH_FILE):
-    with open(AUTH_FILE, 'w') as f:
-        json.dump({}, f)
-def load_auth():
-    with open(AUTH_FILE, 'r') as f:
-        return json.load(f)
-def save_auth(data):
-    with open(AUTH_FILE, 'w') as f:
-        json.dump(data, f)
-def is_assistant(chat_id, user_id):
-    data = load_auth()
-    assistants = data.get(str(chat_id), [])
-    return user_id in assistants
 async def is_owner(chat_id, user_id):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
