@@ -57,15 +57,3 @@ async def list_shortcuts_cmd(event):
         for new, old in mapping.items():
             msg += f"   `{new}` ➝ `{old}`\n"
     await event.reply(msg[:4000])
-@ABH.on(events.NewMessage())
-async def handle_shortcuts(event):
-    text = event.raw_text.strip()
-    for func_name, mapping in shortcuts.items():
-        for shortcut, original in mapping.items():
-            try:
-                if re.fullmatch(shortcut, text):
-                    if func_name in COMMANDS:
-                        await COMMANDS[func_name]["function"](event)
-                        return
-            except re.error:
-                continue
