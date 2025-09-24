@@ -25,9 +25,9 @@ for file in os.listdir("."):
                 if patterns:
                     COMMANDS[name] = patterns
                     print(f"جارٍ إضافة الدالة: {name}")
-                with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-                    json.dump(COMMANDS, f, ensure_ascii=False, indent=4)
-                print(f"✅ تم حفظ جميع الدوال والباترنات في {OUTPUT_FILE}")
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    json.dump(COMMANDS, f, ensure_ascii=False, indent=4)
+print(f"✅ تم حفظ جميع الدوال والباترنات في {OUTPUT_FILE}")
 @ABH.on(events.NewMessage(pattern=r"^اضف اختصار (.+?) (.+)$"))
 async def add_shortcut_cmd(event):
     main, shortcut = event.pattern_match.group(1), event.pattern_match.group(2)
