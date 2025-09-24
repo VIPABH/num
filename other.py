@@ -1,12 +1,12 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from Resources import suras, mention, ment, wfffp, hint
 from telethon.tl.types import ChannelParticipantCreator
 from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
 from Program import chs
+from Resources import *
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
