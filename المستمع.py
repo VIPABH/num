@@ -19,6 +19,7 @@ async def litsin_to_all(e):
   await faster_reult(e)
   await check_quist(e)
   await check_sport(e)
+  await xargame(e)
   await som(e)
   await top(e)
   m = e.message
