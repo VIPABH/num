@@ -72,10 +72,6 @@ async def اليومي(event):
         action = "اليومي"
     else:
         action = "الاسبوعي"
-    # if guid in count[action]:
-    #     await event.reply("لا توجد بيانات لعرضها.")
-    #     await react(event, "💔")
-    #     return
     sorted_users = sorted(
         count["اليومي"][guid].items(),
         key=lambda x: x[1],
