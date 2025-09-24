@@ -11,27 +11,27 @@ x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
         return
-    t = e.text
-    chat_id = e.chat_id
-    if t == "اعلام":
-        type = "اعلام"
-        await botuse(type)
-        if not chat_id in x_arsessions:
-            value, key = random.choice(list(x_ar.items()))
-            x_arsessions[chat_id] = key
-            await chs(e, f'{value}')
-            await asyncio.sleep(3)
-            await e.edit(f"ما اسم هذه الدولة؟")
-            await asyncio.sleep(60)
-            del x_arsessions[chat_id]
-    elif t == x_arsessions[chat_id]:
-        p = random.choice([1000, 5000])
-        user_id = e.sender_id
-        gid = e.chat_id
-        add_points(user_id, gid, points, amount=p)
-        await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
-        await react(e, '🎉')
-        del x_arsessions[chat_id]
+    # t = e.text
+    # chat_id = e.chat_id
+    # if t == "اعلام":
+    #     type = "اعلام"
+    #     await botuse(type)
+    #     if not chat_id in x_arsessions:
+    #         value, key = random.choice(list(x_ar.items()))
+    #         x_arsessions[chat_id] = key
+    #         await chs(e, f'{value}')
+    #         await asyncio.sleep(3)
+    #         await e.edit(f"ما اسم هذه الدولة؟")
+    #         await asyncio.sleep(60)
+    #         del x_arsessions[chat_id]
+    # elif t == x_arsessions[chat_id]:
+    #     p = random.choice([1000, 5000])
+    #     user_id = e.sender_id
+    #     gid = e.chat_id
+    #     add_points(user_id, gid, points, amount=p)
+    #     await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
+    #     await react(e, '🎉')
+    #     del x_arsessions[chat_id]
 math_sessions = {}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
