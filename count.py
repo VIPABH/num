@@ -99,7 +99,7 @@ async def الاسبوعي(event):
         await react(event, "💔")
         return
     sorted_users = sorted(
-        count["الاسبوعي"[[guid].items(),
+        count["الاسبوعي"][guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
