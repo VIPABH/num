@@ -1,10 +1,10 @@
 from telethon.tl.types import DocumentAttributeAudio
-from other import botuse, is_assistant
 from telethon import events, Button
 from yt_dlp import YoutubeDL
 from Program import r, chs
-from Resources import hint
+from other import botuse
 import os, asyncio, json
+from Resources import *
 from ABH import ABH
 actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
