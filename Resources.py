@@ -19,7 +19,7 @@ async def to(e):
         except ValueError:
             try:
                 user = await ABH.get_entity(target_id)
-                return user.id
+                return user
             except Exception as ex:
                 await hint(f"❌ خطأ: {ex}")
                 return None
