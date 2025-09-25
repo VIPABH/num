@@ -8,6 +8,21 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from ABH import ABH
+async def to(e):
+    r = await e.get_reply_message()
+    target_id = e.pattern_match.group(1)
+    if not target_id and r:
+        return r.sender_id
+    else:
+        try:
+            return int(target_id)
+        except ValueError:
+            try:
+                user = await ABH.get_entity(target_id)
+                return user.id
+            except Exception as ex:
+                await hint(f"❌ خطأ: {ex}")
+                return None
 async def auth(event):
     chat_id = event.chat_id
     user_id = event.sender_id
