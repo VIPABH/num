@@ -311,7 +311,7 @@ async def reply_hi(event):
     await botuse(type)
     abh = random.choice(auto)
     await event.reply(abh)
-@ABH.on(events.NewmMessage(pattern="سيف ذو الفقار"))
+@ABH.on(events.NewMessage(pattern="سيف ذو الفقار"))
 async def rr(e):
     await chs(
         e,
