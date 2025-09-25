@@ -2,6 +2,7 @@ from telethon import events
 from addanddel import *
 from Resources import *
 from Program import *
+from guard import *
 from count import *
 from games import *
 from group import *
