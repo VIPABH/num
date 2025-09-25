@@ -175,6 +175,7 @@ async def restrict_user(event):
     except Exception as ex:
         await hint(ex)
         await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
+@ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
         return
