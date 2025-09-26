@@ -574,3 +574,7 @@ async def showwarns(e):
         return
     w = count_warnings(int(target_id), int(chat))
     await chs(e, f' ( 3/{w} )')
+@ABH.on(events.NewMessage(pattern="!تجربة"))
+async def test(e):
+    t = await auth(e)
+    await e.reply(t)
