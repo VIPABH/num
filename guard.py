@@ -577,4 +577,4 @@ async def showwarns(e):
 @ABH.on(events.NewMessage(pattern="!تجربة"))
 async def test(e):
     t = await auth(e)
-    await e.reply(f"{t})
+    await e.reply(f"{t}")
