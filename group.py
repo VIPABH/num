@@ -310,7 +310,7 @@ async def handle_spam(event):
     id = str(event.sender_id)
     if not r:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        await chs(event, "اكتب `ازعاج 4 🌚 وسوي رد `")
         return
     if not much or not text:
         await react(event, "🤔")
@@ -318,19 +318,19 @@ async def handle_spam(event):
         return
     if not much.isdigit() or int(much) < 1 or int(much) > 50 and id != wfffp:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n اكثر من 0 و اقل من 50 ")
+        await chs(event, "عدد مرات الازعاج يجب ان يكون بين 1 و 50")
         return
     if not text:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        await chs(event, "حدد الايموجي اللي تريده")
         return
     if len(text) > 1:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ايموجي واحد فقط")
+        await chs(event, "عذرا بس ماكدر اسويله اكثر من ايموجي واحد")
         return
     if text not in emoji:
         await react(event, "🤔")
-        await chs(event, f"استخدم الامر ك `ازعاج 4 🌚` \n الايموجي غير صالح ```` {' '.join(emoji)} ```"
+        await chs(event, f"الايموجي {text} مدعوم الايموجيات المدعومة هي:\n" + " ".join(emoji)
         )
         return
     much = int(much)
@@ -341,7 +341,7 @@ async def handle_spam(event):
         return
     if r.sender_id == event.sender_id:
         await react(event, "🤔")
-        await chs(event, "لا يمكنك ازعاج نفسك 😒")
+        await chs(event, "لا يمكنك ازعاج نفسك 😁")
         return
     if r.sender_id == wfffp:
         await react(event, "🤔")
@@ -357,14 +357,14 @@ async def handle_spam(event):
         m = points[uid]
     else:
         m = 0
+    ء = much * 50000
     if m < 50000:
         await react(event, "🤣")
-        await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
+        await chs(event, f"فلوسك اقل من 50 الف دينار ماكدر تسوي ازعاج واحد اصلا")
         return
-    ء = much * 50000
     if ء > m:
         await react(event, "🤣")
-        await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
+        await chs(event, f"فلوسك {m} دينار وتحتاج {much / 50000} حتى تسوي {much} ازعاج.")
         return
     b = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
     await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
@@ -437,7 +437,7 @@ async def show_dates(event):
     type = "مواعيد"
     await botuse(type)
     btton = [[
-        Button.inline("محرم", b"m"),
+        Button.inline("محرم", b"mh"),
         Button.inline("رمضان", b"rm"),
         Button.inline("شعبان", b"sh"),
         Button.inline("رجب", b"r"),
@@ -452,8 +452,8 @@ async def set_date(event):
         await event.answer('عزيزي الامر لا يخصك', alert=True)
         return
     await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
-@ABH.on(events.CallbackQuery(data='m'))
-async def handle_m(event):
+@ABH.on(events.CallbackQuery(data='mh'))
+async def handle_mh(event):
     x = (2026, 6, 17)
     الان = datetime.today()
     x_datetime = datetime(*x)
@@ -537,7 +537,7 @@ async def link(event):
     await event.reply(f"⌔︙{tag}", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    await asyncio.sleep(3)
+    await asyncio.sleep(2)
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
