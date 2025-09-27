@@ -316,7 +316,7 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚`")
         return
-    if not much.isdigit() or int(much) < 1 or int(much) > 50:
+    if not much.isdigit() or int(much) < 1 or int(much) > 50 i and id != str(wfffp):
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n اكثر من 0 و اقل من 50 ")
         return
