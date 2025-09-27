@@ -847,11 +847,11 @@ async def send_anime(event):
     type = "انميشن"
     await botuse(type)
     frames = ['|', '/', '-', '\\']
-    msg = await event.reply('جاري التحميل')
+    msg = await event.reply('︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎')
     try:
         for _ in range(3):
             for frame in frames:
-                await asyncio.sleep(0.7)
                 await msg.edit(frame)
+                await asyncio.sleep(0.7)
     except MessageNotModifiedError:
         pass
