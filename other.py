@@ -1,7 +1,6 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from telethon.tl.types import ChannelParticipantCreator
-from telethon.tl.types import PeerChannel, PeerChat
+from telethon.errors import MessageNotModifiedError
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
@@ -845,11 +844,14 @@ async def how_to_whisper(event):
         )
 @ABH.on(events.NewMessage(pattern=r'^انميشن$'))
 async def send_anime(event):
-    animation_type = "انميشن"
-    await botuse(animation_type)
+    type = "انميشن"
+    await botuse(type)
     frames = ['.', '..', '...']
     msg = await event.reply(frames[0])
-    for _ in range(3):
-        for frame in frames:
-            await asyncio.sleep(1)
-            await msg.edit(frame)
+    try:
+        for _ in range(3):
+            for frame in frames:
+                await asyncio.sleep(1)
+                await msg.edit(frame)
+    except MessageNotModifiedError:
+        pass
