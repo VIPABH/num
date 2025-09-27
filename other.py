@@ -846,7 +846,7 @@ async def how_to_whisper(event):
 async def send_anime(event):
     type = "انميشن"
     await botuse(type)
-    frames = ['جاري التحميل.', 'جاري التحميل..', 'جاري التحميل...']
+    frames = ['|', '/', '-', '\\']
     msg = await event.reply('جاري التحميل')
     try:
         for _ in range(3):
