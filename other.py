@@ -847,7 +847,7 @@ async def send_anime(event):
     type = "انميشن"
     await botuse(type)
     frames = ['.', '..', '...']
-    msg = await event.reply(frames[0])
+    msg = await event.reply('جاري التحميل')
     try:
         for _ in range(3):
             for frame in frames:
