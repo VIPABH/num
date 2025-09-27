@@ -845,9 +845,8 @@ async def how_to_whisper(event):
         )
 @ABH.on(events.NewMessage(pattern=r'^انميشن$'))
 async def send_anime(event):
-    type = "انميشن"
-    await botuse(type)
-    await event.reply('.')
+    animation_type = "انميشن"
+    await botuse(animation_type)
     frames = ['.', '..', '...']
     msg = await event.reply(frames[0])
     for _ in range(3):
