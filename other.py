@@ -848,10 +848,9 @@ async def send_anime(event):
     type = "انميشن"
     await botuse(type)
     await event.reply('.')
+    frames = ['.', '..', '...']
+    msg = await event.reply(frames[0])
     for _ in range(3):
-        await asyncio.sleep(1)
-        await event.edit('..')
-        await asyncio.sleep(1)
-        await event.edit('...')
-        await asyncio.sleep(1)
-        await event.edit('.')
+        for frame in frames:
+            await asyncio.sleep(1)
+            await msg.edit(frame)
