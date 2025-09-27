@@ -848,6 +848,10 @@ async def send_anime(event):
     type = "انميشن"
     await botuse(type)
     await event.reply('.')
-    for i in range(5):
+    for _ in range(3):
         await asyncio.sleep(1)
-        await event.edit('..' + '💖' * (i + 1))
+        await event.edit('..')
+        await asyncio.sleep(1)
+        await event.edit('...')
+        await asyncio.sleep(1)
+        await event.edit('.')
