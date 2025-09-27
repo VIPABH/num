@@ -843,3 +843,11 @@ async def how_to_whisper(event):
             caption=c,
             reply_to=event.id
         )
+@ABH.on(events.NewMessage(pattern=r'^انميشن$'))
+async def send_anime(event):
+    type = "انميشن"
+    await botuse(type)
+    await event.reply('.')
+    for i in range(5):
+        await asyncio.sleep(1)
+        await event.edit('..' + '💖' * (i + 1))
