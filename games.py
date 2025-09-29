@@ -15,7 +15,7 @@ active_sessions = {}
 @ABH.on(events.NewMessage(pattern="^حذف رقم$"))
 async def del_NUM(e):
     data = create(NUM_FILE)
-    if not e.chat_id in data:
+    if not str(e.chat_id) in data:
         await chs(e, 'المجموعه مابيها رقم مخزن اصلا')
     else:
         if e.sender_id == data['user_id']:
