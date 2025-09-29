@@ -7,6 +7,87 @@ from other import botuse
 from Resources import *
 from faker import Faker
 from Program import*
+NUM_FILE = 'NUM.json'
+def save_json(filename: str, data: dict):
+    with open(filename, 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+active_sessions = {}
+@ABH.on(events.NewMessage(pattern="^حذف رقم$"))
+async def del_NUM(e):
+    data = create(NUM_FILE)
+    if not e.chat_id in data:
+        await chs(e, 'المجموعه مابيها رقم مخزن اصلا')
+    else:
+        if e.sender_id == data['user_id']:
+            await chs(e, 'تم حذف الرقم المخزن ب نجاح')
+            data.pop(e.chat_id)
+            save_json(NUM_FILE, data)
+@ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
+async def set_num(e):
+    if not e.is_group:
+        return
+    data = create(NUM_FILE)
+    if e.chat_id in data:
+        await chs(e,'المجموعة بيها رقم مسبقا تحب احذف الك؟')
+    bot_username = (await ABH.get_me()).username
+    session_id = str(uuid.uuid4())[:6]
+    button = Button.url(
+        "اضغط لتعيين الرقم",
+        url=f"https://t.me/{bot_username}?start={session_id}"
+    )
+    msg = await e.reply(
+        "📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",
+        buttons=button
+    )
+    active_sessions[session_id] = {
+        "group_id": e.chat_id,
+        "user_id": e.sender_id,
+        "msgid": msg,
+        "number": None
+    }
+@ABH.on(events.NewMessage(pattern="^/start (.+)"))
+async def receive_number(e):
+    if not e.is_private:
+        return
+    session_id = e.pattern_match.group(1)
+    user_id = e.sender_id
+    if session_id not in active_sessions:
+        await e.reply("⚠️ عذراً، الجلسة غير موجودة أو انتهت.")
+        return
+    session = active_sessions[session_id]
+    if session["user_id"] != user_id:
+        await e.reply("❌ لا يمكنك تعيين رقم لجلسة ليست لك.")
+        return
+    if session["number"] is not None:
+        await e.reply("❌ الرقم تم تعيينه مسبقًا.")
+        return
+    await e.reply("📨 أرسل الرقم المميز الآن:")
+    @ABH.on(events.NewMessage(from_users=user_id))
+    async def save_number(ev):
+        if not e.is_private:
+            return
+        if ev.text.startswith("/start"):
+            return
+        if not ev.text.isdigit():
+            return
+        session["number"] = ev.text
+        data = create(NUM_FILE)
+        data[str(session["group_id"])] = session["number"]
+        save_json(NUM_FILE, data)
+        await ev.reply(f" تم حفظ الرقم: {ev.text}")
+        msg = session["msgid"]
+        await msg.edit('✅ تم تعيين الرقم بنجاح', buttons=None)
+        ABH.remove_event_handler(save_number, events.NewMessage)
+async def guess_number(e):
+    if not e.is_group:
+        return
+    data = create(NUM_FILE)
+    group_id = str(e.chat_id)
+    if group_id in data and e.text == data[group_id]:
+        m = await mention(e)
+        await e.reply(f"مبارك عزيزي ( {m} ) \n الرقم {e.text} هو الرقم الصحيح ")
+        data.pop(group_id)
+        save_json(NUM_FILE, data)
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
