@@ -26,6 +26,10 @@ async def set_num(e):
     if not e.is_group:
         return
     group_id=str(e.chat_id)
+    data = create('NUM.json')
+    if group_id in data:
+        await chs(e, 'عذرا بس المجموعه بيها رقم مخزن')
+        return
     bot_username=(await ABH.get_me()).username
     session_id=str(uuid.uuid4())[:6]
     button=Button.url("اضغط لتعيين الرقم",f"https://t.me/{bot_username}?start={session_id}")
