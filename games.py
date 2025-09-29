@@ -15,13 +15,17 @@ active_sessions = {}
 @ABH.on(events.NewMessage(pattern="^حذف رقم$"))
 async def del_NUM(e):
     data = create(NUM_FILE)
-    if not str(e.chat_id) in data:
+    group_id = str(e.chat_id)
+    user_id = e.sender_id
+    if not str(e.chat_id) in data and e.sender_id not in data[str(e.chat_id)]:
         await chs(e, 'المجموعه مابيها رقم مخزن اصلا')
     else:
-        if e.sender_id == data['user_id']:
-            await chs(e, 'تم حذف الرقم المخزن ب نجاح')
-            data.pop(e.chat_id)
-            save_json(NUM_FILE, data)
+        await chs(e, 'تم حذف الرقم المخزن ب نجاح')
+        del data[group_id][user_id]
+        if not data[group_id]:
+            del data[group_id]
+        save_json(NUM_FILE, data)
+        return
 @ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
 async def set_num(e):
     if not e.is_group:
@@ -72,9 +76,13 @@ async def receive_number(e):
             return
         session["number"] = ev.text
         data = create(NUM_FILE)
-        data[str(session["group_id"])] = session["number"]
+        group_id = str(session["group_id"])
+        user_id = str(session["user_id"])
+        if group_id not in data:
+            data[group_id] = {}
+        data[group_id][user_id] = session["number"]
         save_json(NUM_FILE, data)
-        await ev.reply(f" تم حفظ الرقم: {ev.text}")
+        await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
         msg = session["msgid"]
         await msg.edit('✅ تم تعيين الرقم بنجاح', buttons=None)
         ABH.remove_event_handler(save_number, events.NewMessage)
@@ -83,11 +91,17 @@ async def guess_number(e):
         return
     data = create(NUM_FILE)
     group_id = str(e.chat_id)
-    if group_id in data and e.text == data[group_id]:
-        m = await mention(e)
-        await e.reply(f"مبارك عزيزي ( {m} ) \n الرقم {e.text} هو الرقم الصحيح ")
-        data.pop(group_id)
-        save_json(NUM_FILE, data)
+    guess = e.text
+    if group_id in data:
+        for user_id, number in data[group_id].items():
+            if guess == number:
+                m = await mention(e)
+                await e.reply(f"🎉 مبارك عزيزي ( {m} ) \nالرقم {guess} هو الرقم الصحيح ✅")
+                del data[group_id][user_id]
+                if not data[group_id]:
+                    del data[group_id]
+                save_json(NUM_FILE, data)
+                return
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
