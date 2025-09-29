@@ -109,17 +109,17 @@ async def send(e, m):
     if not l:
         return
     await ABH.send_message(l, m)
-def create(filename):
+def create(filename: str):
     if not os.path.exists(filename):
         with open(filename, 'w', encoding='utf-8') as file:
             json.dump({}, file, ensure_ascii=False, indent=4)
-        return True
-    return False
-def create(filename):
-    if not os.path.exists(filename):
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-    return True
+        return {}
+    else:
+        with open(filename, 'r', encoding='utf-8') as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                return {}
 async def res(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
