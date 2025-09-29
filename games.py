@@ -8,117 +8,78 @@ from Resources import *
 from faker import Faker
 from Program import*
 NUM_FILE = 'NUM.json'
-active_sessions = {}
-def create(filename: str) -> dict:
+active_sessions={}
+def create(filename):
     if not os.path.exists(filename):
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-        return {}
-    with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename,'w',encoding='utf-8') as f:
+            json.dump({},f,ensure_ascii=False,indent=4)
+    with open(filename,'r',encoding='utf-8') as f:
         try:
             return json.load(f)
         except json.JSONDecodeError:
-            with open(filename, 'w', encoding='utf-8') as fw:
-                json.dump({}, fw, ensure_ascii=False, indent=4)
             return {}
-def save_json(filename: str, data: dict):
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern="^حذف رقم$"))
-async def del_NUM(e):
-    data = create(NUM_FILE)
-    group_id = str(e.chat_id)
-    user_id = str(e.sender_id)
-    if group_id not in data:
-        await chs(e, '❌ لا يوجد أي أرقام مخزنة في هذه المجموعة.')
-        return
-    if user_id not in data[group_id]:
-        await chs(e, '❌ ليس لديك رقم مخزن في هذه المجموعة.')
-        return
-    del data[group_id][user_id]
-    if not data[group_id]:
-        del data[group_id]
-    save_json(NUM_FILE, data)
-    await chs(e, '✅ تم حذف الرقم المخزن بنجاح.')
+def save_json(filename,data):
+    with open(filename,'w',encoding='utf-8') as f:
+        json.dump(data,f,ensure_ascii=False,indent=4)
 @ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
 async def set_num(e):
     if not e.is_group:
         return
-    data = create(NUM_FILE)
-    group_id = str(e.chat_id)
-    user_id = str(e.sender_id)
-    if group_id in data and user_id in data[group_id]:
-        await chs(e, '⚠️ لديك رقم مخزن مسبقًا. احذفه أولًا باستخدام (حذف رقم).')
-        return
-    bot_username = (await ABH.get_me()).username
-    session_id = str(uuid.uuid4())[:6]
-    button = Button.url(
-        "اضغط لتعيين الرقم",
-        url=f"https://t.me/{bot_username}?start={session_id}"
-    )
-    msg = await e.reply(
-        "📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",
-        buttons=button
-    )
-    active_sessions[session_id] = {
-        "group_id": e.chat_id,
-        "user_id": e.sender_id,
-        "msgid": msg,
-        "number": None
-    }
+    group_id=str(e.chat_id)
+    bot_username=(await ABH.get_me()).username
+    session_id=str(uuid.uuid4())[:6]
+    button=Button.url("اضغط لتعيين الرقم",f"https://t.me/{bot_username}?start={session_id}")
+    msg=await e.reply("📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",buttons=button)
+    active_sessions[session_id]={"group_id":group_id,"user_id":str(e.sender_id),"msgid":msg,"number":None}
 @ABH.on(events.NewMessage(pattern="^/start (.+)"))
 async def receive_number(e):
     if not e.is_private:
         return
-    session_id = e.pattern_match.group(1)
-    user_id = e.sender_id
+    session_id=e.pattern_match.group(1)
+    user_id=str(e.sender_id)
     if session_id not in active_sessions:
         await e.reply("⚠️ عذراً، الجلسة غير موجودة أو انتهت.")
         return
-    session = active_sessions[session_id]
-    if session["user_id"] != user_id:
+    session=active_sessions[session_id]
+    if session["user_id"]!=user_id:
         await e.reply("❌ لا يمكنك تعيين رقم لجلسة ليست لك.")
         return
     if session["number"] is not None:
         await e.reply("❌ الرقم تم تعيينه مسبقًا.")
         return
     await e.reply("📨 أرسل الرقم المميز الآن:")
-    @ABH.on(events.NewMessage(from_users=user_id))
+    @ABH.on(events.NewMessage(from_users=int(user_id)))
     async def save_number(ev):
         if not ev.is_private:
             return
         if ev.text.startswith("/start"):
             return
         if not ev.text.isdigit():
-            await ev.reply("❌ الرجاء إرسال رقم صالح فقط.")
             return
-        session["number"] = ev.text
-        data = create(NUM_FILE)
-        group_id = str(session["group_id"])
-        user_id_str = str(session["user_id"])
-        if group_id not in data:
-            data[group_id] = {}
-        data[group_id][user_id_str] = session["number"]
-        save_json(NUM_FILE, data)
+        session["number"]=ev.text
+        data=create(NUM_FILE)
+        group_id=session["group_id"]
+        if group_id not in data or not isinstance(data[group_id],dict):
+            data[group_id]={}
+        data[group_id][user_id]=session["number"]
+        save_json(NUM_FILE,data)
         await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
-        msg = session["msgid"]
-        await msg.edit('✅ تم تعيين الرقم بنجاح', buttons=None)
-        ABH.remove_event_handler(save_number, events.NewMessage)
+        await session["msgid"].edit('✅ تم تعيين الرقم بنجاح',buttons=None)
+        ABH.remove_event_handler(save_number,events.NewMessage)
 async def guess_number(e):
     if not e.is_group:
         return
-    data = create(NUM_FILE)
-    group_id = str(e.chat_id)
-    guess = e.text.strip()
-    if group_id in data:
-        for user_id, number in data[group_id].items():
-            if guess == number:
-                m = await mention(e)
-                await e.reply(f"🎉 مبارك {m}!\nالرقم {guess} هو الرقم الصحيح ✅")
-                del data[group_id][user_id]
+    data=create(NUM_FILE)
+    group_id=str(e.chat_id)
+    guess=e.text
+    if group_id in data and isinstance(data[group_id],dict):
+        for uid,number in list(data[group_id].items()):
+            if guess==number:
+                await e.reply(f"🎉 مبارك <a href='tg://user?id={uid}'>عزيزي</a> الرقم {guess} هو الصحيح ✅",parse_mode='html')
+                del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
-                save_json(NUM_FILE, data)
+                save_json(NUM_FILE,data)
                 return
 x_arsessions = {}
 async def xargame(e):
