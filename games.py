@@ -8,31 +8,48 @@ from Resources import *
 from faker import Faker
 from Program import*
 NUM_FILE = 'NUM.json'
-def save_json(filename: str, data: dict):
-    with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
 active_sessions = {}
+def create(filename: str) -> dict:
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+        return {}
+    with open(filename, 'r', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            with open(filename, 'w', encoding='utf-8') as fw:
+                json.dump({}, fw, ensure_ascii=False, indent=4)
+            return {}
+def save_json(filename: str, data: dict):
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern="^حذف رقم$"))
 async def del_NUM(e):
     data = create(NUM_FILE)
     group_id = str(e.chat_id)
-    user_id = e.sender_id
-    if not str(e.chat_id) in data and e.sender_id not in data[str(e.chat_id)]:
-        await chs(e, 'المجموعه مابيها رقم مخزن اصلا')
-    else:
-        await chs(e, 'تم حذف الرقم المخزن ب نجاح')
-        del data[group_id][user_id]
-        if not data[group_id]:
-            del data[group_id]
-        save_json(NUM_FILE, data)
+    user_id = str(e.sender_id)
+    if group_id not in data:
+        await chs(e, '❌ لا يوجد أي أرقام مخزنة في هذه المجموعة.')
         return
+    if user_id not in data[group_id]:
+        await chs(e, '❌ ليس لديك رقم مخزن في هذه المجموعة.')
+        return
+    del data[group_id][user_id]
+    if not data[group_id]:
+        del data[group_id]
+    save_json(NUM_FILE, data)
+    await chs(e, '✅ تم حذف الرقم المخزن بنجاح.')
 @ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
 async def set_num(e):
     if not e.is_group:
         return
     data = create(NUM_FILE)
-    if e.chat_id in data:
-        await chs(e,'المجموعة بيها رقم مسبقا تحب احذف الك؟')
+    group_id = str(e.chat_id)
+    user_id = str(e.sender_id)
+    if group_id in data and user_id in data[group_id]:
+        await chs(e, '⚠️ لديك رقم مخزن مسبقًا. احذفه أولًا باستخدام (حذف رقم).')
+        return
     bot_username = (await ABH.get_me()).username
     session_id = str(uuid.uuid4())[:6]
     button = Button.url(
@@ -68,19 +85,20 @@ async def receive_number(e):
     await e.reply("📨 أرسل الرقم المميز الآن:")
     @ABH.on(events.NewMessage(from_users=user_id))
     async def save_number(ev):
-        if not e.is_private:
+        if not ev.is_private:
             return
         if ev.text.startswith("/start"):
             return
         if not ev.text.isdigit():
+            await ev.reply("❌ الرجاء إرسال رقم صالح فقط.")
             return
         session["number"] = ev.text
         data = create(NUM_FILE)
         group_id = str(session["group_id"])
-        user_id = str(session["user_id"])
+        user_id_str = str(session["user_id"])
         if group_id not in data:
             data[group_id] = {}
-        data[group_id][user_id] = session["number"]
+        data[group_id][user_id_str] = session["number"]
         save_json(NUM_FILE, data)
         await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
         msg = session["msgid"]
@@ -91,12 +109,12 @@ async def guess_number(e):
         return
     data = create(NUM_FILE)
     group_id = str(e.chat_id)
-    guess = e.text
+    guess = e.text.strip()
     if group_id in data:
         for user_id, number in data[group_id].items():
             if guess == number:
                 m = await mention(e)
-                await e.reply(f"🎉 مبارك عزيزي ( {m} ) \nالرقم {guess} هو الرقم الصحيح ✅")
+                await e.reply(f"🎉 مبارك {m}!\nالرقم {guess} هو الرقم الصحيح ✅")
                 del data[group_id][user_id]
                 if not data[group_id]:
                     del data[group_id]
