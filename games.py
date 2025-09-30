@@ -26,33 +26,60 @@ def save_json(filename,data):
 async def set_num(e):
     if not e.is_group:
         return
-    group_id=str(e.chat_id)
-    data = create('NUM.json')
+    group_id = str(e.chat_id)
+    data = create(NUM_FILE)
     if group_id in data:
         await chs(e, 'عذرا بس المجموعه بيها رقم مخزن')
         return
-    bot_username=(await ABH.get_me()).username
-    session_id=str(uuid.uuid4())[:6]
-    button=Button.url("اضغط لتعيين الرقم",f"https://t.me/{bot_username}?start={session_id}")
-    msg=await e.reply("📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",buttons=button)
-    active_sessions[session_id]={"group_id":group_id,"user_id":str(e.sender_id),"msgid":msg,"number":None}
-    game[e.chat_id] = {"game owner": e.sender_id, "msg": e.id}
+    bot_username = (await ABH.get_me()).username
+    session_id = str(uuid.uuid4())[:6]
+    button = Button.url("اضغط لتعيين الرقم", f"https://t.me/{bot_username}?start={session_id}")
+    msg = await e.reply(
+        "📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",
+        buttons=button
+    )
+    active_sessions[session_id] = {
+        "group_id": group_id,
+        "user_id": str(e.sender_id),
+        "msgid": msg,
+        "number": None,
+        "command_msg_id": e.id
+    }
 @ABH.on(events.NewMessage(pattern="^/start (.+)"))
 async def receive_number(e):
     if not e.is_private:
         return
-    session_id=e.pattern_match.group(1)
-    user_id=str(e.sender_id)
+    session_id = e.pattern_match.group(1)
+    user_id = str(e.sender_id)
     if session_id not in active_sessions:
         return
-    session=active_sessions[session_id]
-    if session["user_id"]!=user_id:
+    session = active_sessions[session_id]
+    if session["user_id"] != user_id:
         await e.reply("❌ لا يمكنك تعيين رقم لجلسة ليست لك.")
         return
     if session["number"] is not None:
         await e.reply("❌ الرقم تم تعيينه مسبقًا.")
         return
     await e.reply("📨 أرسل الرقم المميز الآن:")
+    @ABH.on(events.NewMessage(from_users=int(user_id)))
+    async def save_number(ev):
+        if not ev.is_private or ev.text.startswith("/start"):
+            return
+        if not ev.text.isdigit():
+            return
+        session["number"] = ev.text
+        data = create(NUM_FILE)
+        group_id = session["group_id"]
+        if group_id not in data or not isinstance(data[group_id], dict):
+            data[group_id] = {}
+        data[group_id][user_id] = {
+            "number": session["number"],
+            "msg_id": session["command_msg_id"]
+        }
+        save_json(NUM_FILE, data)
+        await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
+        await session["msgid"].edit('✅ تم تعيين الرقم بنجاح', buttons=None)
+        ABH.remove_event_handler(save_number, events.NewMessage)
     @ABH.on(events.NewMessage(from_users=int(user_id)))
     async def save_number(ev):
         if not ev.is_private:
@@ -74,22 +101,28 @@ async def receive_number(e):
 async def guess_number(e):
     if not e.is_group:
         return
-    data=create(NUM_FILE)
-    group_id=str(e.chat_id)
-    guess=e.text
-    if group_id in data and isinstance(data[group_id],dict) and guess.isdigit():
+    data = create(NUM_FILE)
+    group_id = str(e.chat_id)
+    guess = e.text.strip()
+    if group_id in data and isinstance(data[group_id], dict) and guess.isdigit():
         r = await e.get_reply_message()
-        if not r or r.id != game[e.chat_id]['msg']:
-            await chs(e, "عذرا بس لازم تسوي رد على رساله الامر")
-            return
-        for uid,number in list(data[group_id].items()):
-            if guess==number:
-                await e.reply(f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",parse_mode='html')
+        found = False
+        for uid, info in list(data[group_id].items()):
+            if not r or r.id != info["msg_id"]:
+                continue
+            found = True
+            if guess == info["number"]:
+                await e.reply(
+                    f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
+                    parse_mode='html'
+                )
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
-                save_json(NUM_FILE,data)
+                save_json(NUM_FILE, data)
                 return
+        if not found:
+            await chs(e, "⚠️ لازم ترد على رسالة الأمر الأصلية حتى يتم التخمين")
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
