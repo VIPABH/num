@@ -42,7 +42,6 @@ async def receive_number(e):
     session_id=e.pattern_match.group(1)
     user_id=str(e.sender_id)
     if session_id not in active_sessions:
-        await e.reply("⚠️ عذراً، الجلسة غير موجودة أو انتهت.")
         return
     session=active_sessions[session_id]
     if session["user_id"]!=user_id:
@@ -79,7 +78,7 @@ async def guess_number(e):
     if group_id in data and isinstance(data[group_id],dict):
         for uid,number in list(data[group_id].items()):
             if guess==number:
-                await e.reply(f"🎉 مبارك <a href='tg://user?id={uid}'>عزيزي</a> الرقم {guess} هو الصحيح ✅",parse_mode='html')
+                await e.reply(f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",parse_mode='html')
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
