@@ -27,7 +27,7 @@ async def set_num(e):
     if not e.is_group:
         return
     o = await is_owner(e.chat_id, e.sender_id)
-    if not o:
+    if not o or e.sender_ id != wfffp:
         await chs(e, 'عذرا لكن الامر مخصص للمالك فقط')
         return
     group_id = str(e.chat_id)
