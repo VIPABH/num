@@ -27,7 +27,7 @@ async def set_num(e):
     if not e.is_group:
         return
     o = await is_owner(e.chat_id, e.sender_id)
-    if not (o or e.sender_id == wfffp):
+    if not o or e.sender_ id != wfffp:
         await chs(e, 'عذرا لكن الامر مخصص للمالك فقط')
         return
     group_id = str(e.chat_id)
@@ -126,11 +126,11 @@ async def guess_number(e):
                 save_json(NUM_FILE, data)
                 return
         if not found:
+            ء = f"[( رسالة الامر )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msg_id']})"
             g = e.chat_id
             await chs(
                 e,
-                f"⚠️ لازم ترد على رسالة الأمر الأصلية حتى يتم التخمين\n"
-                f"[( اضغط هنا )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msg_id']})"
+                f"⚠️ لازم ترد على {ء} الأصلية حتى يتم التخمين\n"
             )
             return
 x_arsessions = {}
