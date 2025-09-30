@@ -115,6 +115,10 @@ async def guess_number(e):
             if not r or r.id != info["msg_id"]:
                 continue
             found = True
+            if guess > info["number"]:
+                await chs(e, "العدد اصغر")
+            else:
+                await chs(e, "العدد اكبر")
             if guess == info["number"]:
                 await e.reply(
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
