@@ -122,7 +122,13 @@ async def guess_number(e):
                 save_json(NUM_FILE, data)
                 return
         if not found:
-            await chs(e, "⚠️ لازم ترد على رسالة الأمر الأصلية حتى يتم التخمين")
+            g = e.chat_id
+            await chs(
+                e,
+                f"⚠️ لازم ترد على رسالة الأمر الأصلية حتى يتم التخمين\n"
+                f"[( اضغط هنا )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msg_id']})"
+            )
+            return
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
