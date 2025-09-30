@@ -99,8 +99,8 @@ async def receive_number(e):
             data[group_id]={}
         data[group_id][user_id]=session["number"]
         save_json(NUM_FILE,data)
-        await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
-        await session["msgid"].edit('✅ تم تعيين الرقم بنجاح',buttons=None)
+        await ev.reply(f" تم حفظ الرقم: {ev.text}")
+        await session["msgid"].edit(' تم تعيين الرقم ب نجاح ابدؤوا التخمين',buttons=None)
         ABH.remove_event_handler(save_number,events.NewMessage)
 async def guess_number(e):
     if not e.is_group:
@@ -115,7 +115,7 @@ async def guess_number(e):
             if not r or r.id != info["msg_id"]:
                 continue
             found = True
-            if guess > info["number"]:
+            if guess > int(info["number"]):
                 await chs(e, f"خمن رقم اصغر من ( {guess} )" )
             else:
                 await chs(e, f"خمن رقم اكبر من ( {guess} )" )
