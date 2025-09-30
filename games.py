@@ -77,9 +77,7 @@ async def guess_number(e):
     data=create(NUM_FILE)
     group_id=str(e.chat_id)
     guess=e.text
-    if not guess.isdigit:
-        return
-    if group_id in data and isinstance(data[group_id],dict):
+    if group_id in data and isinstance(data[group_id],dict) and guess.isdigit():
         r = await e.get_reply_message()
         if not r or r.id != game[e.chat_id]['msg']:
             await chs(e, "عذرا بس لازم تسوي رد على رساله الامر")
