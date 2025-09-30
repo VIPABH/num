@@ -22,9 +22,13 @@ def create(filename):
 def save_json(filename,data):
     with open(filename,'w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False,indent=4)
-@ABH.on(events.NewMessage(pattern="^تعيين رقم$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
 async def set_num(e):
     if not e.is_group:
+        return
+    o = await is_owner(e.chat_id, e.sender_id)
+    if not o:
+        await chs(e, 'عذرا لكن الامر مخصص للمالك فقط')
         return
     group_id = str(e.chat_id)
     data = create(NUM_FILE)
