@@ -9,6 +9,7 @@ from faker import Faker
 from Program import*
 NUM_FILE = 'NUM.json'
 active_sessions={}
+game={}
 def create(filename):
     if not os.path.exists(filename):
         with open(filename,'w',encoding='utf-8') as f:
@@ -35,6 +36,7 @@ async def set_num(e):
     button=Button.url("اضغط لتعيين الرقم",f"https://t.me/{bot_username}?start={session_id}")
     msg=await e.reply("📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",buttons=button)
     active_sessions[session_id]={"group_id":group_id,"user_id":str(e.sender_id),"msgid":msg,"number":None}
+    game[e.chat_id] = {"game owner": e.sender_id, "msg": e.id}
 @ABH.on(events.NewMessage(pattern="^/start (.+)"))
 async def receive_number(e):
     if not e.is_private:
@@ -75,7 +77,11 @@ async def guess_number(e):
     data=create(NUM_FILE)
     group_id=str(e.chat_id)
     guess=e.text
-    if group_id in data and isinstance(data[group_id],dict):
+    if group_id in data and isinstance(data[group_id],dict) and guess.isdigit:
+        r = await e.get_reply_message()
+        if not r or r.id != game[e.chat_id]['msg']:
+            await chs(e, "عذرا بس لازم تسوي رد على رساله الامر")
+            return
         for uid,number in list(data[group_id].items()):
             if guess==number:
                 await e.reply(f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",parse_mode='html')
