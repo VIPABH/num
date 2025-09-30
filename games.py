@@ -21,7 +21,7 @@ def create(filename):
 def save_json(filename,data):
     with open(filename,'w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False,indent=4)
-@ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
+@ABH.on(events.NewMessage(pattern="^تعيين رقم$", from_users=[wfffp]))
 async def set_num(e):
     if not e.is_group:
         return
