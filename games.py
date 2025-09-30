@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
-from other import botuse
 from Resources import *
 from faker import Faker
 from Program import*
+from other import *
 NUM_FILE = 'NUM.json'
 active_sessions={}
 game={}
