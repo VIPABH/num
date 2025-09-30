@@ -78,7 +78,7 @@ async def guess_number(e):
     if group_id in data and isinstance(data[group_id],dict):
         for uid,number in list(data[group_id].items()):
             if guess==number:
-                await e.reply(f"🎉 مبارك {await mention(e)} \n <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",parse_mode='html')
+                await e.reply(f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",parse_mode='html')
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
