@@ -34,7 +34,7 @@ async def delrestrict(e):
     if not delres(chat_id=e.chat_id, user_id=target.sender_id):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
-    participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target.sender_id)))
+    participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
         await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
         await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{target.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
@@ -45,7 +45,7 @@ async def delrestrict(e):
             send_messages=False
         )
         try:
-            await ABH(EditBannedRequest(channel=int(e.chat_id), participant=int(target.sender_id), banned_rights=rights))
+            await ABH(EditBannedRequest(channel=int(e.chat_id), participant=int(target), banned_rights=rights))
         except Exception as ex:
             await chs(e, "لا يمكنني إلغاء تقييد هذا المستخدم.")
             await hint(ex)
