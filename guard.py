@@ -507,14 +507,14 @@ async def warn_user(event):
     if not t:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = getattr(t, "sender_id", None) or getattr(t, "id", None)
+    if await is_owner(chat_id, target_id):
+        await chs(event, 'عذرا بس ماتكدر تحذر المالك')
+        return
     if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
         await chs(event, 'غراب يكول لغراب وجهك اسود')
         return
     if is_assistant(chat_id, target_id):
         await chs(event, 'هييييييه متكدر تحذر المعاون')
-        return
-    if await is_owner(chat_id, target_id):
-        await chs(event, 'عذرا بس ماتكدر تحذر المالك')
         return
     w = add_warning(str(target_id), str(chat_id))
     x = await ment(t)
