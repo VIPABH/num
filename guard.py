@@ -550,6 +550,16 @@ async def warn_user(event):
         f"⚠️ التحذيرات:   {w} / 3\n"
         f"🔗 رابط الرسالة:   {l}"
     )
+def extract_warn_info(text: str):
+    name = None
+    name_match = re.search(r'👤 اسمه[:\s]*([^\|\\n🆔]+)', text)
+    if name_match:
+        name = name_match.group(1).strip()
+    user_id = None
+    id_match = re.search(r'ايديه[:\s]*([0-9]+)', text)
+    if id_match:
+        user_id = id_match.group(1).strip()
+    return name, user_id
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
@@ -560,13 +570,17 @@ async def warnssit(e):
         النوع, target_id, chat_id = parts
         msg = await e.get_message()
         t = msg.text
+        name, user_id = extract_warn_info(t)
+        m = await mention(e)
+        name = f"[{name}](tg://user?id={user_id})"
         if النوع == "zerowarn":
-            await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
             zerowarn(target_id, chat_id)
+            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( {3//0} ) تم تصفير تحذيراته \n ")
+            await send(e, f'تم تصفير تحذيرات \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
         elif النوع == 'delwarn':
             d = del_warning(target_id, chat_id)
-            m = await mention(e)
-            await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
+            await send(e, f'تم الغاء التحذير \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
+            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( {3//0} ) تم تصفير تحذيراته \n ")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
