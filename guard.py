@@ -491,7 +491,7 @@ async def handler_res(event):
         )
         await try_forward(event)
         await event.delete()
-@ABH.on(events.NewMessage(pattern = r'^تحذير(?:\s+|@)(\S+)$'))
+@ABH.on(events.NewMessage(pattern = r'^تحذير(?:\s+|@)?(\S+)?$'))
 async def warn_user(event):
     if not event.is_group:
         return
