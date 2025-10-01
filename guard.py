@@ -525,7 +525,7 @@ async def warn_user(event):
         buttons=b
     )
     restriction_duration = 900
-    await try_forward(r)
+    await try_forward(event)
     await event.delete()
     await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
