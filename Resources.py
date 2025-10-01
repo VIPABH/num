@@ -12,7 +12,7 @@ async def to(e):
     reply = await e.get_reply_message()
     target = e.pattern_match.group(1)
     if not target and reply:
-        return reply.sender_id
+        return reply
     if not (target or reply):
         return None
     if target and target.isdigit():
@@ -23,7 +23,7 @@ async def to(e):
         target = target.replace('https://t.me/', '')
     try:
         entity = await ABH.get_entity(target)
-        return entity.id
+        return entity
     except Exception as ex:
         await hint(f"❌ خطأ أثناء جلب المعرّف: {ex}")
         return None
