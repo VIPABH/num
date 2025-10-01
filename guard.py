@@ -24,13 +24,13 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
-    target =await to(e)
+    ف = await to(e)
+    target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     await hint(f"{target}")
     if not target:
         await chs(e, "🙂")
         return
-    r = await e.get_reply_message()
-    m = await ment(r)
+    m = await ment(ف)
     if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
