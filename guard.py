@@ -576,7 +576,7 @@ async def warnssit(e):
         name = f"[{name}](tg://user?id={user_id})"
         if النوع == "zerowarn":
             zerowarn(target_id, chat_id)
-            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( {3//0} ) تم تصفير تحذيراته \n ")
+            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3/{d} ) تم تصفير تحذيراته \n ")
             await send(e, f'تم تصفير تحذيرات \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
         elif النوع == 'delwarn':
             d = del_warning(target_id, chat_id)
