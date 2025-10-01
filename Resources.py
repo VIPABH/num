@@ -8,21 +8,25 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from ABH import ABH
-async def to(e):
-    r = await e.get_reply_message()
-    target_id = e.pattern_match.group(1)
-    if not target_id and r:
-        return r.sender_id
-    else:
-        try:
-            return int(target_id)
-        except ValueError:
-            try:
-                user = await ABH.get_entity(target_id)
-                return user
-            except Exception as ex:
-                await hint(f"❌ خطأ: {ex}")
-                return None
+async def to(e, client):
+    reply = await e.get_reply_message()
+    target = e.pattern_match.group(1)
+    if not target and reply:
+        return reply.sender_id
+    if not (target or reply):
+        return None
+    if target and target.isdigit():
+        return int(target)
+    if target.startswith('@'):
+        target = target[1:]
+    elif target.startswith('https://t.me/'):
+        target = target.replace('https://t.me/', '')
+    try:
+        entity = await client.get_entity(target)
+        return entity.id
+    except Exception as ex:
+        await hint(f"❌ خطأ أثناء جلب المعرّف: {ex}")
+        return None
 async def auth(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -117,9 +121,10 @@ def create(filename: str):
     else:
         with open(filename, 'r', encoding='utf-8') as file:
             try:
-                return json.load(file)
+                data = json.load(file)
             except json.JSONDecodeError:
-                return {}
+                data = {}
+        return data
 async def res(e):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
