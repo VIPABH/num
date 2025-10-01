@@ -522,7 +522,7 @@ async def warn_user(event):
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
     await event.respond(
-        f'تم تحذير المستخدم {x} ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
+        f'تم تحذير المستخدم اسمه: {x} ايديه: ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
         buttons=b
     )
     restriction_duration = 900
@@ -553,17 +553,13 @@ async def warn_user(event):
     )
 def extract_warn_info(text: str):
     text = text.strip()
-    pattern = r'تم تحذير المستخدم\s+(.+?)\s*\(\s*(\d+)\s*\)'
-    print(pattern)
-    match = re.search(pattern, text)
-    print(match)
-    if match:
-        name = match.group(1).strip()
-        print(name)
-        user_id = match.group(2).strip()
-        return name, user_id
-    else:
-        return None, None
+    name_pattern = r'اسمه[:：]?\s*([^\n]+?)\s+ايديه'
+    name_match = re.search(name_pattern, text)
+    name = name_match.group(1).strip() if name_match else None
+    id_pattern = r'ايديه[:：]?\s*\(\s*`(\d+)`\s*\)'
+    id_match = re.search(id_pattern, text)
+    user_id = id_match.group(1).strip() if id_match else None
+    return name, user_id
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
