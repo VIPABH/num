@@ -12,7 +12,6 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delrestrict(e):
     id = e.sender_id
-    x = save(None, filename="secondary_devs.json")
     a = await is_owner(e.chat_id, id)
     z = await can_ban_users(e.chat_id, id)
     s = save(None, "secondary_devs.json")
@@ -22,10 +21,13 @@ async def delrestrict(e):
         or z
         or k
     ):
-        await e.reply("ليس لديك صلاحيات كافية.")
+        await chs(e, "ليس لديك صلاحيات كافية.")
         return
-    r = await e.get_reply_message()
-    if not r or not r.sender_id:
+    # r = await e.get_reply_message()
+    target =await to(e)
+    await hint(f"{target}")
+    if target:
+    # if not r or not r.sender_id:
         await chs(e, "الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
     m = await ment(r)
