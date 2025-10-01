@@ -495,7 +495,6 @@ async def handler_res(event):
 async def warn_user(event):
     if not event.is_group:
         return
-    await hint("ok")
     chat_id = event.chat_id
     user_id = event.sender_id
     x = save(None, filename="secondary_devs.json")
