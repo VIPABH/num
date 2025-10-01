@@ -31,7 +31,7 @@ async def delrestrict(e):
         await chs(e, "الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
         return    
     m = await ment(e)
-    if not delres(chat_id=e.chat_id, user_id=target.sender_id):
+    if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
