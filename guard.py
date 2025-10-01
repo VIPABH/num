@@ -1,3 +1,4 @@
+
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
@@ -23,14 +24,13 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
-    # r = await e.get_reply_message()
     target =await to(e)
     await hint(f"{target}")
     if not target:
-    # if not r or not r.sender_id:
-        await chs(e, "الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
-        return    
-    m = await ment(e)
+        await chs(e, "🙂")
+        return
+    r = await e.get_reply_message()
+    m = await ment(r)
     if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
