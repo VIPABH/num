@@ -581,7 +581,7 @@ async def warnssit(e):
         elif النوع == 'delwarn':
             d = del_warning(target_id, chat_id)
             await send(e, f'تم الغاء التحذير \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
-            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( {3//0} ) تم تصفير تحذيراته \n ")
+            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3//{d} ) تم تصفير تحذيراته \n ")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
