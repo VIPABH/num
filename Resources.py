@@ -8,7 +8,7 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from ABH import ABH
-async def to(e, client):
+async def to(e):
     reply = await e.get_reply_message()
     target = e.pattern_match.group(1)
     if not target and reply:
@@ -22,7 +22,7 @@ async def to(e, client):
     elif target.startswith('https://t.me/'):
         target = target.replace('https://t.me/', '')
     try:
-        entity = await client.get_entity(target)
+        entity = await ABH.get_entity(target)
         return entity.id
     except Exception as ex:
         await hint(f"❌ خطأ أثناء جلب المعرّف: {ex}")
