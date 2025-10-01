@@ -1,4 +1,3 @@
-
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
@@ -33,6 +32,17 @@ async def delrestrict(e):
     m = await ment(ف)
     if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
+        return
+    aa = await is_owner(e.chat_id, target)
+    if aa:
+        await chs(e, 'لا يمكنك تقييد المالك')
+        return
+    kk = str(e.chat_id) in s and str(target) in s[str(e.chat_id)]
+    if kk:
+        await chs(e, 'لا يمكنك تقييد المطور الثانوي')
+        return
+    if target == wfffp:
+        await chs(e, 'ههههههههه لتعيدها')
         return
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
