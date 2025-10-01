@@ -554,9 +554,12 @@ async def warn_user(event):
 def extract_warn_info(text: str):
     text = text.strip()
     pattern = r'تم تحذير المستخدم\s+(.+?)\s*\(\s*(\d+)\s*\)'
+    print(pattern)
     match = re.search(pattern, text)
+    print(match)
     if match:
         name = match.group(1).strip()
+        print(name)
         user_id = match.group(2).strip()
         return name, user_id
     else:
