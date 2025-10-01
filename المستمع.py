@@ -9,7 +9,7 @@ from group import *
 from other import *
 from ABH import *
 from امسح import *
-@ABH.on(events.NewMessage()
+@ABH.on(events.NewMessage)
 async def litsin_to_all(e):
   await store_media_messages(e)
   await check_math_answer(e)
