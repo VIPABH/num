@@ -552,8 +552,9 @@ async def warn_user(event):
         f"🔗 رابط الرسالة:   {l}"
     )
 def extract_warn_info(text: str):
+    text = text.strip()
     name = None
-    name_match = re.search(r'👤 اسمه[:\s]*([^\|\\n🆔]+)', text)
+    name_match = re.search(r'👤 اسمه[:\s]*([^\|\n🆔]+)', text)
     if name_match:
         name = name_match.group(1).strip()
     user_id = None
@@ -576,7 +577,7 @@ async def warnssit(e):
         name = f"[{name}](tg://user?id={user_id})"
         if النوع == "zerowarn":
             zerowarn(target_id, chat_id)
-            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3/0 ) تم تصفير تحذيراته \n ")
+            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3/{d} ) تم تصفير تحذيراته \n ")
             await send(e, f'تم تصفير تحذيرات \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
         elif النوع == 'delwarn':
             d = del_warning(target_id, chat_id)
