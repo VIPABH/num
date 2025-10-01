@@ -553,15 +553,14 @@ async def warn_user(event):
     )
 def extract_warn_info(text: str):
     text = text.strip()
-    name = None
-    name_match = re.search(r'👤 اسمه[:\s]*([^\|\n🆔]+)', text)
-    if name_match:
-        name = name_match.group(1).strip()
-    user_id = None
-    id_match = re.search(r'ايديه[:\s]*([0-9]+)', text)
-    if id_match:
-        user_id = id_match.group(1).strip()
-    return name, user_id
+    pattern = r'تم تحذير المستخدم\s+(.+?)\s*\(\s*(\d+)\s*\)'
+    match = re.search(pattern, text)
+    if match:
+        name = match.group(1).strip()
+        user_id = match.group(2).strip()
+        return name, user_id
+    else:
+        return None, None
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
