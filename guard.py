@@ -9,7 +9,7 @@ from top import points, delpoints
 import asyncio, re, json, time
 from Resources import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
+@ABH.on(events.NewMessage(pattern=r"^الغاء تقييد عام(?:\s+(.*))?$"))
 async def delrestrict(e):
     id = e.sender_id
     a = await is_owner(e.chat_id, id)
