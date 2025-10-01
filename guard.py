@@ -522,7 +522,7 @@ async def warn_user(event):
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
     await event.respond(
-        f'تم تحذير المستخدم اسمه: {x} ايديه: ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
+        f'تم تحذير المستخدم اسمه: {x}\n ايديه: ( `{target_id}` )\n \n تحذيراته صارت ( 3/{w} )',
         buttons=b
     )
     restriction_duration = 900
@@ -572,10 +572,10 @@ async def warnssit(e):
         t = msg.text
         name, user_id = extract_warn_info(t)
         m = await mention(e)
-        name = f"[{name}](tg://user?id={user_id})"
+        n = f"[{name}](tg://user?id={user_id})"
         if النوع == "zerowarn":
             zerowarn(target_id, chat_id)
-            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3/0 ) تم تصفير تحذيراته \n ")
+            await e.edit(f"المستخدم ( {n} ) \n ايديه: ( {user_id} ) \n ( 3/0 ) تم تصفير تحذيراته \n ")
             await send(e, f'تم تصفير تحذيرات \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
         elif النوع == 'delwarn':
             d = del_warning(target_id, chat_id)
