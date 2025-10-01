@@ -25,7 +25,6 @@ async def delrestrict(e):
         return
     ف = await to(e)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
-    await hint(f"{target}")
     if not target:
         await chs(e, "🙂")
         return
@@ -492,11 +491,10 @@ async def handler_res(event):
         )
         await try_forward(event)
         await event.delete()
-@ABH.on(events.NewMessage(pattern='^تحذير$'))
+@ABH.on(events.NewMessage(pattern = r'^تحذير(?:\s+|@)(\S+)$'))
 async def warn_user(event):
     if not event.is_group:
         return
-    lc = await LC(event.chat_id)
     chat_id = event.chat_id
     user_id = event.sender_id
     x = save(None, filename="secondary_devs.json")
@@ -504,19 +502,22 @@ async def warn_user(event):
     if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
         await chs(event, 'شني خالي كبينه ')
         return
+    t = await to(event)
     r = await event.get_reply_message()
-    if not r:
+    if not t:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
-    target_id = r.sender_id
+    target_id = getattr(t, "sender_id", None) or getattr(t, "id", None)
     if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
         await chs(event, 'غراب يكول لغراب وجهك اسود')
         return
     if is_assistant(chat_id, target_id):
         await chs(event, 'هييييييه متكدر تحذر المعاون')
         return
+    if await is_owner(chat_id, target_id):
+        await chs(event, 'عذرا بس ماتكدر تحذر المالك')
+        return
     w = add_warning(str(target_id), str(chat_id))
-    p = await r.get_sender()
-    x = await ment(p)
+    x = await ment(t)
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
     await event.respond(
@@ -525,6 +526,7 @@ async def warn_user(event):
     )
     restriction_duration = 900
     await try_forward(r)
+    await event.delete()
     await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
         now = int(time.time())
@@ -548,8 +550,6 @@ async def warn_user(event):
         f"⚠️ التحذيرات:   {w} / 3\n"
         f"🔗 رابط الرسالة:   {l}"
     )
-    await try_forward(event)
-    await event.delete()
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
