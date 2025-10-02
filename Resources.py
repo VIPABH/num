@@ -460,20 +460,23 @@ async def mention(event):
     user_id = event.sender_id
     return f"[{name}](tg://user?id={user_id})"
 async def ment(entity):
-    if hasattr(entity, "first_name"):
-        name = entity.first_name or "غير معروف"
-        user_id = entity.id
-    elif hasattr(entity, "sender_id"):
-        if entity.sender:
-            name = entity.sender.first_name or "غير معروف"
-            user_id = entity.sender.id
-        else:
-            sender = await entity.get_sender()
-            name = sender.first_name or "غير معروف"
+    try:
+        if hasattr(entity, "id") and hasattr(entity, "first_name"):
+            name = getattr(entity, "first_name", "غير معروف")
+            user_id = entity.id
+            return f"[{name}](tg://user?id={user_id})"
+        if hasattr(entity, "sender_id"):
+            sender = entity.sender or await entity.get_sender()
+            name = getattr(sender, "first_name", "غير معروف")
             user_id = sender.id
-    else:
+            return f"[{name}](tg://user?id={
+        if hasattr(entity, "id"):
+            name = getattr(entity, "first_name", "غير معروف")
+            user_id = entity.id
+            return f"[{name}](tg://user?id={user_id})"
         return "غير معروف"
-    return f"[{name}](tg://user?id={user_id})"
+    except Exception:
+        return "غير معروف"
 football = [
         {
             "answer": "الميعوف",
