@@ -1,4 +1,6 @@
+from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
+from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.messages import SendReactionRequest
@@ -152,6 +154,12 @@ async def res(e):
     d[chat_id][user_id] = end_time
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(d, file, ensure_ascii=False, indent=4)
+    now = int(time.time())
+    rights = ChatBannedRights(
+        until_date=now + 20 * 60,
+        send_messages=True
+    )
+    await ABH(EditBannedRequest(channel=int(chat_id), participant=int(target), banned_rights=rights))
     return d
 def delres(chat_id=None, user_id=None):
     create('res.json')
