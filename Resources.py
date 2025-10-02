@@ -26,7 +26,7 @@ async def to(e):
         return None
     if target and target.isdigit():
         return int(target)
-    if target.startswith('@'):
+    if target and target.startswith('@'):
         target = target[1:]
     elif target.startswith('https://t.me/'):
         target = target.replace('https://t.me/', '')
