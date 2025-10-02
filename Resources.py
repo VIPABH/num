@@ -20,7 +20,7 @@ async def to(e):
     'target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)'
     reply = await e.get_reply_message()
     target = e.pattern_match.group(1)
-    if not target and reply:
+    if reply:
         return reply
     if not (target or reply):
         return None
