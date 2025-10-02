@@ -23,10 +23,10 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
-    m = await mention(e)
     ف = await to(e)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
+    m = await ment(ف)
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
         await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
         await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{target.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
