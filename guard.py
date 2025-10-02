@@ -494,9 +494,6 @@ async def warn_user(event):
         buttons=b
     )
     restriction_duration = 900
-    await try_forward(event)
-    await event.delete()
-    await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
         now = int(time.time())
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
@@ -519,6 +516,9 @@ async def warn_user(event):
         f"⚠️ التحذيرات:   {w} / 3\n"
         f"🔗 رابط الرسالة:   {l}"
     )
+    await try_forward(event)
+    await r.delete()
+    await event.delete()
 def extract_warn_info(text: str):
     text = text.strip()
     name_pattern = r'اسمه[:：]?\s*([^\n]+?)\s+ايديه'
