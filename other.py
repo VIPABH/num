@@ -7,6 +7,7 @@ from telethon import events, Button
 from Program import chs
 from Resources import *
 from ABH import ABH
+wfffp = 1910015590
 async def creat_useFILE():
     if not os.path.exists('use.json'):
         with open('use.json', 'w', encoding='utf-8') as f:
