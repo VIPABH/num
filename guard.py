@@ -29,7 +29,7 @@ async def delrestrict(e):
     m = await ment(ف)
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
         await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
-        await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{target.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
+        await send(e, f'#الغاء_تقييد_عام\n تم الغاء تقييد المشرف \n اسمه: ( {m} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(e)} ) \n ايديه: ( `{e.sender_id}` )')
         return
     else:
         rights = ChatBannedRights(
