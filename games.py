@@ -8,8 +8,7 @@ from faker import Faker
 from Program import*
 from other import *
 NUM_FILE = 'NUM.json'
-active_sessions={}
-game={}
+active_sessions = {}
 def create(filename):
     if not os.path.exists(filename):
         with open(filename,'w',encoding='utf-8') as f:
@@ -19,7 +18,7 @@ def create(filename):
             return json.load(f)
         except json.JSONDecodeError:
             return {}
-def save_json(filename,data):
+def save_json(filename, data):
     with open(filename,'w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False,indent=4)
 @ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
@@ -39,17 +38,8 @@ async def set_num(e):
     bot_username = (await ABH.get_me()).username
     session_id = str(uuid.uuid4())[:6]
     button = Button.url("اضغط لتعيين الرقم", f"https://t.me/{bot_username}?start={session_id}")
-    msg = await e.reply(
-        "📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.",
-        buttons=button
-    )
-    active_sessions[session_id] = {
-        "group_id": group_id,
-        "user_id": str(e.sender_id),
-        "msgid": msg,
-        "number": None,
-        "command_msg_id": e.id
-    }
+    msg = await e.reply("📌 تم فتح جلسة لتعيين الرقم.\nاضغط على الزر وأرسل الرقم في الخاص.", buttons=button)
+    active_sessions[session_id] = {"group_id": group_id, "user_id": str(e.sender_id), "msgid": msg.id, "number": None}
 @ABH.on(events.NewMessage(pattern="^/start (.+)"))
 async def receive_number(e):
     if not e.is_private:
@@ -70,20 +60,19 @@ async def receive_number(e):
     async def save_number(ev):
         if not ev.is_private:
             return
-        if ev.text.startswith("/start"):
+        if ev.text.startswith("/start") or not ev.text.isdigit():
             return
-        if not ev.text.isdigit():
-            return
-        session["number"]=ev.text
-        data=create(NUM_FILE)
-        group_id=session["group_id"]
-        if group_id not in data or not isinstance(data[group_id],dict):
-            data[group_id]={}
-        data[group_id][user_id]= session["msgid"] ,session["number"]
-        save_json(NUM_FILE,data)
-        await ev.reply(f" تم حفظ الرقم: {ev.text}")
-        await session["msgid"].edit(' تم تعيين الرقم ب نجاح ابدؤوا التخمين',buttons=None)
-        ABH.remove_event_handler(save_number,events.NewMessage)
+        session["number"] = ev.text
+        data = create(NUM_FILE)
+        group_id = session["group_id"]
+        if group_id not in data or not isinstance(data[group_id], dict):
+            data[group_id] = {}
+        data[group_id][user_id] = {"msgid": session["msgid"], "number": session["number"]}
+        save_json(NUM_FILE, data)
+        await ev.reply(f"تم حفظ الرقم: {ev.text}")
+        await ABH.send_message(group_id, 'تم تعيين الرقم بنجاح، ابدؤوا التخمين')
+        ABH.remove_event_handler(save_number, events.NewMessage)
+@ABH.on(events.NewMessage())
 async def guess_number(e):
     if not e.is_group:
         return
@@ -98,27 +87,19 @@ async def guess_number(e):
                 continue
             found = True
             if int(guess) > int(info["number"]):
-                await chs(e, f"خمن رقم اصغر من ( {guess} )" )
+                await chs(e, f"خمن رقم أصغر من ({guess})")
+            elif int(guess) < int(info["number"]):
+                await chs(e, f"خمن رقم أكبر من ({guess})")
             else:
-                await chs(e, f"خمن رقم اكبر من ( {guess} )" )
-            if guess == info["number"]:
-                await e.reply(
-                    f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
-                    parse_mode='html'
-                )
+                await e.reply(f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} صحيح", parse_mode='html')
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
                 save_json(NUM_FILE, data)
-                return
-        if not found:
-            ء = f"[( رسالة الامر )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msgid']})"
-            g = e.chat_id
-            await chs(
-                e,
-                f"⚠️ لازم ترد على {ء} الأصلية حتى يتم التخمين\n"
-            )
             return
+        if not found and r:
+            msg_link = f"https://t.me/c/{str(group_id).replace('-100','')}/{r.id}"
+            await chs(e, f"⚠️ لازم ترد على [رسالة الرقم الأصلية]({msg_link}) للتخمين", link_preview=False)
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
