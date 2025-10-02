@@ -10,6 +10,7 @@ import google.generativeai as genai
 from other import is_owner
 from ABH import ABH
 async def to(e):
+    'target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)'
     reply = await e.get_reply_message()
     target = e.pattern_match.group(1)
     if not target and reply:
