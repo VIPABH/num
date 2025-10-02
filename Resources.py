@@ -50,8 +50,8 @@ async def auth(event):
                 "⚠️ السبب: ليس لديه صلاحيات مشرف."
             )
             data = load_auth()
-            if chat_id in data and event.sender_id in data[chat_id]:
-                data[chat_id].remove(target_id)
+            if str(chat_id) in data and event.sender_id in data[str(chat_id)]:
+                data[str(chat_id)].remove(target_id)
                 save_auth(data)
                 await send(
                     event, 
