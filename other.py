@@ -105,8 +105,7 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    x = await is_owner(event.chat_id, event.sender_id)
-    if not (x or not event.sender == wfffp):
+    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         await chs(event, "😁")
         return
     sm = await mention(event)
