@@ -99,7 +99,7 @@ async def guess_number(e):
             return
         if not found and r:
             msg_link = f"https://t.me/c/{str(group_id).replace('-100','')}/{r.id}"
-            await chs(e, f"⚠️ لازم ترد على [رسالة الرقم الأصلية]({msg_link}) للتخمين", link_preview=False)
+            await chs(e, f"⚠️ لازم ترد على [رسالة الرقم الأصلية]({msg_link}) للتخمين")
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
