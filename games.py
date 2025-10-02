@@ -94,7 +94,7 @@ async def guess_number(e):
         r = await e.get_reply_message()
         found = False
         for uid, info in list(data[group_id].items()):
-            if not r or r.id != info["msg_id"]:
+            if not r or r.id != info["msgid"]:
                 continue
             found = True
             if int(guess) > int(info["number"]):
