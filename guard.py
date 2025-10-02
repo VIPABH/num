@@ -2,9 +2,9 @@ from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from telethon.errors import UserNotParticipantError
+from telethon import events, Button
 from Program import r as redas, chs
 from other import botuse, is_owner
-from telethon import events, Button
 from top import points, delpoints
 import asyncio, re, json, time
 from Resources import *
@@ -23,26 +23,9 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
+    m = await mention(e)
     ف = await to(e)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
-    if not target:
-        await chs(e, "🙂")
-        return
-    m = await ment(ف)
-    if not delres(chat_id=e.chat_id, user_id=target):
-        await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
-        return
-    aa = await is_owner(e.chat_id, target)
-    if aa:
-        await chs(e, 'لا يمكنك تقييد المالك')
-        return
-    kk = str(e.chat_id) in s and str(target) in s[str(e.chat_id)]
-    if kk:
-        await chs(e, 'لا يمكنك تقييد المطور الثانوي')
-        return
-    if target == wfffp:
-        await chs(e, 'ههههههههه لتعيدها')
-        return
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
         await chs(e, f"تم إلغاء كتم المشرف ( {m} ).")
@@ -136,28 +119,29 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
-    # lock_key = f"lock:{event.chat_id}:تقييد"
-    # x = redas.get(lock_key) == "True"
-    # if not x:
-    #     await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
-    #     return
     chat_id = event.chat_id
-    user_id = event.sender_id
     text = event.text
-    if not is_assistant(str(chat_id), user_id) or text == "تقييد ميم":
+    ف = await to(event)
+    target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
+    if not target:
+        await chs(event, "🙂")
+        return
+    x = await auth(event)
+    if not x or text == "تقييد ميم":
+        await react(event, '👍🏾')
         await notAssistantres(event)
-        # await chs(event, 'شني خالي كبينه انت مو معاون')
         return
     r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    name = await ment(r)
+    if r:
+        name = await ment(r)
+        await try_forward(r)
+        await r.delete()
+        return
+    name = await ment(to)
+    await event.delete()
     try:
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(r.sender_id)))
+        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            await try_forward(r)
-            await r.delete()
-            await event.delete()
             await res(event)
             await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
@@ -165,27 +149,12 @@ async def restrict_user(event):
     except Exception as ex:
         await hint(ex)
         return
-    now = int(time.time())
-    rights = ChatBannedRights(
-        until_date=now + 20 * 60,
-        send_messages=True
-    )
     await res(event)
-    try:
-        await ABH(EditBannedRequest(channel=int(chat_id), participant=int(r.sender_id), banned_rights=rights))
-        type = "تقييد عام"
-        await botuse(type)
-        ء = await r.get_sender()
-        rrr = await ment(ء)
-        c = f"تم تقييد {rrr} لمدة 20 دقيقة."
-        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {rrr} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
-        await try_forward(r)
-        await r.delete()
-        await event.delete()
-    except Exception as ex:
-        await hint(ex)
-        await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
+    type = "تقييد عام"
+    await botuse(type)
+    c = f"تم تقييد {name} لمدة 20 دقيقة."
+    await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+    await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
