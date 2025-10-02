@@ -4,8 +4,8 @@ from telethon.errors import MessageNotModifiedError
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
+from Resources import suras
 from Program import chs
-from Resources import *
 from ABH import ABH
 wfffp = 1910015590
 async def creat_useFILE():
