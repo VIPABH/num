@@ -112,7 +112,7 @@ async def guess_number(e):
                 save_json(NUM_FILE, data)
                 return
         if not found:
-            ء = f"[( رسالة الامر )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msg_id']})"
+            ء = f"[( رسالة الامر )](https://t.me/c/{str(group_id).replace('-100', '')}/{info['msgid']})"
             g = e.chat_id
             await chs(
                 e,
