@@ -491,7 +491,7 @@ async def warn_user(event):
     x = await ment(t)
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
-    await event.respond(
+    await event.reply(
         f'تم تحذير المستخدم اسمه: {x}\n ايديه: ( `{target_id}` )\n \n تحذيراته صارت ( 3/{w} )',
         buttons=b
     )
@@ -518,7 +518,7 @@ async def warn_user(event):
         f"⚠️ التحذيرات:   {w} / 3\n"
         f"🔗 رابط الرسالة:   {l}"
     )
-    await try_forward(event)
+    await try_forward(r)
     await r.delete()
     await event.delete()
 def extract_warn_info(text: str):
