@@ -142,8 +142,9 @@ async def res(e):
         d = json.load(file)
     if e is None:
         return d
-    r = await e.get_reply_message()
-    chat_id, user_id = str(e.chat_id), str(r.sender_id)
+    ف = await to(e)
+    target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
+    chat_id, user_id = str(e.chat_id), str(target)
     if chat_id not in d:
         d[chat_id] = {}
     duration = 20 * 60
