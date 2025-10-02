@@ -11,6 +11,12 @@ import pytz, os, json, asyncio, time
 import google.generativeai as genai
 from other import is_owner
 from ABH import ABH
+async def is_owner(chat_id, user_id):
+    try:
+        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
+        return isinstance(participant.participant, ChannelParticipantCreator)
+    except:
+        return False
 async def to(e):
     'target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)'
     reply = await e.get_reply_message()
