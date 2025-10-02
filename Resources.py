@@ -51,7 +51,7 @@ async def auth(event):
             )
             data = load_auth()
             if str(chat_id) in data and event.sender_id in data[str(chat_id)]:
-                data[str(chat_id)].remove(target_id)
+                data[str(chat_id)].remove(user_id)
                 save_auth(data)
                 await send(
                     event, 
