@@ -37,7 +37,12 @@ async def auth(event):
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
         if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
             mention_text = await mention(event)
-            await event.respond(
+            await event.reply(
+                f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
+                "⚠️ السبب: ليس لديه صلاحيات مشرف."
+            )
+            await send(
+                event, 
                 f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
                 "⚠️ السبب: ليس لديه صلاحيات مشرف."
             )
