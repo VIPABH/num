@@ -53,12 +53,11 @@ async def auth(event):
             if str(chat_id) in data and target_id in data[str(chat_id)]:
                 data[chat_id].remove(target_id)
                 save_auth(data)
-        await event.reply(f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
-            await send(
-                event, 
-                f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
-                "⚠️ السبب: ليس لديه صلاحيات مشرف."
-            )
+                await send(
+                    event, 
+                    f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
+                    "⚠️ السبب: ليس لديه صلاحيات مشرف."
+                )
         else:
             return "assistant"
     devers = save(None, "secondary_devs.json")
