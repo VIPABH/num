@@ -154,7 +154,7 @@ async def restrict_user(event):
     await botuse(type)
     c = f"تم تقييد {name} لمدة 20 دقيقة."
     await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-    await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+    await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {name} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
