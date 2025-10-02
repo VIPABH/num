@@ -4,7 +4,7 @@ from telethon.errors import MessageNotModifiedError
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
-from Resources import suras
+from Resources import *
 from Program import chs
 from ABH import ABH
 wfffp = 1910015590
