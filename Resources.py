@@ -458,7 +458,8 @@ async def hint(e):
 async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
-    return f"[{name}](tg://user?id={user_id})"async def ment(entity):
+    return f"[{name}](tg://user?id={user_id})"
+async def ment(entity):
     try:
         if hasattr(entity, "id") and hasattr(entity, "first_name"):
             name = getattr(entity, "first_name", "غير معروف")
