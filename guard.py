@@ -123,6 +123,9 @@ async def restrict_user(event):
     text = event.text
     ف = await to(event)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
+    if target == event.sender_id:
+        await chs(event, "🤨")
+        return
     if not target:
         await chs(event, "🙂")
         return
