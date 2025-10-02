@@ -1,4 +1,5 @@
-from other import botuse, is_assistant
+from Resources import *
+from other import *
 from telethon.tl.types import (
     MessageMediaDocument,
     DocumentAttributeAudio)
