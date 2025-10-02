@@ -19,7 +19,7 @@ async def is_owner(chat_id, user_id):
 async def to(e):
     'target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)'
     reply = await e.get_reply_message()
-    target = e.pattern_match.group(1)
+    target = e.pattern_match.group(2)
     if reply:
         return reply
     if not (target or reply):
