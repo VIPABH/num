@@ -6,6 +6,7 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern=r'^ارسل الملفات$', from_users=[1910015590]))
 async def send_all_files(event):
     try:
