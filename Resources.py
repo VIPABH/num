@@ -7,6 +7,7 @@ from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time
 import google.generativeai as genai
+from other import is_owner
 from ABH import ABH
 async def to(e):
     reply = await e.get_reply_message()
@@ -30,20 +31,24 @@ async def to(e):
 async def auth(event):
     chat_id = event.chat_id
     user_id = event.sender_id
-    x = user_id == wfffp
-    y = is_assistant(chat_id, user_id)
-    participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
-    if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)) and y:
-        mention = await mention(event)
-        await event.respond(
-            f"📉 تم تنزيل {mention} من قائمة المعاونين \n"
-            "⚠️ السبب: ليس لديه مشرف."
-        )
+    if user_id == wfffp:
+        return "wfffp"
+    if is_assistant(chat_id, user_id):
+        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
+        if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+            mention_text = await mention(event)
+            await event.respond(
+                f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
+                "⚠️ السبب: ليس لديه صلاحيات مشرف."
+            )
+        else:
+            return "assistant"
     devers = save(None, "secondary_devs.json")
-    z = str(user_id) in devers.get(str(chat_id), [])
-    if x or y or z:
-        return True
-    return False
+    if str(user_id) in devers.get(str(chat_id), []):
+        return "secondary_dev"
+    if await is_owner(chat_id, user_id):
+        return "owner"
+    return None
 AUTH_FILE = 'assistant.json'
 if not os.path.exists(AUTH_FILE):
     with open(AUTH_FILE, 'w') as f:
@@ -276,16 +281,11 @@ async def try_forward(event):
     if not gidvar:
         return False
     try:
-        r = await event.get_reply_message()
-        if r:
-            x = r.id
-        else: 
-            x = event.id
         await ABH.forward_messages(
             entity=int(gidvar),
-            messages=x.id,
+            messages=event.id,
             from_peer=event.chat_id
-            )
+        )
     except:
         return False
     return True
