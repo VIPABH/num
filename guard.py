@@ -131,13 +131,13 @@ async def restrict_user(event):
         await react(event, '👍🏾')
         await notAssistantres(event)
         return
-    r = await event.get_reply_message()
+    r = await event.get_reply_message:
     if r:
         name = await ment(r)
         await try_forward(r)
         await r.delete()
-        return
-    name = await ment(ف)
+    else:
+        name = await ment(ف)
     await event.delete()
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
