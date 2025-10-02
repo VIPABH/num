@@ -79,7 +79,7 @@ async def receive_number(e):
         group_id=session["group_id"]
         if group_id not in data or not isinstance(data[group_id],dict):
             data[group_id]={}
-        data[group_id][user_id]=session["number"]
+        data[group_id][user_id]= session["msgid"] ,session["number"]
         save_json(NUM_FILE,data)
         await ev.reply(f" تم حفظ الرقم: {ev.text}")
         await session["msgid"].edit(' تم تعيين الرقم ب نجاح ابدؤوا التخمين',buttons=None)
