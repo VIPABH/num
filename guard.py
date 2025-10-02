@@ -121,6 +121,7 @@ async def restrict_user(event):
         return
     chat_id = event.chat_id
     text = event.text
+    await auth(event
     ف = await to(event)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     if target == event.sender_id:
@@ -468,6 +469,7 @@ async def warn_user(event):
         return
     chat_id = event.chat_id
     user_id = event.sender_id
+    await auth(event)
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(event.chat_id, user_id)
     if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
