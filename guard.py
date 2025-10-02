@@ -134,14 +134,8 @@ async def restrict_user(event):
         await react(event, '👍🏾')
         await notAssistantres(event)
         return
-    r = await event.get_reply_message()
-    if r:
-        name = await ment(r)
-        await try_forward(r)
-        await r.delete()
-    else:
-        name = await ment(ف)
     await event.delete()
+    name = await ment(ف)
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
@@ -158,6 +152,11 @@ async def restrict_user(event):
     c = f"تم تقييد {name} لمدة 20 دقيقة."
     await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
     await send(event, f'#تقييد_عام\n تم تقييد المستخدم \n اسمه: ( {name} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+    r = await event.get_reply_message()
+    if r:
+        name = await ment(r)
+        await try_forward(r)
+        await r.delete()
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
