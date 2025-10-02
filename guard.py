@@ -131,7 +131,7 @@ async def restrict_user(event):
         await react(event, '👍🏾')
         await notAssistantres(event)
         return
-    r = await event.get_reply_message:
+    r = await event.get_reply_message
     if r:
         name = await ment(r)
         await try_forward(r)
