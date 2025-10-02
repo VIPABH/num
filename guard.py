@@ -137,7 +137,7 @@ async def restrict_user(event):
         await try_forward(r)
         await r.delete()
         return
-    name = await ment(to)
+    name = await ment(ف)
     await event.delete()
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
