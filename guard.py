@@ -23,11 +23,11 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
+    ف = await to(e)
+    target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
         return
-    ف = await to(e)
-    target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     participant = await ABH(GetParticipantRequest(channel=int(e.chat_id), participant=int(target)))
     m = await ment(ف)
     if isinstance(participant.participant, (ChannelParticipantAdmin)):
