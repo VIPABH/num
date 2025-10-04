@@ -7,6 +7,7 @@ from Resources import *
 from faker import Faker
 from Program import*
 from other import *
+from top import lit
 NUM_FILE = 'NUM.json'
 active_sessions={}
 game={}
@@ -82,7 +83,6 @@ async def receive_number(e):
         }
         save_json(NUM_FILE, data)
         await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
-        await session["msgid"].edit('✅ تم تعيين الرقم بنجاح', buttons=None)
         ABH.remove_event_handler(save_number, events.NewMessage)
     @ABH.on(events.NewMessage(from_users=int(user_id)))
     async def save_number(ev):
@@ -120,6 +120,7 @@ async def guess_number(e):
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
                     parse_mode='html'
                 )
+                await session["msgid"].edit(f'مبارك ل ( {await mention(e)} ) فاز باللعبة وحزر الرقم ', buttons=None)
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
