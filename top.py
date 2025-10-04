@@ -51,7 +51,7 @@ async def show_rich(event):
         return
     sorted_points=sorted(valid_points.items(),key=lambda x:x[1],reverse=True)
     top_rich=sorted_points[:10]
-    message="💰 أغنى الأشخاص 💰\n\n"
+    message="💰 أغنى الأشخاص في البوت 💰\n\n"
     for i,(uid,amt) in enumerate(top_rich,start=1):
         try:
             user=await event.client.get_entity(int(uid))
