@@ -79,7 +79,8 @@ async def receive_number(e):
             data[group_id] = {}
         data[group_id][user_id] = {
             "number": session["number"],
-            "msg_id": session["command_msg_id"]
+            "msg_id": session["command_msg_id"],
+            "msgedit": session["msg"].id
         }
         save_json(NUM_FILE, data)
         await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
@@ -120,7 +121,7 @@ async def guess_number(e):
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
                     parse_mode='html'
                 )
-                await session["msgid"].edit(f'مبارك ل ( {await mention(e)} ) فاز باللعبة وحزر الرقم ', buttons=None)
+                await info["msgedit"].edit(f'مبارك ل ( {await mention(e)} ) فاز باللعبة وحزر الرقم ', buttons=None)
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
