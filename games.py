@@ -115,7 +115,7 @@ async def guess_number(e):
             if not r or r.id != info["msg_id"]:
                 continue
             found = True
-            if guess > int(info["number"]):
+            if int(guess) > int(info["number"]):
                 await chs(e, f"خمن رقم اصغر من ( {guess} )" )
             else:
                 await chs(e, f"خمن رقم اكبر من ( {guess} )" )
