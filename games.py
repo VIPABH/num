@@ -123,6 +123,7 @@ async def guess_number(e):
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
+                    return
             if int(guess) > int(info["number"]):
                 await chs(e, f"خمن رقم اصغر من ( {guess} )" )
             else:
