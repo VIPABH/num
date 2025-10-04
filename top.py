@@ -45,16 +45,20 @@ async def show_rich(event):
     if not points:
         await event.reply("لا توجد بيانات ثروة حالياً.")
         return
-    sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
-    top_rich = sorted_points[:10]
-    message = "أغنى الأشخاص:\n\n"
-    for i, (uid, amt) in enumerate(top_rich, start=1):
+    valid_points={uid:val for uid,val in points.items() if isinstance(val,int)}
+    if not valid_points:
+        await event.reply("لا توجد بيانات صالحة حالياً.")
+        return
+    sorted_points=sorted(valid_points.items(),key=lambda x:x[1],reverse=True)
+    top_rich=sorted_points[:10]
+    message="💰 أغنى الأشخاص 💰\n\n"
+    for i,(uid,amt) in enumerate(top_rich,start=1):
         try:
-            user = await event.client.get_entity(int(uid))
-            name = user.first_name if user.first_name else "بدون اسم"
+            user=await event.client.get_entity(int(uid))
+            name=user.first_name if user.first_name else "بدون اسم"
         except:
-            name = f"مستخدم {uid}"
-        message += f"{i}. {name} → `{amt}`\n"
+            name=f"مستخدم {uid}"
+        message+=f"{i}. {name} → `{amt:,}`\n"
     await event.reply(message)
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
