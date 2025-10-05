@@ -76,7 +76,7 @@ async def receive_number(e):
         group_id = int(session["group_id"])
         if group_id not in data or not isinstance(data[group_id], dict):
             data[group_id] = {}
-        data[int(group_id])[int(user_id)] = {
+        data[int(group_id)][int(user_id)] = {
             "number": session["number"],
             "msg_id": session["command_msg_id"]
         }
