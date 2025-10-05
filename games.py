@@ -73,10 +73,10 @@ async def receive_number(e):
             return
         session["number"] = int(ev.text)
         data = create(NUM_FILE)
-        group_id = session["group_id"]
+        group_id = int(session["group_id"])
         if group_id not in data or not isinstance(data[group_id], dict):
             data[group_id] = {}
-        data[group_id][user_id] = {
+        data[group_id][int(user_id)] = {
             "number": session["number"],
             "msg_id": session["command_msg_id"]
         }
@@ -94,10 +94,10 @@ async def receive_number(e):
             return
         session["number"]=ev.text
         data=create(NUM_FILE)
-        group_id=session["group_id"]
+        group_id=int(session["group_id"])
         if group_id not in data or not isinstance(data[group_id],dict):
             data[group_id]={}
-        data[group_id][user_id]=session["number"]
+        data[group_id][int(user_id)]=session["number"]
         save_json(NUM_FILE,data)
         await ev.reply(f" تم حفظ الرقم: {ev.text}")
         await session["msgid"].edit(' تم تعيين الرقم ب نجاح ابدؤوا التخمين',buttons=None)
@@ -106,7 +106,7 @@ async def guess_number(e):
     if not e.is_group:
         return
     data = create(NUM_FILE)
-    group_id = str(e.chat_id)
+    group_id = int(e.chat_id)
     guess = e.text.strip()
     if group_id in data and isinstance(data[group_id], dict) and guess.isdigit():
         r = await e.get_reply_message()
