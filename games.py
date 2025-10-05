@@ -1,4 +1,4 @@
-from top import points, add_points #type: ignore
+from top import *
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
@@ -7,7 +7,6 @@ from Resources import *
 from faker import Faker
 from Program import*
 from other import *
-from top import lit
 NUM_FILE = 'NUM.json'
 active_sessions = {}
 def create(filename):
@@ -100,8 +99,8 @@ async def guess_number(e):
             return
         if not found and r:
             msg_link = f"https://t.me/c/{str(group_id).replace('-100','')}/{r.id}"
-            await chs(e, f"⚠️ لازم ترد على [رسالة الرقم الأصلية]({msg_link}) للتخمين")
-x_arsessions = {}
+            await chs(e, f"⚠️ لازم ترد على [رسالة الرقم الأصلية]({msg_link}) للتخمين", link_preview=False)
+x_arsessions = {}x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
         return
