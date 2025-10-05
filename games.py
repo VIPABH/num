@@ -120,7 +120,7 @@ async def guess_number(e):
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
                     parse_mode='html'
                 )
-                del data[group_id][uid]
+                del data[group_id]
                 if not data[group_id]:
                     del data[group_id]
                     return
