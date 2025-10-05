@@ -84,7 +84,6 @@ async def receive_number(e):
         await ev.reply(f" تم حفظ الرقم: {ev.text}")
         await session["msgid"].edit(' تم تعيين الرقم ب نجاح ابدؤوا التخمين',buttons=None)
         ABH.remove_event_handler(save_number,events.NewMessage)
-    @ABH.on(events.NewMessage(from_users=int(user_id)))
 async def guess_number(e):
     if not e.is_group:
         return
