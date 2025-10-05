@@ -115,10 +115,6 @@ async def guess_number(e):
             if not r or r.id != info["msg_id"]:
                 continue
             found = True
-            if int(guess) > int(info["number"]):
-                await chs(e, f"خمن رقم اصغر من ( {guess} )" )
-            else:
-                await chs(e, f"خمن رقم اكبر من ( {guess} )" )
             if int(guess) == info["number"]:
                 await e.reply(
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
@@ -127,6 +123,11 @@ async def guess_number(e):
                 del data[group_id][uid]
                 if not data[group_id]:
                     del data[group_id]
+                    return
+            if int(guess) > int(info["number"]):
+                await chs(e, f"خمن رقم اصغر من ( {guess} )" )
+            else:
+                await chs(e, f"خمن رقم اكبر من ( {guess} )" )
                 save_json(NUM_FILE, data)
                 return
         if not found:
