@@ -67,25 +67,6 @@ async def receive_number(e):
     await e.reply("📨 أرسل الرقم المميز الآن:")
     @ABH.on(events.NewMessage(from_users=int(user_id)))
     async def save_number(ev):
-        if not ev.is_private or ev.text.startswith("/start"):
-            return
-        if not ev.text.isdigit():
-            return
-        session["number"] = int(ev.text)
-        data = create(NUM_FILE)
-        group_id = int(session["group_id"])
-        if group_id not in data or not isinstance(data[group_id], dict):
-            data[group_id] = {}
-        data[group_id][int(user_id)] = {
-            "number": session["number"],
-            "msg_id": session["command_msg_id"]
-        }
-        save_json(NUM_FILE, data)
-        await ev.reply(f"✅ تم حفظ الرقم: {ev.text}")
-        await session["msgid"].edit('✅ تم تعيين الرقم بنجاح', buttons=None)
-        ABH.remove_event_handler(save_number, events.NewMessage)
-    @ABH.on(events.NewMessage(from_users=int(user_id)))
-    async def save_number(ev):
         if not ev.is_private:
             return
         if ev.text.startswith("/start"):
