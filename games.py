@@ -70,7 +70,7 @@ async def receive_number(e):
         data[group_id][user_id] = {"msgid": session["msgid"], "number": session["number"]}
         save_json(NUM_FILE, data)
         await ev.reply(f"تم حفظ الرقم: {ev.text}")
-        await ABH.send_message(group_id, 'تم تعيين الرقم بنجاح، ابدؤوا التخمين')
+        await ABH.send_message(int(group_id), 'تم تعيين الرقم بنجاح، ابدؤوا التخمين')
         ABH.remove_event_handler(save_number, events.NewMessage)
 @ABH.on(events.NewMessage())
 async def guess_number(e):
