@@ -43,7 +43,7 @@ async def set_num(e):
         buttons=button
     )
     active_sessions[session_id] = {
-        "group_id": group_id,
+        "group_id": int(group_id),
         "user_id": int(e.sender_id),
         "msgid": msg,
         "number": None,
@@ -76,7 +76,7 @@ async def receive_number(e):
         group_id = int(session["group_id"])
         if group_id not in data or not isinstance(data[group_id], dict):
             data[group_id] = {}
-        data[group_id][int(user_id)] = {
+        data[int(group_id])[int(user_id)] = {
             "number": session["number"],
             "msg_id": session["command_msg_id"]
         }
