@@ -30,7 +30,7 @@ async def set_num(e):
     if not (o or e.sender_id == wfffp):
         await chs(e, 'عذرا لكن الامر مخصص للمالك فقط')
         return
-    group_id = str(e.chat_id)
+    group_id = int(e.chat_id)
     data = create(NUM_FILE)
     if group_id in data:
         await chs(e, 'عذرا بس المجموعه بيها رقم مخزن')
@@ -44,7 +44,7 @@ async def set_num(e):
     )
     active_sessions[session_id] = {
         "group_id": group_id,
-        "user_id": str(e.sender_id),
+        "user_id": int(e.sender_id),
         "msgid": msg,
         "number": None,
         "command_msg_id": e.id
