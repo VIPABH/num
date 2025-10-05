@@ -71,7 +71,7 @@ async def receive_number(e):
             return
         if not ev.text.isdigit():
             return
-        session["number"] = ev.text
+        session["number"] = int(ev.text)
         data = create(NUM_FILE)
         group_id = session["group_id"]
         if group_id not in data or not isinstance(data[group_id], dict):
