@@ -58,7 +58,7 @@ async def receive_number(e):
     if session_id not in active_sessions:
         return
     session = active_sessions[session_id]
-    if session["user_id"] != user_id:
+    if session["user_id"] != int(user_id):
         await e.reply("❌ لا يمكنك تعيين رقم لجلسة ليست لك.")
         return
     if session["number"] is not None:
