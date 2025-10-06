@@ -31,6 +31,7 @@ async def change_own_rank(event):
     aw = await is_owner(event.sender_id, event.chat_id)
     if not (event.sender_id == wfffp or aw or (
         str(event.chat_id) in x and str(event.sender_id) in x[str(event.chat_id)]
+        or event.text.startswith("تغيير لقبي")
     )):
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
