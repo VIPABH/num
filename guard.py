@@ -20,6 +20,7 @@ async def delrestrict(e):
         a
         or z
         or k
+        or id == wfffp
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
