@@ -194,7 +194,13 @@ async def info(e, msg_type):
     if not os.path.exists(f):
         create(f)
     with open(f, 'r', encoding='utf-8') as file:
-        data = json.load(file)
+        content = file.read()
+        content = re.sub(r"[\x00-\x1F\x7F]", "", content)
+        content = re.sub(r",\s*([\]}])", r"\1", content)
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            data = {}
     chat = str(e.chat_id)
     user_id = str(e.sender_id)
     if chat not in data:
