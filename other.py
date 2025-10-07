@@ -121,6 +121,9 @@ async def add_assistant(event):
     else:
         target_id = int(target_id)
         sender = await ABH.get_entity(target_id)
+    if target id == 1680890363:
+        await chs(event, "ديله ماشي")
+        return
     chat_id = str(event.chat_id)
     rm = await ment(sender)
     data = load_auth()
