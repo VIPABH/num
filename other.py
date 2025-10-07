@@ -605,16 +605,35 @@ async def showlenalert(event):
 @ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
 async def forward_all(event):
     if not event.reply_to_msg_id:
-        await event.reply("❌ يرجى الرد على رسالة لإعادة توجيهها.")
+        await event.reply("❌ يرجى الرد على الرسالة التي تريد إعادة توجيهها.")
         return
     replied_msg = await event.get_reply_message()
-    await event.reply(f"🚀 جاري إعادة توجيه الرسالة إلى {len(alert_ids)} محادثة...")
+    total = len(alert_ids)
+    success = 0
+    failed = 0
+    await event.reply(f"🚀 بدأ النشر إلى {total} محادثة...")
     for dialog_id in list(alert_ids):
         try:
             await ABH.forward_messages(dialog_id, replied_msg)
+            success += 1
         except Exception as e:
-            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
-            remove_user(dialog_id)
+            error_text = str(e).lower()
+            if any(keyword in error_text for keyword in [
+                "user is blocked",
+                "chat write forbidden",
+                "peer id invalid",
+                "you can't write in this chat"
+            ]):
+                remove_user(dialog_id)
+                failed += 1
+            else:
+                failed += 1
+    await event.reply(
+        f"📢 **تقرير النشر:**\n"
+        f"✅ تم الإرسال بنجاح إلى {success} محادثة.\n"
+        f"🚫 تم حذف {failed} من القائمة بسبب الحظر أو عدم القدرة على الإرسال.\n"
+        f"📌 العدد الكلي: {total}"
+    )
 @ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
 async def forward_groups(event):
     if not event.reply_to_msg_id:
