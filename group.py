@@ -2,7 +2,7 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
-import asyncio, os, json, time, random
+import asyncio, os, json, time, random, re
 from hijri_converter import Gregorian
 from googletrans import Translator
 from num2words import num2words
@@ -17,6 +17,15 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
+@ABH.on(events.NewMessage(pattern=r'^مخفي اختار'))
+async def hidden_choice_handler(event):
+    message = event.raw_text
+    choices = re.findall(r"\d+\s*-\s*(.+)", message)
+    if not choices:
+        await event.reply("⚠️ لم يتم العثور على أي اختيارات.\nيرجى كتابة:\nمخفي اختار\n1- الصحة\n2- المال ...")
+        return
+    selected = random.choice(choices).strip()
+    await chs(event, f"🎯 اختاريت 👉 {selected}")
 def get_message_type(msg: Message) -> str:
     if msg is None:
         return
