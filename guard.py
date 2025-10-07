@@ -151,7 +151,7 @@ async def restrict_user(event):
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             await res(event)
-            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{r.sender_id}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
             await chs(event, f'تم كتم {name} مدة 20 دقيقه')
             return
     except Exception as ex:
