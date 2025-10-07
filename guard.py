@@ -141,6 +141,9 @@ async def restrict_user(event):
         return
     await event.delete()
     name = await ment(ف)
+    if target == wfffp: 
+        await chs("😂")
+        return
     try:
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
