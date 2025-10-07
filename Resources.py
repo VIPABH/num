@@ -63,12 +63,12 @@ async def auth(event, x=None):
                     "⚠️ السبب: ليس لديه صلاحيات مشرف."
                 )
         else:
-            return "assistant"
+            return "المعاون"
     devers = save(None, "secondary_devs.json")
     if str(user_id) in devers.get(str(chat_id), []):
-        return "secondary_dev"
+        return "المطور الثانوي"
     if await is_owner(chat_id, user_id):
-        return "owner"
+        return "المالك"
     return None
 AUTH_FILE = 'assistant.json'
 if not os.path.exists(AUTH_FILE):
