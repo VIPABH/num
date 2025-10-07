@@ -25,7 +25,7 @@ async def hidden_choice_handler(event):
         await event.reply("⚠️ لم يتم العثور على أي اختيارات.\nيرجى كتابة:\nمخفي اختار\n1- الصحة\n2- المال ...")
         return
     selected = random.choice(choices).strip()
-    await chs(event, f"🎯 اختاريت 👉 {selected}")
+    await chs(event, f"🎯 اختاريت {selected}")
 def get_message_type(msg: Message) -> str:
     if msg is None:
         return
