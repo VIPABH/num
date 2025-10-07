@@ -21,11 +21,16 @@ from telethon.tl.types import (
 async def hidden_choice_handler(event):
     message = event.raw_text
     await botuse("مخفي اختار")
-    choices = re.findall(r"(?:\d+\s*[-~]\s*|[-~]\s*)(.+)", message)
-    if not choices:
+    raw_choices = re.findall(r"(?:\d+\s*[-~]\s*|[-~]\s*)(.+)", message)
+    if not raw_choices:
         await event.reply("⚠️ لم يتم العثور على أي اختيارات.\nيرجى كتابة:\nمخفي اختار\n1- الصحة\n2- المال ...")
         return
-    selected = random.choice(choices).strip()
+    choices = []
+    for choice in raw_choices:
+        parts = re.split(r"\s*(?:و|او|لو)\s*", choice)
+        parts = [p.strip() for p in parts if p.strip()]
+        choices.extend(parts)
+    selected = random.choice(choices)
     await chs(event, f"🎯 اختاريت {selected}")
 def get_message_type(msg: Message) -> str:
     if msg is None:
