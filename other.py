@@ -331,7 +331,7 @@ async def ai_handler(event):
     "مخفي نزلني", "مخفي نزلة", "مخفي نزله",
     "مخفي اختار"
 ]
-    if not user_q or x in ignore_phrases:
+    if not user_q or x in ignore_phrases or x.startswith("مخفي اختار"):
         return
     type = "ai"
     await botuse(type)
