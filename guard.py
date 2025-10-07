@@ -134,7 +134,10 @@ async def restrict_user(event):
     if not target:
         await chs(event, "🙂")
         return
-    x = await auth(event)
+    x, a = await auth(event), await auth(event, x=True)
+    if a:
+        await chs(event, f"عذرا بس ىاتكدر تقيد{a}")
+        return
     if not x or text == "تقييد ميم":
         await react(event, '👍🏾')
         await notAssistantres(event)
