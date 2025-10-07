@@ -43,7 +43,7 @@ async def auth(event, x=None):
         reply_msg = await event.get_reply_message()
         if reply_msg:
             user_id = reply_msg.sender_id
-    if user_id == wfffp:
+    if user_id == wfffp
         return "المطور الاساسي":
     if is_assistant(chat_id, user_id):
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
