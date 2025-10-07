@@ -20,7 +20,7 @@ from telethon.tl.types import (
 @ABH.on(events.NewMessage(pattern=r'^مخفي اختار'))
 async def hidden_choice_handler(event):
     message = event.raw_text
-    choices = re.findall(r"\d+\s*-\s*(.+)", message)
+    choices = re.findall(r"(?:\d+\s*[-~]\s*|[-~]\s*)(.+)", message)
     if not choices:
         await event.reply("⚠️ لم يتم العثور على أي اختيارات.\nيرجى كتابة:\nمخفي اختار\n1- الصحة\n2- المال ...")
         return
