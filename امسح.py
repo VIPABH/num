@@ -56,8 +56,8 @@ async def store_media_messages(event):
 async def delete_stored_media(event):
     if not event.is_group:
         return
-        a = await auth(event)
-        await hint(str(a))
+    a = await auth(event)
+    await hint(str(a))
     if a:
         await event.reply('شني خالي كبينه انت مو معاون')
         return
