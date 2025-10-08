@@ -107,7 +107,7 @@ async def add_assistant(event):
         return
     sm = await mention(event)
     x = await auth(event)
-    if x and x != "المعاون":
+    if not x and x != "المعاون":
         await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
         return
     sm = await mention(event)
@@ -143,7 +143,7 @@ async def remove_assistant(event):
         return
     sm = await mention(event)
     x = await auth(event)
-    if x and x != "المعاون":
+    if not x and x != "المعاون":
         await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
         return
     user_id = event.sender_id
