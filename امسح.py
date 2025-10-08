@@ -56,7 +56,7 @@ async def store_media_messages(event):
 async def delete_stored_media(event):
     if not event.is_group:
         return
-    if not is_assistant(event.chat_id, event.sender_id):
+    if await auth(event):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
     chat_id = str(event.chat_id)
