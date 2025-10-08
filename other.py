@@ -105,8 +105,10 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    if not (await is_owner(event.chat_id, event.sender_id) or event.sender_id == 1910015590):
-        await chs(event, "😁")
+    sm = await mention(event)
+    x = await auth(event)
+    if x and x != "المعاون":
+        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
         return
     sm = await mention(event)
     type = "رفع معاون"
@@ -132,18 +134,20 @@ async def add_assistant(event):
     if target_id not in data[chat_id]:
         data[chat_id].append(target_id)
         save_auth(data)
-        await event.reply(f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
+        await chs(event, f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
     else:
-        await event.reply(f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+        await chs(event, f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
         return
-    user_id = event.sender_id
     sm = await mention(event)
+    x = await auth(event)
+    if x and x != "المعاون":
+        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
+        return
+    user_id = event.sender_id
     chat_id = str(event.chat_id)
-    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
-        return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
     reply = await event.get_reply_message()
     if not reply:
         return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
@@ -154,9 +158,9 @@ async def remove_assistant(event):
     if chat_id in data and target_id in data[chat_id]:
         data[chat_id].remove(target_id)
         save_auth(data)
-        await event.reply(f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
+        await cha(event, f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
     else:
-        await event.reply(f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+        await chs(event, f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
     type = "تنزيل معاون"
     await botuse(type)
 async def m(user_id):
