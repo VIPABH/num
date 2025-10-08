@@ -27,12 +27,8 @@ async def change_own_rank(event):
             await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
             return
         user_id = r.sender_id
-    x = save(None, 'secondary_devs.json')
-    aw = await is_owner(event.sender_id, event.chat_id)
-    if not (event.sender_id == wfffp or aw or (
-        str(event.chat_id) in x and str(event.sender_id) in x[str(event.chat_id)]
-        or event.text.startswith("تغيير لقبي")
-    )):
+    x = await auth(event)
+    if  not x or x == "المعاون" or event.text.startswith("تغيير لقبي":
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
     new_rank = event.pattern_match.group(2)
@@ -101,11 +97,10 @@ async def promoteADMIN(event):
     type = "ترقية"
     await botuse(type)
     isc = await can_add_admins(chat, user_id)
-    o = await get_owner(event)
-    uid = event.sender_id
-    x = save(None, 'secondary_devs.json')
-    if uid != o.id and uid != 1910015590 and not isc and (str(event.chat_id) not in x or str(uid) not in x[str(event.chat_id)]):
-        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
+    sm = await mention(event)
+    x = await auth(event)
+    if not isc or not x or x == "المعاون":
+        await chs(event, f"عذرًا ( {sm} )، هذا الأمر مخصص للمالك فقط.")
         await react(event, "💔")
         return
     r = await event.get_reply_message()
@@ -305,6 +300,3 @@ async def demote_admin(event):
     if ء:
         await chs(event, "تم تنزيل المستخدم من المشرفين.")
         return
-    # type = "اوامر الرفع"
-    # await botuse(type)
-    # await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`\n `رفع معاون` بالرد \n حتى ترفع الشخص معاون \n `تنزيل معاون` بالرد \n حتى تنزل الشخص من المعاونين \n `المعاونين` حتى تشوف قائمة المعاونين بالمجموعة \n `رفع معاون` بالرد على مستخدم \n راح ينرفع المستخدم داخل البوت\n \n `المعاونين` علمود تشوف المرفوعين  \n `ترقية` حتى ترفعه مشرف بالمجموعة')
