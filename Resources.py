@@ -36,39 +36,35 @@ async def to(e):
     except Exception as ex:
         await hint(f"❌ خطأ أثناء جلب المعرّف: {ex}")
         return None
-async def auth(event, x=None):
-    user_id = event.sender_id
+async def auth(event, x=False):
     chat_id = event.chat_id
     if x:
         reply_msg = await event.get_reply_message()
         if reply_msg:
             user_id = reply_msg.sender_id
+        else:
+            user_id = event.sender_id
+    else:
+        user_id = event.sender_id
     if user_id == wfffp:
         return "المطور الاساسي"
+    if await is_owner(chat_id, user_id):
+        return "المالك"
+    devers = save(None, "secondary_devs.json")
+    if str(user_id) in devers.get(str(chat_id), []):
+        return "المطور الثانوي"
     if is_assistant(chat_id, user_id):
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
         if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
             mention_text = await mention(event)
-            await event.reply(
-                f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
-                "⚠️ السبب: ليس لديه صلاحيات مشرف."
-            )
+            await event.reply(f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n⚠️ السبب: ليس لديه صلاحيات مشرف.")
             data = load_auth()
             if str(chat_id) in data and user_id in data[str(chat_id)]:
                 data[str(chat_id)].remove(user_id)
                 save_auth(data)
-                await send(
-                    event, 
-                    f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n"
-                    "⚠️ السبب: ليس لديه صلاحيات مشرف."
-                )
+                await send(event, f"📉 تم تنزيل {mention_text} من قائمة المعاونين \n⚠️ السبب: ليس لديه صلاحيات مشرف.")
         else:
             return "المعاون"
-    devers = save(None, "secondary_devs.json")
-    if str(user_id) in devers.get(str(chat_id), []):
-        return "المطور الثانوي"
-    if await is_owner(chat_id, user_id):
-        return "المالك"
     return None
 AUTH_FILE = 'assistant.json'
 if not os.path.exists(AUTH_FILE):
