@@ -99,7 +99,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     sm = await mention(event)
     x = await auth(event)
-    if not x or x == "المعاون":
+    if not x or x == "المعاون" or not isc:
         await chs(event, f"عذرًا ( {sm} )، هذا الأمر مخصص للمالك فقط.")
         await react(event, "💔")
         return
