@@ -28,9 +28,9 @@ def save_json(filename, data):
 async def set_num(e):
     if not e.is_group:
         return
-    a = await auth(event)
+    a = await auth(e)
     if a == "المعاون": 
-        await chs(event, f"عذرا عزيزي ( {await mention(event)} ) الامر يخص المالك ")
+        await chs(e, f"عذرا عزيزي ( {await mention(e)} ) الامر يخص المالك ")
         return
     group_id = int(e.chat_id)
     data = create(NUM_FILE)
