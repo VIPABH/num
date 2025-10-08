@@ -17,6 +17,18 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
+@ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
+async def myrank(e):
+    reply_msg = await e.get_reply_message()
+    if not reply_msg and e.text == "رتبتي":
+        a = await auth(e)
+        await chs(e, f"👤 رتبتك: ( {a} )")
+        return
+    if reply_msg:
+        a = await auth(e, True)
+        await chs(e, f"👤 رتبته: ( {a} )")
+        return
+    await chs(e, "⚠️ يرجى استخدام الأمر بشكل صحيح.")
 @ABH.on(events.NewMessage(pattern=r'^مخفي اختار'))
 async def hidden_choice_handler(event):
     message = event.raw_text
