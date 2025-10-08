@@ -29,7 +29,7 @@ async def set_num(e):
     if not e.is_group:
         return
     a = await auth(e)
-    if a == "المعاون": 
+    if a and a == "المعاون": 
         await chs(e, f"عذرا عزيزي ( {await mention(e)} ) الامر يخص المالك ")
         return
     group_id = int(e.chat_id)
