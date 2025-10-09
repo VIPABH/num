@@ -22,7 +22,7 @@ async def myrank(e):
     reply_msg = await e.get_reply_message()
     if not reply_msg and e.text == "رتبتي":
         a = await auth(e)
-        if not a:
+        if a is None:
             a = "عضو فقير"
             return
         await chs(e, f" رتبتك: ( {a} )")
