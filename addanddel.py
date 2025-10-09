@@ -99,7 +99,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     sm = await mention(event)
     x = await auth(event)
-    if not x or x == "المعاون" or not isc:
+    if not x or x == "المعاون":
         await chs(event, f"عذرًا ( {sm} )، هذا الأمر مخصص للمالك فقط.")
         await react(event, "💔")
         return
@@ -270,13 +270,8 @@ async def demote_admin(event):
         return
     chat_id = event.chat_id
     target_user_id = r.sender_id
-    isc = await can_add_admins(int(chat_id), target_user_id)
-    o = await get_owner(event)
-    x = save(None, 'secondary_devs.json')
-    if (event.sender_id != o.id 
-        and event.sender_id != 1910015590 
-        and not isc 
-        and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)])):
+    a = await auth(event)
+    if not a or a == "المعاون":
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
         return
