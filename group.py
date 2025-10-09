@@ -132,11 +132,6 @@ async def theft(e):
     if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
         return
-    s = save(None, 'secondary_devs.json')
-    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
-    if k:
-        await e.reply('ماتكدر تسرق المطور الثانوي')
-        return
     if id in points:
         فلوس = points[id]
     else:
