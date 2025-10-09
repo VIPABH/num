@@ -22,29 +22,32 @@ async def myrank(e):
     reply_msg = await e.get_reply_message()
     if not reply_msg and e.text == "رتبتي":
         a = await auth(e)
-        await chs(e, f"👤 رتبتك: ( {a} )")
+        await chs(e, f" رتبتك: ( {a} )")
         return
     if reply_msg:
         a = await auth(e, True)
-        await chs(e, f"👤 رتبته: ( {a} )")
+        await chs(e, f" رتبته: ( {a} )")
         return
     await chs(e, "⚠️ يرجى استخدام الأمر بشكل صحيح.")
 @ABH.on(events.NewMessage(pattern=r'^مخفي اختار'))
 async def hidden_choice_handler(event):
     message = event.raw_text
     await botuse("مخفي اختار")
-    content = re.sub(r'^مخفي اختار\s*', '', message)
-    parts = re.split(r"(?:\d+\s*[-~]|[-~])", content)
-    choices = []
-    for part in parts:
-        sub_parts = re.split(r"\s*(?:و|او|لو)\s*", part)
-        sub_parts = [p.strip() for p in sub_parts if p.strip()]
-        choices.extend(sub_parts)
-    if not choices:
-        await event.reply("⚠️ لم يتم العثور على أي اختيارات.")
+    content = re.sub(r'^مخفي اختار\s*', '', message).strip()
+    if not content:
+        await event.reply("⚠️ يرجى كتابة جملتين مفصولتين بكلمة (لو) أو (او).")
         return
-    selected = random.choice(choices)
-    await chs(event, f"🎯 اختاريت {selected}")
+    match = re.search(r'(.+?)\s+(?:لو|او|أو)\s+(.+)', content)
+    if not match:
+        await event.reply("⚠️ لم أستطع العثور على المفتاح (لو) أو (او) في الجملة.")
+        return
+    option1 = match.group(1).strip()
+    option2 = match.group(2).strip()
+    selected = random.choice([option1, option2])
+    await chs(
+        event,
+        f"🎯 اختاريت بين **{option1}** و **{option2}** → النتيجة: **{selected}** ✅"
+    )
 def get_message_type(msg: Message) -> str:
     if msg is None:
         return
