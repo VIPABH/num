@@ -46,7 +46,7 @@ async def hidden_choice_handler(event):
     selected = random.choice([option1, option2])
     await chs(
         event,
-        f"🎯 اختاريت بين **{option1}** و **{option2}** → النتيجة: **{selected}** ✅"
+        f"🎯 اختاريت: ( {selected} )"
     )
 def get_message_type(msg: Message) -> str:
     if msg is None:
