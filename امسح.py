@@ -66,6 +66,10 @@ async def delete_stored_media(event):
 async def count_media_messages(event):
     if not event.is_group:
         return
+    a = await auth(event)
+    if not a:
+        await event.reply('شني خالي كبينه انت مو معاون')
+        return
     type = "كشف ميديا"
     await botuse(type)
     chat_id = str(event.chat_id)
@@ -80,7 +84,8 @@ async def undel(event):
         return
     type = "تخطي المسح"
     await botuse(type)
-    if not is_assistant(event.chat_id, event.sender_id):
+    a = await auth(event)
+    if not a:
         await event.reply('شني خالي كبينه انت مو معاون')
         return
     r = await event.get_reply_message()
@@ -104,7 +109,8 @@ async def delalmedia_message(event):
         return
     type = "تفريغ"
     await botuse(type)
-    if not is_assistant(event.chat_id, event.sender_id):
+    a = await auth(event)
+    if not a:
         await event.reply('شني خالي كبينه انت مو معاون')
         return
     chat_id = str(event.chat_id)
