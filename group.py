@@ -379,6 +379,10 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
         return
+    a = auth(event)
+    if a:
+        await chs(event, f"عذرا ماتكدر تزعج ( {await ment(r)} ) لان رتبته ( {a} )")
+        return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
     if uid in points:
