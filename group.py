@@ -381,7 +381,7 @@ async def handle_spam(event):
         return
     a = auth(event, False)
     if a:
-        await chs(event, f"عذرا ماتكدر تزعج ( {await ment(r)} ) لان رتبته ( {a} )")
+        await chs(event, f"عذرا ماتكدر تزعج ( {await ment(r)} )")
         return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
