@@ -9,8 +9,9 @@ from ABH import ABH
 actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
-    if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'شني خالي كبينه انت مو معاون')
+    a = await auth(event)
+    if not a:
+        await event.reply('شني خالي كبينه انت مو معاون')
         return
     feature, action = event.pattern_match.groups()
     if feature not in actions:
