@@ -28,7 +28,7 @@ async def change_own_rank(event):
             return
         user_id = r.sender_id
     x = await auth(event)
-    if not x or x == "المعاون" and not event.text.startswith("تغيير لقبي"):
+    if (not x or x == "المعاون") and not event.text.startswith("تغيير لقبي"):
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
     new_rank = event.pattern_match.group(2)
