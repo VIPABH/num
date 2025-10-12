@@ -147,7 +147,7 @@ def create(filename: str):
             except json.JSONDecodeError:
                 data = {}
         return data
-async def res(e):
+async def res(e=None, x=None):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
         d = json.load(file)
@@ -163,6 +163,8 @@ async def res(e):
     d[chat_id][user_id] = end_time
     with open('res.json', 'w', encoding='utf-8') as file:
         json.dump(d, file, ensure_ascii=False, indent=4)
+    if x:
+        return
     now = int(time.time())
     rights = ChatBannedRights(
         until_date=now + 20 * 60,
