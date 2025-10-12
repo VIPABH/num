@@ -526,9 +526,9 @@ async def warn_user(event):
         f"⚠️ التحذيرات:   {w} / 3\n"
         f"🔗 رابط الرسالة:   {l}"
     )
-    await try_forward(r)
-    await r.delete()
-    await event.delete()
+await try_forward(r)
+await r.delete()
+await event.delete()
 def extract_warn_info(text: str):
     text = text.strip()
     name_pattern = r'اسمه[:：]?\s*([^\n]+?)\s+ايديه'
@@ -572,13 +572,9 @@ async def showwarns(e):
             await chs(e, "⚠️ لازم ترد على رسالة الشخص")
             return
         target_id = r.sender_id
-    معاون = is_assistant(chat, target_id)
+    معاون = await auth(event)
     if معاون:
         await chs(e, "لك شمعة ماكو تحذيرات")
         return
     w = count_warnings(int(target_id), int(chat))
     await chs(e, f' ( 3/{w} )')
-@ABH.on(events.NewMessage(pattern="!تجربة"))
-async def test(e):
-    t = await auth(e)
-    await e.reply(f"{t}")
