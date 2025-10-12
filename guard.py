@@ -144,18 +144,14 @@ async def restrict_user(event):
         return
     await event.delete()
     name = await ment(ف)
-    #if target == wfffp: 
-        #await chs("😂")
-        #return
-    try:
-        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
-        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            await res(event)
-            await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
-            await chs(event, f'تم كتم {name} مدة 20 دقيقه')
-            return
-    except Exception as ex:
-        await hint(ex)
+    if target == wfffp: 
+        await chs("😂")
+        return
+    participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(target)))
+    if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+        await res(event)
+        await send(event, f'#تقييد_عام\n تم كتم المشرف \n اسمه: ( {name} ) \n🆔 ايديه: `{target}`\n👤 بواسطة المعاون \n اسمه: ( {await mention(event)} ) \n ايديه: ( `{event.sender_id}` )')
+        await chs(event, f'تم كتم {name} مدة 20 دقيقه')
         return
     await res(event)
     type = "تقييد عام"
