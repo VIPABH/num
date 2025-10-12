@@ -274,15 +274,6 @@ WIN_VALUES = {
     "🎳": 6,
     "🎰": 64
 }
-USER_DATA_FILE = "user_data.json"
-def load_user_data():
-    if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
-    return {}
-def save_user_data(data):
-    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
     if not event.message.dice or not event.is_group:
@@ -297,18 +288,6 @@ async def telegramgames(event):
         amount = random.choice([100000, 200000, 300000, 500000])
     else:
         amount = 10000
-    user_data = load_user_data()
-    last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
-    current_time = int(time.time())
-    time_diff = current_time - last_play_time
-    if time_diff < 5 * 60:
-        remaining = 5 * 60 - time_diff
-        minutes = remaining // 60
-        seconds = remaining % 60
-        formatted_time = f"{minutes:02}:{seconds:02}"
-        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
-        await react(event, '😁')
-        return
     await asyncio.sleep(4)
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
@@ -320,8 +299,6 @@ async def telegramgames(event):
     else:
         await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
         await react(event, '💔')
-    user_data[str(user_id)] = {"last_play_time": current_time}
-    save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern='/num'))
 async def num(event):
     if not event.is_group:
