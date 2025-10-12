@@ -186,9 +186,9 @@ async def monitor_messages(event):
             with open('res.json', 'w', encoding='utf-8') as f:
                 json.dump(all_data, f, ensure_ascii=False, indent=4)
                 return
+        await event.delete()
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            await event.delete()
             return
         rights = ChatBannedRights(
             until_date=now + remaining,
@@ -202,7 +202,7 @@ async def monitor_messages(event):
         rrr = await mention(event)
         c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
         await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
-        await send(event, f"#تقييد_عام \n تم اعادة تقييد {rrr} باقي على انتهاء وقت التقييد ** {remaining//60} دقيقة و {remaining%60} ثانية.** ")
+        await send(event, f"#تقييد_عام \n تم اعادة تقييد {rrr} \n  باقي على انتهاء وقت التقييد ** {remaining//60} دقيقة و {remaining%60} ثانية.** ")
         type = "تقييد مستخدمين"
         await botuse(type)
 report_data = {}
