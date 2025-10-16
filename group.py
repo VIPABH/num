@@ -130,7 +130,7 @@ async def theft(e):
         return
     rank = await auth(e, True)
     if rank:  
-        await chs(e, f”عذرا بس ماتكدر تسرق من {rank} “)
+        await chs(e, f"عذرا بس ماتكدر تسرق من {rank} ")
         return
     if id in points:
         فلوس = points[id]
