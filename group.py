@@ -115,8 +115,6 @@ async def theft(e):
         await e.reply(f"يجب عليك الانتظار {formatted_time} قبل السرقة مجددًا.")
         await react(e, '😐')
         return
-    type = "سرقة"
-    await botuse(type)
     r = await e.get_reply_message()
     if not r:
         await react(e, '🤔')
@@ -124,31 +122,30 @@ async def theft(e):
         return
     id = r.sender_id
     س = await r.get_sender()
-    m = await ment(س)
     if س.bot:
         await e.reply('ماتكدر تسرق من بوت')
         return
-    if id == wfffp:
-        await e.reply('ماتكدر تسرق المطور الاساسي')
-        return
     if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
+        return
+    rank = await auth(e, True)
+    if rank:
+        await e.reply(f'ماتكدر تسرق {س.first_name}')
         return
     if id in points:
         فلوس = points[id]
     else:
         فلوس = 0
     if فلوس > 10000:
-        await chs(e, f'عذرا بس {m} فلوسه قليله')
+        await chs(e, f'عذرا بس {await ment(س)} فلوسه قليله')
         return
-    await botuse('سرقة')
     p = فلوس // 10
     delpoints(id, e.chat_id, points, p)
     add_points(e.sender_id, e.chat_id, points, p)
-    await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
+    await chs(e, f'تم سرقة {p} من {await ment(س)} بنجاح 🎉')
     await react(e, '🎉')
     user_data['سرقة'][user_id]['last_play_time'] = current_time
-    save_user_data(user_data)
+    save_user_data(user_data) 
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     if not event.is_group:
