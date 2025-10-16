@@ -129,8 +129,8 @@ async def theft(e):
         await e.reply('ماتكدر تسرق نفسك')
         return
     rank = await auth(e, True)
-    if rank:
-        await e.reply(f'ماتكدر تسرق {س.first_name}')
+    if rank:  
+        await chs(e, f”عذرا بس ماتكدر تسرق من {rank} “)
         return
     if id in points:
         فلوس = points[id]
