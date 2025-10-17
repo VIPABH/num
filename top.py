@@ -37,8 +37,8 @@ def add_points(uid, gid, points, amount=0):
 def delpoints(uid, gid, points, amount):
     uid = str(uid)
     if uid not in points:
-        points[uid] = {}
-    points[uid] = max(0, points[uid] - amount)
+        points[uid] = 0
+    points[uid] -= amount
     save_points(points)
 @ABH.on(events.NewMessage(pattern='^الاغنياء$'))
 async def show_rich(event):
