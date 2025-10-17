@@ -70,7 +70,7 @@ async def add_money(event):
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     chat = str(event.chat_id)
-    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
+    if not (wfffp == uid or uid in lit):
         return
     if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
@@ -90,7 +90,7 @@ async def add_money(event):
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     chat = str(event.chat_id)
-    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
+    if not (wfffp == uid or uid in lit):
         return
     if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
