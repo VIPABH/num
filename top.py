@@ -104,6 +104,7 @@ async def add_money(event):
 async def add_money(event):
     if not event.is_group:
         return
+    r = await event.get_reply_message()
     type = "تصفير"
     await botuse(type)
     uid = event.sender_id
@@ -114,7 +115,6 @@ async def add_money(event):
     if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
         return
-    r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
     p = points[uid].get('points', 0)
