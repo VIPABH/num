@@ -117,7 +117,7 @@ async def add_money(event):
         return
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    p = points[uid].get('points', 0)
+    p = points[uid]
     delpoints(str(uid), str(gid), points, amount=int(p))
     await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
