@@ -210,7 +210,7 @@ async def callback_handler(event):
         await event.edit('عليمن تريد تضحك؟')
         lol[str(event.chat_id)] = True
     elif data == 'n':
-        await event.edit('اوكيه، خليناه بحاله 🤐')
+        await event.edit('اوكي، خليناه بحاله 🤐')
     else:
         return
 @ABH.on(events.NewMessage(pattern='^بوت$'))
@@ -264,23 +264,23 @@ async def myhandlers(event):
     ch = r.get(CHANNEL_KEY)
     buttons = [
         [
-            Button.inline('اوامر الحماية', data='gaurd'),
-            Button.inline('اوامر الرفع', data='ADD')
+            Button.inline('اوامر الحماية 🛡️ ', data='gaurd'),
+            Button.inline('اوامر الرفع ↕️', data='ADD')
         ],
         [
-            Button.inline('اوامر الالعاب', data='g'),
-            Button.inline('اوامر التفاعل', data='c')
+            Button.inline('اوامر الالعاب 🎮', data='g'),
+            Button.inline('اوامر التفاعل ✉️', data='c')
         ],
         [
-            Button.inline('اوامر التنظيف', data='d'),
-            Button.inline('اوامر الفلوس', data='m')
+            Button.inline('اوامر التنظيف 🧼', data='d'),
+            Button.inline('اوامر الفلوس 💵', data='m')
         ],
         [
-            Button.inline('اوامر اليوت', data='yt'),
-            Button.url('تحديثات البوت', url=f'https://t.me/{ch}')
+            Button.inline('اوامر اليوت 🟥', data='yt'),
+            Button.url('تحديثات البوت 🫆', url=f'https://t.me/{ch}')
         ]
     ]
-    await event.reply('شتريد من الاوامر متكلي ', buttons=buttons)
+    await event.reply('اقسام الاوامر👇', buttons=buttons)
 async def callbacklist(event):
     await botuse("اوامري")
     b = Button.inline('الرجوع', data='ret'),
