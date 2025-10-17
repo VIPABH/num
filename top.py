@@ -84,14 +84,14 @@ async def add_money(event):
 async def add_money(event):
     if not event.is_group:
         return
+    if not (wfffp == uid or uid in lit):
+        return
     type = "حذف فلوس"
     r = await event.get_reply_message()
     await botuse(type)
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     chat = str(event.chat_id)
-    if not (wfffp == uid or uid in lit):
-        return
     if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
         return
