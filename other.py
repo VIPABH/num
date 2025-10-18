@@ -158,7 +158,7 @@ async def remove_assistant(event):
     if chat_id in data and target_id in data[chat_id]:
         data[chat_id].remove(target_id)
         save_auth(data)
-        await cha(event, f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
+        await chs(event, f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
     else:
         await chs(event, f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
     type = "تنزيل معاون"
