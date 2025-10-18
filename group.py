@@ -136,16 +136,20 @@ async def theft(e):
         فلوس = points[id]
     else:
         فلوس = 0
-    if فلوس > 10000:
-        await chs(e, f'عذرا بس {await ment(س)} فلوسه قليله')
+    if فلوس < 10000:
+        await chs(e, f'عذرًا، لكن {await ment(س)} فلوسه قليلة جدًا للسرقة 💸')
         return
     p = فلوس // 10
     delpoints(id, e.chat_id, points, p)
     add_points(e.sender_id, e.chat_id, points, p)
-    await chs(e, f'تم سرقة {p} من {await ment(س)} بنجاح 🎉')
+    await chs(e, f'تمت سرقة {p} من {await ment(س)} بنجاح 🎉')
     await react(e, '🎉')
-    user_data['سرقة'][user_id]['last_play_time'] = current_time
-    save_user_data(user_data) 
+    if 'سرقة' not in user_data:
+        user_data['سرقة'] = {}
+    if user_id not in user_data['سرقة']:
+        user_data['سرقة'][user_id] = {}
+        user_data['سرقة'][user_id]['last_play_time'] = current_time
+        save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     if not event.is_group:
