@@ -129,14 +129,11 @@ async def theft(e):
         await e.reply('ماتكدر تسرق نفسك')
         return
     rank = await auth(e, True)
-    if rank:  
+    if rank:
         await chs(e, f"عذرا بس ماتكدر تسرق من {rank} ")
         return
-    if str(id) in points:
-        فلوس = points[id]
-    else:
-        فلوس = 0
-    if فلوس > 10000:
+    فلوس = points.get(id, points.get(str(id), 0))
+    if فلوس < 10000:
         await chs(e, f'عذرًا، لكن {await ment(س)} فلوسه قليلة جدًا للسرقة 💸')
         return
     p = فلوس // 10
@@ -148,8 +145,8 @@ async def theft(e):
         user_data['سرقة'] = {}
     if user_id not in user_data['سرقة']:
         user_data['سرقة'][user_id] = {}
-        user_data['سرقة'][user_id]['last_play_time'] = current_time
-        save_user_data(user_data)
+    user_data['سرقة'][user_id]['last_play_time'] = current_time
+    save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     if not event.is_group:
