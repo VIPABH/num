@@ -575,7 +575,7 @@ async def showwarns(e):
             await chs(e, "⚠️ لازم ترد على رسالة الشخص")
             return
         target_id = r.sender_id
-    معاون = await auth(event)
+    معاون = await auth(e)
     if معاون:
         await chs(e, "لك شمعة ماكو تحذيرات")
         return
