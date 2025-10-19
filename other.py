@@ -304,47 +304,38 @@ async def quran(event):
                 )
             else:
                 return
-AI_SECRET = "AIChatPowerBrain123@2024"
-def ask_ai(q):
-    url = "https://powerbrainai.com/app/backend/api/api.php"
-    headers = {
-        "User-Agent": "Dart/3.3 (dart:io)",
-        "Accept-Encoding": "gzip",
-        "content-type": "application/json; charset=utf-8"
-    }
-    data = {
-        "action": "send_message",
-        "model": "gpt-4o-mini",
-        "secret_token": AI_SECRET,
-        "messages": [
-            {"role": "system", "content": "ساعد باللهجة العراقية وكن ذكي وودود"},
-            {"role": "user", "content": q}
-        ]
-    }
-    res = requests.post(url, headers=headers, data=json.dumps(data), timeout=20)
-    if res.status_code == 200:
-        return res.json().get("data", "ماكو رد واضح من الذكاء.")
-    else:
-        return "صار خطأ بالسيرفر، جرب بعدين."
+GEMINI_API_KEY=os.getenv("GEMINI_API_KEY","AIzaSyCfoH1E0-8xexIUFHaZGnp-G58Cc2hegvM")
+GEMINI_MODEL="gemini-2.5-flash-lite"
+GEMINI_URL=f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+def ask_ai(q:str)->str:
+    try:
+        headers={"Content-Type":"application/json"}
+        data={"contents":[{"role":"user","parts":[{"text":q}]}],"system_instruction":{"parts":[{"text":"تحدث باللهجة العراقية بطريقة ذكية وودودة، وكن مختصر ومهذب."}]}}
+        params={"key":GEMINI_API_KEY}
+        res=requests.post(GEMINI_URL,headers=headers,params=params,json=data,timeout=20)
+        res.raise_for_status()
+        js=res.json()
+        if"candidates"in js and js["candidates"]:
+            return js["candidates"][0]["content"]["parts"][0].get("text","ماكو رد واضح من Gemini.")
+        else:
+            return"ماكو رد واضح من Gemini."
+    except requests.exceptions.Timeout:
+        return"⏳ السيرفر تأخر بالرد، جرب بعدين."
+    except Exception as e:
+        return f"⚠️ صار خطأ أثناء الاتصال: {e}"
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
-    user_q = event.pattern_match.group(1)
-    x = event.text
-    ignore_phrases = [
-    "مخفي اعفطلة", "مخفي اعفطله",
-    "مخفي قيده", "مخفي قيدة",
-    "مخفي طكة زيج",
-    "مخفي اطلع", "مخفي غادر",
-    "مخفي نزلني", "مخفي نزلة", "مخفي نزله",
-    "مخفي اختار"
-]
+    user_q=event.pattern_match.group(1)
+    x=event.text
+    ignore_phrases=["مخفي اعفطلة","مخفي اعفطله","مخفي قيده","مخفي قيدة","مخفي طكة زيج","مخفي اطلع","مخفي غادر","مخفي نزلني","مخفي نزلة","مخفي نزله","مخفي اختار"]
     if not user_q or x in ignore_phrases or x.startswith("مخفي اختار"):
         return
-    type = "ai"
-    await botuse(type)
-    async with event.client.action(event.chat_id, 'typing'):
-        response = await asyncio.to_thread(ask_ai, user_q)
-    await event.respond(response, reply_to=event.id)
+    msg_type="ai"
+    await botuse(msg_type)
+    await event.respond("🤖 انتظر، خلي أشوف شنو يكلك الذكاء...",reply_to=event.id)
+    async with event.client.action(event.chat_id,'typing'):
+        response=await asyncio.to_thread(ask_ai,user_q)
+    await event.respond(response,reply_to=event.id)
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):
     type = "اوامر الحظ"
@@ -879,7 +870,7 @@ async def how_to_whisper(event):
             caption=c,
             reply_to=event.id
         )
-@ABH.on(events.NewMessage(pattern=r'^انميشن$'))
+@ABH.on(events.NewMessage(pattern=r'^انميشن'))
 async def send_anime(event):
     type = "انميشن"
     await botuse(type)
