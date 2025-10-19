@@ -499,38 +499,20 @@ async def warn_user(event):
     x = await ment(t)
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
-    await event.reply(
-        f'تم تحذير المستخدم اسمه: {x}\n ايديه: ( `{target_id}` )\n \n تحذيراته صارت ( 3/{w} )',
-        buttons=b
-    )
-    await try_forward(r)
-    await r.delete()
-    await event.delete()
+    await event.reply(f'تم تحذير المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n\nتحذيراته صارت ( 3/{w} )', buttons=b)
     restriction_duration = 900
-    if w == 3 and await is_admin(chat_id, target_id):
+    if w == 3:
         now = int(time.time())
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-    elif w == 3 and not await is_admin(chat_id, target_id):
-        now = int(time.time())
-        rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True)
-        await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-        return
+        if not await is_admin(chat_id, target_id):
+            rights = ChatBannedRights(until_date=now + restriction_duration, send_messages=True)
+            await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
     await botuse("تحذير مستخدمين")
-    المحذر= await mention(event)
-    await send(
-        event, 
-        f"🚨 ┇ #تـحـذيـر ┇ 🚨\n"
-        f"👤 المُحَذِّر:   {المحذر}\n"
-        f"👤 المُحَذَّر:   {x}\n"
-        f"🆔 الآيـدي:   `{target_id}`\n"
-        f"⚠️ التحذيرات:   {w} / 3\n"
-        f"🔗 رابط الرسالة:   {l}"
-    )
-    await try_forward(r)
-    await r.delete()
+    المحذر = await mention(event)
+    await send(event, f"🚨 ┇ #تـحـذيـر ┇ 🚨\n👤 المُحَذِّر: {المحذر}\n👤 المُحَذَّر: {x}\n🆔 الآيـدي: `{target_id}`\n⚠️ التحذيرات: {w} / 3\n🔗 رابط الرسالة: {l}")
+    if r:
+        await try_forward(r)
+        await r.delete()
     await event.delete()
 def extract_warn_info(text: str):
     text = text.strip()
