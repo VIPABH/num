@@ -332,10 +332,10 @@ async def ai_handler(event):
         return
     msg_type="ai"
     await botuse(msg_type)
-    await event.respond("🤖 انتظر، خلي أشوف شنو يكلك الذكاء...",reply_to=event.id)
+    await event.reply("🤖 انتظر، خلي أشوف شنو يكلك الذكاء...",reply_to=event.id)
     async with event.client.action(event.chat_id,'typing'):
         response=await asyncio.to_thread(ask_ai,user_q)
-    await event.respond(response,reply_to=event.id)
+    await event.edit(response)
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):
     type = "اوامر الحظ"
