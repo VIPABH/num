@@ -49,7 +49,7 @@ async def store_media_messages(event):
             z = r.get(lock_key) == "True"
             if not z:
                 return
-            if len(media_messages[chat_id]) <= 50:
+            if len(media_messages[chat_id]) >= 50:
                 await chs(event, f"عذرا ما تكدر احذف حاليا لازم يكون عدد الميديا اكثر من 50 ~ {len(media_messages[chat_id])}")
                 return
             if len(media_messages[chat_id]) >= 150:
