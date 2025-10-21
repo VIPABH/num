@@ -18,6 +18,9 @@ def save_media_messages():
         json.dump(media_messages, f, ensure_ascii=False, indent=2)
 async def delete_media(chat_id, event=None):
     deleted_count = 0
+    if len(media_messages[chat_id]) <= 50:
+        await chs(event, f"ما تگدر تحذف، لازم الميديا أكثر من 50 📦 ({len(media_messages[chat_id])})")
+        return
     if chat_id in media_messages and media_messages[chat_id]:
         try:
             for msg_id in media_messages[chat_id]:
@@ -48,9 +51,6 @@ async def store_media_messages(event):
             lock_key = f"lock:{event.chat_id}:تنظيف"
             z = r.get(lock_key) == "True"
             if not z:
-                return
-            if len(media_messages[chat_id]) <= 50:
-                await chs(event, f"عذرا ما تكدر احذف حاليا لازم يكون عدد الميديا اكثر من 50 ~ {len(media_messages[chat_id])}")
                 return
             if len(media_messages[chat_id]) >= 150:
                 await delete_media(chat_id)
