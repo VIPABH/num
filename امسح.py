@@ -19,7 +19,7 @@ def save_media_messages():
 async def delete_media(chat_id, event=None):
     deleted_count = 0
     if len(media_messages[chat_id]) <= 50:
-        await chs(event, f"ما تگدر تحذف، لازم الميديا أكثر من 50 📦 ({len(media_messages[chat_id])})")
+        await chs(event, f"ما تگدر تحذف، لازم الميديا أكثر من ( 50 / {len(media_messages[chat_id])} ) 📦")
         return
     if chat_id in media_messages and media_messages[chat_id]:
         try:
