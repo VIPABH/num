@@ -101,7 +101,7 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
- @ABH.on(events.NewMessage(pattern=r'(?i)^(حذف|مسح) المعاونين$'))
+@ABH.on(events.NewMessage(pattern=r'(?i)^(حذف|مسح) المعاونين$'))
 async def delassistant(e):
 	a = await auth(e)
 	if not a or a == "المعاون":
