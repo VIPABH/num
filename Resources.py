@@ -24,7 +24,7 @@ async def to(e):
         return reply
     if not (target or reply):
         return None
-    if target and target.isdigit():
+    if (target or e.pattern_match.group(2)) and target.isdigit() or int(e.pattern_match.group(2)):
         return int(target)
     if target and target.startswith('@'):
         target = target[1:]
