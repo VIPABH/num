@@ -107,10 +107,6 @@ async def delassistant(e):
 	if not a or a == "المعاون":
 		await chs(e, "عذرا الامر يخص المطورين الثانويين والمالك")
 		return
-	r = await e.get_reply_message()
-	if not r:
-		await chs(e, "لازم تسوي رد على شخص علمود انزله")
-		return
 	await chs(e, "يتبع...")    
 @ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
 async def add_assistant(event):
