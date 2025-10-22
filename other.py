@@ -107,7 +107,13 @@ async def delassistant(e):
 	if not a or a == "المعاون":
 		await chs(e, "عذرا الامر يخص المطورين الثانويين والمالك")
 		return
-	await chs(e, "يتبع...")    
+	c = int(e.chat_id)
+	data = load_auth()
+    if c not in data:
+        await chs(e, "المجموعة ما بيها معاونين اصلا")
+		return
+	del data[c]
+	await chs(e, "تم حذف المعاونين.")
 @ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
 async def add_assistant(event):
     if not event.is_group:
