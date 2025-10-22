@@ -101,7 +101,7 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.+))?$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
 async def add_assistant(event):
     if not event.is_group:
         return
