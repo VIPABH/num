@@ -107,7 +107,7 @@ async def delassistant(e):
     if not a or a == "المعاون":
         await chs(e, "عذراً، الأمر يخص المطورين الثانويين والمالك")
         return
-    c = int(e.chat_id)
+    c = str(e.chat_id)
     data = load_auth()
     if c not in data:
         await chs(e, "المجموعة ما بيها معاونين أصلاً")
