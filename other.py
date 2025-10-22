@@ -115,7 +115,7 @@ async def add_assistant(event):
     await botuse(type)
     ف = await to(event)
     target_id = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
-    if not target_id:
+    if not ف:
         await chs(event, f"اكتب يوزر او ايدي الشخص او سويه عليه رد")
         return
     chat_id = str(event.chat_id)
