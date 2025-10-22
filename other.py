@@ -101,6 +101,17 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
+ @ABH.on(events.NewMessage(pattern=r'(?i)^(حذف|مسح) المعاونين$'))
+async def delassistant(e):
+	a = await auth(e)
+	if not a or a == "المعاون":
+		await chs(e, "عذرا الامر يخص المطورين الثانويين والمالك")
+		return
+	r = await e.get_reply_message()
+	if not r:
+		await chs(e, "لازم تسوي رد على شخص علمود انزله")
+		return
+	await chs(e, "يتبع...")    
 @ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
 async def add_assistant(event):
     if not event.is_group:
