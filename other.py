@@ -746,7 +746,7 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
-    if event.sender_id != data['from'] and event.sender_id != data['from']:
+    if event.sender_id != data['from'] and event.sender_id != data['to']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
     type = "مشاهده الهمسه"
