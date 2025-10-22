@@ -113,19 +113,8 @@ async def add_assistant(event):
     sm = await mention(event)
     type = "رفع معاون"
     await botuse(type)
-    target_id = event.pattern_match.group(1)
-    if not target_id:
-        reply = await event.get_reply_message()
-        if not reply:
-            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-        target_id = reply.sender_id
-        sender = await reply.get_sender()
-    else:
-        target_id = int(target_id)
-        sender = await ABH.get_entity(target_id)
-    if target_id == 1680890363:
-        await chs(event, "ديله ماشي")
-        return
+    ف = await to(event)
+    target_id = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     chat_id = str(event.chat_id)
     rm = await ment(sender)
     data = load_auth()
