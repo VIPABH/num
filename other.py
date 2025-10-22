@@ -116,7 +116,7 @@ async def add_assistant(event):
     ف = await to(event)
     target_id = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     chat_id = str(event.chat_id)
-    rm = await ment(sender)
+    rm = await ment(ف)
     data = load_auth()
     if chat_id not in data:
         data[chat_id] = []
