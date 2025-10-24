@@ -32,7 +32,7 @@ async def delnumber(e):
         return
     await botuse("حذف رقم")
     data = create("NUM.json")
-    chat_id = str(e.chat_id)
+    chat_id = int(e.chat_id)
     if chat_id not in data:
         await chs(e, "المجموعة لا تحتوي على أي رقم مخزن.")
         return
