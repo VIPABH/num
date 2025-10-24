@@ -24,6 +24,22 @@ def save_json(filename, data):
     str_data = {str(k): v for k, v in data.items()}
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(str_data, f, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern="حذف (رقم|الرقم)"))
+async def delnumber(e):
+    a = await auth(e)
+    if not a or a == "المعاون":
+        await chs(e, "عذرًا، هذا الأمر متاح فقط للمطور الثانوي أو الأعلى.")
+        return
+    await botuse("حذف رقم")
+    data = create("NUM.json")
+    chat_id = str(e.chat_id)
+    if chat_id not in data:
+        await chs(e, "المجموعة لا تحتوي على أي رقم مخزن.")
+        return
+    del data[chat_id]
+    with open("NUM.json", "w") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+    await chs(e, "تم حذف الرقم بنجاح ✅")
 @ABH.on(events.NewMessage(pattern="^تعيين رقم$"))
 async def set_num(e):
     if not e.is_group:
@@ -32,6 +48,7 @@ async def set_num(e):
     if a and a == "المعاون": 
         await chs(e, f"عذرا عزيزي ( {await mention(e)} ) الامر يخص المالك ")
         return
+    await botuse("تعيين رقم")
     group_id = int(e.chat_id)
     data = create(NUM_FILE)
     if group_id in data:
