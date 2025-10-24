@@ -45,7 +45,7 @@ async def set_num(e):
     if not e.is_group:
         return
     a = await auth(e)
-    if a and a == "المعاون": 
+    if not a or a == "المعاون": 
         await chs(e, f"عذرا عزيزي ( {await mention(e)} ) الامر يخص المالك ")
         return
     await botuse("تعيين رقم")
