@@ -3,17 +3,14 @@ from Program import *
 from ABH import ABH
 import requests, datetime
 def to_date(timestamp):
-    if not timestamp:
-        return "غير متوفر"
+    if not timestamp: return "غير متوفر"
     return datetime.datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M")
 def get_chess_profile(username):
     base = f"https://api.chess.com/pub/player/{username.lower()}"
     headers = {"User-Agent": "TelegramChessBot/1.0 (contact@example.com)"}
     profile = requests.get(base, headers=headers, timeout=10)
-    if profile.status_code == 404:
-        return None
-    if profile.status_code != 200:
-        return {"error": f"⚠️ خطأ في الاتصال: {profile.status_code}"}
+    if profile.status_code == 404: return None
+    if profile.status_code != 200: return {"error": f"⚠️ خطأ في الاتصال: {profile.status_code}"}
     stats = requests.get(f"{base}/stats", headers=headers, timeout=10)
     stats_data = stats.json() if stats.status_code == 200 else {}
     data = profile.json()
@@ -35,7 +32,6 @@ async def get_elo(event):
             await event.respond("❌ لم يتم تعيين اسمك بعد.\nاكتب مثلًا:\n`شطرنج k_4x1`")
             return
         username = stored_username
-    await event.respond(f"♟ جاري جلب معلومات اللاعب **{username}** ...")
     data = get_chess_profile(username)
     if not data:
         await event.respond("❌ لم يتم العثور على هذا المستخدم على Chess.com.")
@@ -46,20 +42,15 @@ async def get_elo(event):
     s = data.get("stats", {})
     def rating(mode):
         item = s.get(f"chess_{mode}")
-        if not item:
-            return "غير متوفر"
+        if not item: return "غير متوفر"
         last = item.get("last", {}).get("rating")
         best = item.get("best", {}).get("rating")
-        if last and best:
-            return f"{last} (Elo: {best})"
-        elif last:
-            return str(last)
-        else:
-            return "غير متوفر"
+        if last and best: return f"{last} (Elo: {best})"
+        if last: return str(last)
+        return "غير متوفر"
     def record(mode):
         item = s.get(f"chess_{mode}")
-        if not item or "record" not in item:
-            return "غير متوفر"
+        if not item or "record" not in item: return "غير متوفر"
         rec = item["record"]
         wins = rec.get("win", 0)
         losses = rec.get("loss", 0)
@@ -70,7 +61,7 @@ async def get_elo(event):
         f"♟ **معلومات اللاعب Chess.com** ♟\n\n"
         f"👤 **الاسم:** {data.get('username', 'غير متوفر')}\n"
         f"🏆 **اللقب:** {data.get('title', 'بدون')}\n"
-        f"🌍 **الدولة:** {data.get('country', '').split('/')[-1] if data.get('country') else 'غير معروف'}\n"
+        f"🌍 **الدولة:** {data.get('country','').split('/')[-1] if data.get('country') else 'غير معروف'}\n"
         f"📅 **تاريخ الانضمام:** {to_date(data.get('joined'))}\n"
         f"🕐 **آخر ظهور:** {to_date(data.get('last_online'))}\n\n"
         f"📊 **التصنيفات:**\n"
