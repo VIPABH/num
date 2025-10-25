@@ -40,22 +40,23 @@ async def get_elo(event):
         await event.respond(data["error"])
         return
     s = data.get("stats", {})
-    def record(mode):
-        item = s.get(f"chess_{mode}")
-        if not item or "record" not in item: return 0, 0, 0
+    item = s.get("chess_blitz")
+    if not item or "record" not in item:
+        wins = losses = draws = 0
+        elo = "غير متوفر"
+    else:
         rec = item["record"]
-        return rec.get("win", 0), rec.get("loss", 0), rec.get("draw", 0)
-    wins, losses, draws = record("blitz")  
+        wins = rec.get("win", 0)
+        losses = rec.get("loss", 0)
+        draws = rec.get("draw", 0)
+        elo = item.get("last", {}).get("rating", "غير متوفر")
     profile_text = (
-        f"الاسم -> {data.get('username', 'غير متوفر')}\n"
+        f"الاسم -> {data.get('username','غير متوفر')}\n"
         f"الانشاء -> {to_date(data.get('joined'))}\n"
         f"اخر ظهور -> {to_date(data.get('last_online'))}\n"
         f"عدد الفوز -> {wins}\n"
         f"عدد الخسارات -> {losses}\n"
-        f"عدد التعادلات -> {draws}\n\n"
-        f"⚡ Blitz -> {wins} فوز / {losses} خسارة / {draws} تعادل\n"
-        f"🔥 Bullet -> {record('bullet')[0]} فوز / {record('bullet')[1]} خسارة / {record('bullet')[2]} تعادل\n"
-        f"⏱ Rapid -> {record('rapid')[0]} فوز / {record('rapid')[1]} خسارة / {record('rapid')[2]} تعادل\n"
-        f"📬 Daily -> {record('daily')[0]} فوز / {record('daily')[1]} خسارة / {record('daily')[2]} تعادل"
+        f"عدد التعادلات -> {draws}\n"
+        f"Blitz Elo -> {elo}"
     )
     await event.reply(profile_text, link_preview=False)
