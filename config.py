@@ -1,5 +1,5 @@
 from ABH import ABH, events, bot_token
-from datetime import datetime
+import datetime
 import os, json, pytz
 from Resources import * 
 from addanddel import * 
@@ -19,10 +19,10 @@ from يوت import *
 from المستمع import *
 from ايبيات import *
 baghdad_tz = pytz.timezone("Asia/Baghdad")
-start_time = datetime.now(baghdad_tz)
+start_time = datetime.datetime.now(baghdad_tz)
 @ABH.on(events.NewMessage(pattern='وقت التشغيل', from_users=[wfffp]))
 async def timerun(event):
-    now = datetime.now(baghdad_tz)
+    now = datetime.datetime.now(baghdad_tz)
     diff = now - start_time
     days = diff.days
     hours = diff.seconds // 3600
