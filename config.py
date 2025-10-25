@@ -17,24 +17,33 @@ from top import *
 from امسح import * 
 from يوت import *
 from المستمع import *
-baghdad_tz = pytz.timezone('Asia/Baghdad')
-now = datetime.now(baghdad_tz)
-hour = now.strftime("%y\\%m\\%d--%I:%M%p")
-اسم_الملف = "التشغيل.json"
-if not os.path.exists(اسم_الملف):
-    وقت_التشغيل = hour
-    with open(اسم_الملف, "w", encoding="utf-8") as ملف:
-        json.dump(وقت_التشغيل, ملف, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern='وقت التشغيل'))
+from ايبيات import *
+baghdad_tz = pytz.timezone("Asia/Baghdad")
+start_time = datetime.now(baghdad_tz)
+@ABH.on(events.NewMessage(pattern='وقت التشغيل', from_users=[wfffp]))
 async def timerun(event):
-    if event.sender_id==wfffp:
-        with open(اسم_الملف,"r",encoding="utf-8") as ملف:
-            وقت_التشغيل=json.load(ملف)
-        baghdad_tz=pytz.timezone("Asia/Baghdad")
-        الآن=datetime.now(baghdad_tz)
-        الساعة=الآن.strftime("%I:%M %p")
-        الرسالة=f"🕒 وقت التشغيل {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد {الساعة}"
-        await event.reply(الرسالة)
+    now = datetime.now(baghdad_tz)
+    diff = now - start_time
+    days = diff.days
+    hours = diff.seconds // 3600
+    minutes = (diff.seconds % 3600) // 60
+    duration_parts = []
+    if days > 0:
+        duration_parts.append(f"{days} يوم")
+    if hours > 0:
+        duration_parts.append(f"{hours} ساعة")
+    if minutes > 0:
+        duration_parts.append(f"{minutes} دقيقة")
+
+    duration_text = " و ".join(duration_parts) if duration_parts else "أقل من دقيقة"
+    start_str = start_time.strftime("%y/%m/%d--%I:%M%p")
+    now_str = now.strftime("%y/%m/%d--%I:%M%p")
+    message = (
+        f"🕒 **بدأ التشغيل:** {start_str}\n"
+        f"🕰️ **الوقت الحالي في بغداد:** {now_str}\n"
+        f"⏳ **مدة التشغيل:** {duration_text}"
+    )
+    await event.reply(message)
 def main():
     print(f'anymous is working at {hour} ✓')
     ABH.start(bot_token=bot_token)
