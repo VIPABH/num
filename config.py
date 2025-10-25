@@ -34,7 +34,6 @@ async def timerun(event):
         duration_parts.append(f"{hours} ساعة")
     if minutes > 0:
         duration_parts.append(f"{minutes} دقيقة")
-
     duration_text = " و ".join(duration_parts) if duration_parts else "أقل من دقيقة"
     start_str = start_time.strftime("%y/%m/%d--%I:%M%p")
     now_str = now.strftime("%y/%m/%d--%I:%M%p")
