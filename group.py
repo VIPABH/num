@@ -377,7 +377,7 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
         return
-    a = auth(event, False)
+    a = auth(event, True)
     if a:
         await chs(event, f"عذرا ماتكدر تزعج ( {await ment(r)} )")
         return
