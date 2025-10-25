@@ -302,9 +302,9 @@ async def telegramgames(event):
     emoji = dice.emoticon
     value = dice.value
     if value == 64:
-        amount = random.choice([100000, 200000, 300000, 500000])
+        amount = 1000000
     else:
-        amount = 10000
+        amount = 250000
     await asyncio.sleep(4)
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
