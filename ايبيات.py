@@ -40,36 +40,22 @@ async def get_elo(event):
         await event.respond(data["error"])
         return
     s = data.get("stats", {})
-    def rating(mode):
-        item = s.get(f"chess_{mode}")
-        if not item: return "غير متوفر"
-        last = item.get("last", {}).get("rating")
-        best = item.get("best", {}).get("rating")
-        if last and best: return f"{last} (Elo: {best})"
-        if last: return str(last)
-        return "غير متوفر"
     def record(mode):
         item = s.get(f"chess_{mode}")
-        if not item or "record" not in item: return "غير متوفر"
+        if not item or "record" not in item: return 0, 0, 0
         rec = item["record"]
-        wins = rec.get("win", 0)
-        losses = rec.get("loss", 0)
-        draws = rec.get("draw", 0)
-        total = wins + losses + draws
-        return f"{wins} فوز / {losses} خسارة / {draws} تعادل (المجموع: {total})"
+        return rec.get("win", 0), rec.get("loss", 0), rec.get("draw", 0)
+    wins, losses, draws = record("blitz")  
     profile_text = (
-        f"♟ **معلومات اللاعب Chess.com** ♟\n\n"
-        f"👤 **الاسم:** {data.get('username', 'غير متوفر')}\n"
-        f"🏆 **اللقب:** {data.get('title', 'بدون')}\n"
-        f"🌍 **الدولة:** {data.get('country','').split('/')[-1] if data.get('country') else 'غير معروف'}\n"
-        f"📅 **تاريخ الانضمام:** {to_date(data.get('joined'))}\n"
-        f"🕐 **آخر ظهور:** {to_date(data.get('last_online'))}\n\n"
-        f"📊 **التصنيفات:**\n"
-        f"⚡ Blitz: {rating('blitz')} — {record('blitz')}\n"
-        f"🔥 Bullet: {rating('bullet')} — {record('bullet')}\n"
-        f"⏱ Rapid: {rating('rapid')} — {record('rapid')}\n"
-        f"🧩 Puzzle: {rating('puzzle')}\n"
-        f"📬 Daily: {rating('daily')} — {record('daily')}\n\n"
-        f"🔗 [الملف الشخصي على Chess.com]({data.get('url')})"
+        f"الاسم -> {data.get('username', 'غير متوفر')}\n"
+        f"الانشاء -> {to_date(data.get('joined'))}\n"
+        f"اخر ظهور -> {to_date(data.get('last_online'))}\n"
+        f"عدد الفوز -> {wins}\n"
+        f"عدد الخسارات -> {losses}\n"
+        f"عدد التعادلات -> {draws}\n\n"
+        f"⚡ Blitz -> {wins} فوز / {losses} خسارة / {draws} تعادل\n"
+        f"🔥 Bullet -> {record('bullet')[0]} فوز / {record('bullet')[1]} خسارة / {record('bullet')[2]} تعادل\n"
+        f"⏱ Rapid -> {record('rapid')[0]} فوز / {record('rapid')[1]} خسارة / {record('rapid')[2]} تعادل\n"
+        f"📬 Daily -> {record('daily')[0]} فوز / {record('daily')[1]} خسارة / {record('daily')[2]} تعادل"
     )
     await event.reply(profile_text, link_preview=False)
