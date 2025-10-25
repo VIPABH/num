@@ -36,7 +36,7 @@ async def delete_media(chat_id, event=None):
         else:
             await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹')
 async def store_media_messages(event):
-    if not event.is_group:
+    if event.message.dice or not event.is_group:
         return
     chat_id = str(event.chat_id)
     msg = event.message
