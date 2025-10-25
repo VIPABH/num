@@ -19,7 +19,7 @@ from يوت import *
 from المستمع import *
 from ايبيات import *
 baghdad_tz = pytz.timezone("Asia/Baghdad")
-start_time = datetime.now(baghdad_tz)
+start_time = datetime.datetime.now(baghdad_tz)
 @ABH.on(events.NewMessage(pattern='وقت التشغيل', from_users=[wfffp]))
 async def timerun(event):
     now = datetime.now(baghdad_tz)
