@@ -341,7 +341,7 @@ async def ai_handler(event):
     async with event.client.action(event.chat_id,'typing'):
         response=await asyncio.to_thread(ask_ai,user_q)
     await chs(event, response)
-@ABH.on(events.NewMessage(pattern='اوامر الحظ'))
+@ABH.on(events.NewMessage(pattern='^اوامر الحظ$'))
 async def luck_list(event):
     type = "اوامر الحظ"
     await botuse(type)
