@@ -45,7 +45,7 @@ async def timerun(event):
     )
     await event.reply(message)
 def main():
-    print(f'anymous is working at {hour} ✓')
+    print(f'anymous is working at {start_time} ✓')
     ABH.start(bot_token=bot_token)
     ABH.run_until_disconnected()
 if __name__ == "__main__":
