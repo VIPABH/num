@@ -294,7 +294,10 @@ WIN_VALUES = {
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
     if not event.message.dice or not event.is_group:
-        return    
+        return
+    if event.fwd_from:
+        await chs(event, "ممنوع تحول الرسالة! جرب حضك ولا تغش")
+        return
     type = "المقدار المميز"
     await botuse(type)
     user_id = event.sender_id
