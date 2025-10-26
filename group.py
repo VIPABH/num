@@ -110,13 +110,6 @@ async def theft(e):
     current_time = int(time.time())
     cooldown = 10 * 60
     last_play_time = user_data['سرقة'].get(user_id, {}).get('last_play_time', 0)
-    last_stolen_time = user_data['مسروق'].get(user_id, {}).get('last_play_time', 0)
-    if current_time - last_stolen_time < cooldown:
-        remaining = cooldown - (current_time - last_stolen_time)
-        minutes, seconds = divmod(remaining, 60)
-        await e.reply(f"🪙 تمت سرقتك مؤخرًا! يجب أن تنتظر {minutes:02}:{seconds:02} قبل أن تسرق أحدًا.")
-        await react(e, '😞')
-        return
     if current_time - last_play_time < cooldown:
         remaining = cooldown - (current_time - last_play_time)
         minutes, seconds = divmod(remaining, 60)
@@ -135,6 +128,13 @@ async def theft(e):
         return
     if target_id == user_id:
         await e.reply('❌ لا يمكنك سرقة نفسك.')
+        return
+    last_stolen_time = user_data['مسروق'].get(target_id, {}).get('last_play_time', 0)
+    if current_time - last_stolen_time < cooldown:
+        remaining = cooldown - (current_time - last_stolen_time)
+        minutes, seconds = divmod(remaining, 60)
+        await e.reply(f"🪙 تمت سرقته مؤخرًا! يجب أن تنتظر {minutes:02}:{seconds:02} قبل أن تسرق أحدًا.")
+        await react(e, '😞')
         return
     rank = await auth(e, True)
     if rank and rank != "المعاون":
