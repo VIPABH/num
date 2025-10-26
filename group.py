@@ -96,56 +96,51 @@ def tiftsave():
 def save_user_data(data):
     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
+@ABH.on(events.NewMessage(pattern=r'^(?:سرقة|سرقه|خمط)$'))
 async def theft(e):
     if not e.is_group:
         return
     user_id = str(e.sender_id)
     user_data = load_user_data()
     user_data.setdefault('سرقة', {})
-    user_data['سرقة'].setdefault(user_id, {})
-    last_play_time = user_data['سرقة'][user_id].get('last_play_time', 0)
+    user_data.setdefault('مسروق', {})
+    last_play_time = user_data['سرقة'].get(user_id, {}).get('last_play_time', 0)
     current_time = int(time.time())
-    time_diff = current_time - last_play_time
-    if time_diff < 10 * 60:
-        remaining = 10 * 60 - time_diff
-        minutes = remaining // 60
-        seconds = remaining % 60
-        formatted_time = f"{minutes:02}:{seconds:02}"
-        await e.reply(f"يجب عليك الانتظار {formatted_time} قبل السرقة مجددًا.")
+    cooldown = 10 * 60
+    if current_time - last_play_time < cooldown:
+        remaining = cooldown - (current_time - last_play_time)
+        minutes, seconds = divmod(remaining, 60)
+        await e.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل السرقة مجددًا.")
         await react(e, '😐')
         return
     r = await e.get_reply_message()
     if not r:
         await react(e, '🤔')
-        await e.reply('لازم ترد على رساله حته تخمط من صاحبها')
+        await e.reply('يجب أن ترد على رسالة المستخدم الذي تريد سرقته.')
         return
-    id = r.sender_id
-    س = await r.get_sender()
-    if س.bot:
-        await e.reply('ماتكدر تسرق من بوت')
+    target_id = str(r.sender_id)
+    target = await r.get_sender()
+    if target.bot:
+        await e.reply('❌ لا يمكنك السرقة من بوت.')
         return
-    if id == e.sender_id:
-        await e.reply('ماتكدر تسرق نفسك')
+    if target_id == user_id:
+        await e.reply('❌ لا يمكنك سرقة نفسك.')
         return
     rank = await auth(e, True)
     if rank and rank != "المعاون":
         await chs(e, f"عذرًا، لا يمكنك السرقة من {rank}.")
         return
-    فلوس = points.get(id, points.get(str(id), 0))
+    فلوس = points.get(target_id, points.get(str(target_id), 0))
     if فلوس < 10000:
-        await chs(e, f'عذرًا، لكن {await ment(س)} فلوسه قليلة جدًا للسرقة 💸')
+        await chs(e, f'عذرًا، {await ment(target)} فلوسه قليلة جدًا 💸')
         return
-    p = فلوس // 10
-    delpoints(id, e.chat_id, points, p)
-    add_points(e.sender_id, e.chat_id, points, p)
-    await chs(e, f'تمت سرقة {p} من {await ment(س)} بنجاح 🎉')
+    stolen_amount = فلوس // 10
+    delpoints(target_id, e.chat_id, points, stolen_amount)
+    add_points(e.sender_id, e.chat_id, points, stolen_amount)
+    await chs(e, f'💰 تمت سرقة {stolen_amount} من {await ment(target)} بنجاح 🎉')
     await react(e, '🎉')
-    if 'سرقة' not in user_data:
-        user_data['سرقة'] = {}
-    if user_id not in user_data['سرقة']:
-        user_data['سرقة'][user_id] = {}
-    user_data['سرقة'][user_id]['last_play_time'] = current_time
+    user_data['سرقة'][user_id] = {'last_play_time': current_time}
+    user_data['مسروق'][target_id] = {'last_play_time': current_time}
     save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
