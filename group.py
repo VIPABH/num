@@ -88,10 +88,13 @@ def get_message_type(msg: Message) -> str:
         return "الاستفتاءات"
     return
 USER_DATA_FILE = "thift.json"
-def tiftsave():
+def load_user_data():
     if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
+        try:
+            with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return {}
     return {}
 def save_user_data(data):
     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
@@ -104,19 +107,26 @@ async def theft(e):
     user_data = load_user_data()
     user_data.setdefault('سرقة', {})
     user_data.setdefault('مسروق', {})
-    last_play_time = user_data['سرقة'].get(user_id, {}).get('last_play_time', 0)
     current_time = int(time.time())
     cooldown = 10 * 60
+    last_play_time = user_data['سرقة'].get(user_id, {}).get('last_play_time', 0)
+    last_stolen_time = user_data['مسروق'].get(user_id, {}).get('last_play_time', 0)
+    if current_time - last_stolen_time < cooldown:
+        remaining = cooldown - (current_time - last_stolen_time)
+        minutes, seconds = divmod(remaining, 60)
+        await e.reply(f"🪙 تمت سرقتك مؤخرًا! يجب أن تنتظر {minutes:02}:{seconds:02} قبل أن تسرق أحدًا.")
+        await react(e, '😞')
+        return
     if current_time - last_play_time < cooldown:
         remaining = cooldown - (current_time - last_play_time)
         minutes, seconds = divmod(remaining, 60)
-        await e.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل السرقة مجددًا.")
+        await e.reply(f"⏳ يجب أن تنتظر {minutes:02}:{seconds:02} قبل أن تسرق مجددًا.")
         await react(e, '😐')
         return
     r = await e.get_reply_message()
     if not r:
         await react(e, '🤔')
-        await e.reply('يجب أن ترد على رسالة المستخدم الذي تريد سرقته.')
+        await e.reply('يجب أن ترد على رسالة الشخص الذي تريد سرقته.')
         return
     target_id = str(r.sender_id)
     target = await r.get_sender()
@@ -132,7 +142,7 @@ async def theft(e):
         return
     فلوس = points.get(target_id, points.get(str(target_id), 0))
     if فلوس < 10000:
-        await chs(e, f'عذرًا، {await ment(target)} فلوسه قليلة جدًا 💸')
+        await chs(e, f'عذرًا، {await ment(target)} فلوسه قليلة جدًا للسرقة 💸')
         return
     stolen_amount = فلوس // 10
     delpoints(target_id, e.chat_id, points, stolen_amount)
