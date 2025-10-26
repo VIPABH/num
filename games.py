@@ -312,11 +312,13 @@ async def telegramgames(event):
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
         await event.reply(f"اررررحب فزت ب {emoji}  تم اضافة ( `{amount}` ) لثروتك")
+        await react(event, '🎉')
         user_id = event.sender_id
         gid = event.chat_id
         add_points(user_id, gid, points, amount=amount)
     else:
         await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
+        await react(event, '💔')
 @ABH.on(events.NewMessage(pattern='/num'))
 async def num(event):
     if not event.is_group:
