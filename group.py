@@ -129,8 +129,8 @@ async def theft(e):
         await e.reply('ماتكدر تسرق نفسك')
         return
     rank = await auth(e, True)
-    if rank or not (rank == "المعاون"):
-        await chs(e, f"عذرا بس ماتكدر تسرق من {rank} ")
+    if rank and rank != "المعاون":
+        await chs(e, f"عذرًا، لا يمكنك السرقة من {rank}.")
         return
     فلوس = points.get(id, points.get(str(id), 0))
     if فلوس < 10000:
