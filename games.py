@@ -1035,7 +1035,7 @@ async def faster_reult(event):
         user_id = event.sender_id
         gid = event.chat_id
         p = random.randint(1, 100)
-        a = points[str(user_id)]
+        a = points[user_id]
         await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{a}` لفلوسك')
         add_points(user_id, gid, points, amount=p)
         answer = None
