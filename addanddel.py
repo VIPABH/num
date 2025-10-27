@@ -249,6 +249,7 @@ async def dodemote(event, target_user_id=None):
             rank=''
         ))
         await react(event, "👍")
+        await chs(event, "تم تنزيلك من المشرفين")
         return True
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تنزيل المشرف: {e}")
@@ -261,7 +262,6 @@ async def demote_admin(event):
         return
     if event.text == "مخفي نزلني":
         await dodemote(event)
-        await chs(event, "تم تنزيلك من المشرفين")
         return
     r = await event.get_reply_message()
     if not r:
