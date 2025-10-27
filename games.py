@@ -945,110 +945,97 @@ async def handle_choice(event, user_choice_key):
             f"{result}"
         )
     active_games.pop(chat_id, None)
+fake = Faker("ar_AA")
 res = {}
-a = 0
 players = {}
 answer = None
 is_on = False
 start_time = None
-fake = Faker("ar_AA")
-@ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
-async def faster(event):
+rounds = 5
+delay = random.randint(6, 8)
+@ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))
+async def start_faster_game(event):
     if not event.is_group:
         return
-    type = "اسرع"
-    await botuse(type)
-    global is_on, players
+    global is_on, players, res
+    if is_on:
+        await event.reply("اللعبة قيد التشغيل حالياً 🚫")
+        return
     is_on = True
     players.clear()
+    res.clear()
     uid = event.sender_id
     sender = await event.get_sender()
     name = sender.first_name
-    if uid not in players:
-         players[uid] = {"username": name}
-         res[name] = {"name": name, "score": 0}
-         await event.reply("اهلاً ضفتك للعبة , للانضمام ارسل `انا` للبدء `تم` \n**ENJOY BABY✌**")
-@ABH.on(events.NewMessage(pattern="(?i)انا$"))
-async def faster_join(event):
+    players[uid] = {"username": name}
+    res[name] = {"name": name, "score": 0}
+    await event.reply("🎯 تم إنشاء لعبة (أسرع)\nللانضمام أرسل `انا`\nوللبدء أرسل `تم`\n\n**ENJOY BABY ✌️**")
+@ABH.on(events.NewMessage(pattern=r"(?i)^انا$"))
+async def join_faster(event):
     if not event.is_group:
         return
-    if is_on:
-        uid = event.sender_id
-        sender = await event.get_sender()
-        name = sender.first_name
-        if uid not in players:
-            players[uid] = {"username": name}
-            res[name] = {"name": name, "score": 0}
-            await event.reply('سجلتك باللعبة، لا ترسل مجددًا!')
-        else:
-            await event.reply("عزيزي الصديق، سجلتك والله!")
-@ABH.on(events.NewMessage(pattern="(?i)اللاعبين$"))
-async def faster_players(event):
+    global is_on, players, res
+    if not is_on:
+        await event.reply("ماكو لعبة مشغلة حالياً 💭")
+        return
+    uid = event.sender_id
+    sender = await event.get_sender()
+    name = sender.first_name
+    if uid in players:
+        await event.reply("✅ انت مسجل باللعبة أصلاً!")
+        return
+    players[uid] = {"username": name}
+    res[name] = {"name": name, "score": 0}
+    await event.reply(f"🎮 سجلتك يا {name}!")
+@ABH.on(events.NewMessage(pattern=r"(?i)^اللاعبين$"))
+async def show_players(event):
     if not event.is_group:
         return
-    global is_on
-    chat_id = event.chat_id
-    game = g.get(chat_id)
-    if game and game["players"]:
+    global is_on, players
+    if not is_on or not players:
+        await event.reply("🚫 ماكو لاعبين حالياً.")
         return
-    if is_on and players:
-        player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
-        await event.reply(f"📜 قائمة اللاعبين:\n{player_list}")
-    else:
-        await event.reply('ماكو لاعبين 🙃')
-s = random.randint(6, 8)
-@ABH.on(events.NewMessage(pattern="(?i)تم$"))
-async def faster_done(event):
+    player_list = "\n".join([f"• {info['username']}" for info in players.values()])
+    await event.reply(f"📜 **قائمة اللاعبين:**\n{player_list}")
+@ABH.on(events.NewMessage(pattern=r"(?i)^تم$"))
+async def start_rounds(event):
     if not event.is_group:
         return
-    global answer, is_on, start_time
-    if is_on:
-        await event.reply('تم بدء اللعبة، انتظر ثواني...')
-        await asyncio.sleep(2)
-        for _ in range(5):
-            word = fake.word()
-            answer = (word)
-            await event.respond('راقب الكلمة 👇')
-            await asyncio.sleep(1)
-            await event.respond(f'✍ اكتب ⤶ {answer}')
-            start_time = time.time()
-            await asyncio.sleep(s)
-        points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
-        await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
-        is_on = False
+    global is_on, answer, start_time, delay
+    if not is_on or not players:
+        await event.reply("🚫 لازم تبدأ اللعبة أولاً بالأمر `اسرع` وتضيف لاعبين.")
+        return
+    await event.reply("⌛ تم بدء اللعبة... استعدوا للجولات 🔥")
+    await asyncio.sleep(2)
+    for i in range(rounds):
+        word = fake.word()
+        answer = word
+        await event.respond(f"📣 الجولة {i+1}:\nراقب الكلمة 👇")
+        await asyncio.sleep(1)
+        await event.respond(f"✍️ اكتب الكلمة التالية بسرعة:\n`{answer}`")
+        start_time = time.time()
+        await asyncio.sleep(delay)
+    points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
+    await event.reply(f"🏆 **ترتيب اللاعبين بالنقاط:**\n{points_list}")
+    is_on = False
 @ABH.on(events.NewMessage)
-async def faster_reult(event):
+async def faster_result(event):
     if not event.is_group:
         return
-    global is_on, start_time, answer, a
+    global is_on, start_time, answer, res
     if not is_on or start_time is None:
         return
     elapsed_time = time.time() - start_time
-    seconds = int(elapsed_time)
-    isabh = event.text.strip()
-    wid = event.sender_id
-    if answer and isabh.lower() == answer.lower() and wid in players:
-        username = players[wid]["username"]
-        if username not in res:
-            res[username] = {"name": username, "score": 0}
-        res[username]["score"] += 1
-        user_id = event.sender_id
-        gid = event.chat_id
-        p = random.randint(1, 100)
-        a = points[user_id]
-        await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{a}` لفلوسك')
-        add_points(user_id, gid, points, amount=p)
-        answer = None
+    if elapsed_time > 10:
+        return
+    msg = event.text.strip()
+    uid = event.sender_id
+    if answer and msg.lower() == answer.lower() and uid in players:
+        name = players[uid]["username"]
+        res[name]["score"] += 1
+        await event.reply(f"👏 احسنت {name}! جاوبت صح خلال {int(elapsed_time)} ثانية ✅")
         start_time = None
-    elif elapsed_time >= 10:
-        is_on = False
         answer = None
-        start_time = None
-        if a == 5:
-            is_on = False
-            points_list = "\n".join([f"{pid} -> {info['score']} نقطة" for pid, info in res.items()])
-            await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
-            is_on = False
 @ABH.on(events.NewMessage(func=lambda event: event.text in ['كتويت']))
 async def send_random_question(event):
     if not event.is_group:
