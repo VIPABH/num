@@ -993,7 +993,6 @@ async def show_players(event):
         return
     global is_on, players
     if not is_on or not players:
-        await event.reply("🚫 ماكو لاعبين حالياً.")
         return
     player_list = "\n".join([f"• {info['username']}" for info in players.values()])
     await event.reply(f"📜 **قائمة اللاعبين:**\n{player_list}")
@@ -1003,7 +1002,6 @@ async def start_rounds(event):
         return
     global is_on, answer, start_time, delay
     if not is_on or not players:
-        await event.reply("🚫 لازم تبدأ اللعبة أولاً بالأمر `اسرع` وتضيف لاعبين.")
         return
     await event.reply("⌛ تم بدء اللعبة... استعدوا للجولات 🔥")
     await asyncio.sleep(2)
