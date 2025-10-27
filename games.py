@@ -1012,7 +1012,7 @@ async def start_rounds(event):
         answer = word
         await event.respond(f"📣 الجولة {i+1}:\nراقب الكلمة 👇")
         await asyncio.sleep(1)
-        await event.respond(f"✍️ اكتب الكلمة التالية بسرعة:\n`{answer}`")
+        await event.respond(f"✍️ اكتب الكلمة التالية بسرعة:\n{answer}")
         start_time = time.time()
         await asyncio.sleep(delay)
     points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
