@@ -136,10 +136,6 @@ async def theft(e):
         await e.reply(f"🪙 تمت سرقته مؤخرًا! يجب أن تنتظر {minutes:02}:{seconds:02} قبل أن تسرق أحدًا.")
         await react(e, '😞')
         return
-    rank = await auth(e, True)
-    if rank and rank != "المعاون":
-        await chs(e, f"عذرًا، لا يمكنك السرقة من {rank}.")
-        return
     فلوس = points.get(target_id, points.get(str(target_id), 0))
     if فلوس < 10000:
         await chs(e, f'عذرًا، {await ment(target)} فلوسه قليلة جدًا للسرقة 💸')
