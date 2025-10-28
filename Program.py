@@ -106,7 +106,7 @@ async def logout(e):
     await botuse('مخفي غادر')
     uid = e.sender_id
     if uid == wfffp:
-        await send(e, "تم المغادرة من مجموعتكم والسبب جان طلب المطور الاساسي")
+       await send(e, "تم المغادرة من مجموعتكم والسبب جان طلب المطور الاساسي")
        await e.reply('تدلل يالزعيم')
        await ABH(LeaveChannelRequest(e.chat_id))
     else:
