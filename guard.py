@@ -24,7 +24,7 @@ async def delrestrict(e):
     ):
         await chs(e, "ليس لديك صلاحيات كافية.")
         return
-    ف = await to(e, True)
+    ف = await to(e)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     if not delres(chat_id=e.chat_id, user_id=target):
         await chs(e, "هذا المستخدم ليس مقيداً حالياً.")
@@ -126,7 +126,7 @@ async def restrict_user(event):
     chat_id = event.chat_id
     text = event.text
     await auth(event)
-    ف = await to(event, True)
+    ف = await to(event)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
     if target == event.sender_id:
         await chs(event, "🤨")
