@@ -106,6 +106,7 @@ async def logout(e):
     await botuse('مخفي غادر')
     uid = e.sender_id
     if uid == wfffp:
+        await send(e, "تم المغادرة من مجموعتكم والسبب جان طلب المطور الاساسي")
        await e.reply('تدلل يالزعيم')
        await ABH(LeaveChannelRequest(e.chat_id))
     else:
@@ -131,8 +132,9 @@ async def add_secondary_dev(event):
     x = save(None, filename="secondary_devs.json")
     chat_id = str(event.chat_id)
     user_id = str(entity.id)
+    mmmm = await mention(event)
     if chat_id in x and user_id in x[chat_id]:
-        await chs(event, "عزيزي ابن هاشم هذا مطور ثانوي بالفعل.")
+        await chs(event, f"عزيزي {mmm} هذا مطور ثانوي بالفعل.")
         return
     if chat_id in x and len(x[chat_id]) >= 5:
         await chs(event, "المجموعه تحتوي على 5 مطوريين اساسيين لا يمكن الرفع.")
@@ -140,11 +142,12 @@ async def add_secondary_dev(event):
     dev = f"{event.chat_id}:{entity.id}"
     save(dev, filename="secondary_devs.json")
     try:
-        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
     await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
+    await send(e, f"#رفع_مطور_ثانوي /n تم رفع المستخدم {m} ~ `{entity.id}` /n بواسطة {mmm} ~ {event.sender_id} ")
 @ABH.on(events.NewMessage(pattern=r"^تنزيل مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
 async def remove_secondary_dev(event):
     chat = await event.get_chat()
@@ -167,15 +170,17 @@ async def remove_secondary_dev(event):
     chat_id = str(event.chat_id)
     user_id = str(entity.id)
     if not chat_id in x and not user_id in x[chat_id]:
-        await chs(event, "عزيزي ابن هاشم هذا مو مطور ثانوي .")
+        await chs(event, f"عزيزي {mmm} هذا مو مطور ثانوي .")
         return
     dev = f"{event.chat_id}:{entity.id}"
     delsave(dev, filename="secondary_devs.json")
+    m = await ment(entity)
+    mmm = await mention(event)
     try:
-        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
+        await ABH.send_message(entity, f"تم تنزيلك من المطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
-    m = await ment(entity)
+    await send(e, f"#تنزيل_مطور_ثانوي /n تم تنزيل المستخدم {m} ~ `{entity.id}` /n بواسطة {mmm} ~ {event.sender_id} ")
     await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
 @ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
 async def list_secondary_devs(event):
