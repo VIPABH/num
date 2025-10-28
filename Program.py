@@ -132,7 +132,7 @@ async def add_secondary_dev(event):
     x = save(None, filename="secondary_devs.json")
     chat_id = str(event.chat_id)
     user_id = str(entity.id)
-    mmmm = await mention(event)
+    mmm = await mention(event)
     if chat_id in x and user_id in x[chat_id]:
         await chs(event, f"عزيزي {mmm} هذا مطور ثانوي بالفعل.")
         return
