@@ -647,7 +647,8 @@ async def forward_messages_handler(event):
         f"✅ تم الإرسال بنجاح إلى {success}.\n"
         f"🚫 فشل الإرسال إلى {failed}.\n"
         f"📋 السجل:\n{log}"
-    )whispers_file = 'whispers.json'
+    )
+whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
     try:
