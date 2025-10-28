@@ -22,7 +22,7 @@ async def to(e):
         args = e.pattern_match.group(1)
         target = args.strip() if args else None
         if target and target.isdigit():
-            return int(target)
+            return await ABH.get_entity(int(target))
         if target:
             if target.startswith('@'):
                 target = target[1:]
