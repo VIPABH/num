@@ -19,8 +19,7 @@ async def is_owner(chat_id, user_id):
 async def to(e):
     try:
         reply = await e.get_reply_message()
-        args = e.pattern_match.group(1)
-        target = args.strip() if args else None
+        target = e.pattern_match.group(1)
         if target and target.isdigit():
             return int(target)
         if target:
