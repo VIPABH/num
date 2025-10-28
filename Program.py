@@ -147,7 +147,7 @@ async def add_secondary_dev(event):
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
     await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
-    await send(event, f"#رفع_مطور_ثانوي /n تم رفع المستخدم {m} ~ `{entity.id}` /n بواسطة {mmm} ~ {event.sender_id} ")
+    await send(event, f"#رفع_مطور_ثانوي \n تم رفع المستخدم {m} ~ `{entity.id}` \n بواسطة {mmm} ~ {event.sender_id} ")
 @ABH.on(events.NewMessage(pattern=r"^تنزيل مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
 async def remove_secondary_dev(event):
     chat = await event.get_chat()
@@ -180,7 +180,7 @@ async def remove_secondary_dev(event):
         await ABH.send_message(entity, f"تم تنزيلك من المطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
-    await send(event, f"#تنزيل_مطور_ثانوي /n تم تنزيل المستخدم {m} ~ `{entity.id}` /n بواسطة {mmm} ~ {event.sender_id} ")
+    await send(event, f"#تنزيل_مطور_ثانوي \n تم تنزيل المستخدم {m} ~ `{entity.id}` \n بواسطة {mmm} ~ {event.sender_id} ")
     await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
 @ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
 async def list_secondary_devs(event):
