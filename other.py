@@ -612,20 +612,25 @@ async def add_toalert(event):
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
-@ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
-async def forward_all(event):
+@ABH.on(events.NewMessage(pattern=r"^نشر(?: الكروبات)?$", from_users=[wfffp]))
+async def forward_messages_handler(event):
     if not event.reply_to_msg_id:
         await event.reply("❌ يرجى الرد على الرسالة التي تريد إعادة توجيهها.")
         return
     replied_msg = await event.get_reply_message()
+    to_groups = "الكروبات" in event.raw_text
     total = len(alert_ids)
     success = 0
     failed = 0
-    await event.reply(f"🚀 بدأ النشر إلى {total} محادثة...")
+    log = ""
+    await event.reply(f"🚀 بدأ النشر إلى {'المجموعات' if to_groups else 'جميع المحادثات'} ({total})...")
     for dialog_id in list(alert_ids):
         try:
+            if to_groups and not str(dialog_id).startswith("-100"):
+                continue
             await ABH.forward_messages(dialog_id, replied_msg)
             success += 1
+            log += f"✅ تم الإرسال إلى {dialog_id}\n"
         except Exception as e:
             error_text = str(e).lower()
             if any(keyword in error_text for keyword in [
@@ -635,33 +640,14 @@ async def forward_all(event):
                 "you can't write in this chat"
             ]):
                 remove_user(dialog_id)
-                failed += 1
-            else:
-                failed += 1
+            failed += 1
+            log += f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}\n"
     await event.reply(
         f"📢 **تقرير النشر:**\n"
-        f"✅ تم الإرسال بنجاح إلى {success} محادثة.\n"
-        f"🚫 تم حذف {failed} من القائمة بسبب الحظر أو عدم القدرة على الإرسال.\n"
-        f"📌 العدد الكلي: {total}"
-    )
-@ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
-async def forward_groups(event):
-    if not event.reply_to_msg_id:
-        await event.reply("❌ يرجى الرد على رسالة لإعادة توجيهها.")
-        return
-    replied_msg = await event.get_reply_message()
-    sent_count = 0
-    for dialog_id in list(alert_ids):
-        try:
-            if not str(dialog_id).startswith("-100"):
-                continue
-            await ABH.forward_messages(dialog_id, replied_msg)
-            sent_count += 1
-        except Exception as e:
-            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
-            remove_user(dialog_id)
-    await event.reply(f"✅ تم إعادة توجيه الرسالة إلى {sent_count} مجموعة.")
-whispers_file = 'whispers.json'
+        f"✅ تم الإرسال بنجاح إلى {success}.\n"
+        f"🚫 فشل الإرسال إلى {failed}.\n"
+        f"📋 السجل:\n{log}"
+    )whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
     try:
