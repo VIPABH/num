@@ -20,6 +20,7 @@ async def to(e):
     try:
         reply = await e.get_reply_message()
         target = e.pattern_match.group(1)
+        await hint(str(target))
         if target and target.isdigit():
             return int(target)
         if target:
