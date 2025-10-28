@@ -619,18 +619,15 @@ async def forward_messages_handler(event):
         return
     replied_msg = await event.get_reply_message()
     to_groups = "الكروبات" in event.raw_text
-    total = len(alert_ids)
     success = 0
     failed = 0
-    log = ""
-    await event.reply(f"🚀 بدأ النشر إلى {'المجموعات' if to_groups else 'جميع المحادثات'} ({total})...")
-    for dialog_id in list(alert_ids):
+    targets = [i for i in alert_ids if str(i).startswith("-100")] if to_groups else list(alert_ids)
+    if not to_groups:
+        await event.reply(f"🚀 بدأ النشر إلى {len(targets)} محادثة...")
+    for dialog_id in targets:
         try:
-            if to_groups and not str(dialog_id).startswith("-100"):
-                continue
             await ABH.forward_messages(dialog_id, replied_msg)
             success += 1
-            log += f"✅ تم الإرسال إلى {dialog_id}\n"
         except Exception as e:
             error_text = str(e).lower()
             if any(keyword in error_text for keyword in [
@@ -641,12 +638,10 @@ async def forward_messages_handler(event):
             ]):
                 remove_user(dialog_id)
             failed += 1
-            log += f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}\n"
     await event.reply(
         f"📢 **تقرير النشر:**\n"
         f"✅ تم الإرسال بنجاح إلى {success}.\n"
-        f"🚫 فشل الإرسال إلى {failed}.\n"
-        f"📋 السجل:\n{log}"
+        f"🚫 فشل الإرسال إلى {failed}."
     )
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
