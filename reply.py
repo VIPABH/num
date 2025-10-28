@@ -295,7 +295,7 @@ async def ABN_HASHEM(event):
     await botuse(type)
     caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
     button = [Button.url(text="click", url="https://t.me/wfffp")]
-    pic = 'links/x.jpg'
+    pic = 'links/IMG_1321.jpeg'
     await ABH.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
 auto = [
         "ع س",
