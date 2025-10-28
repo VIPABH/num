@@ -17,24 +17,28 @@ async def is_owner(chat_id, user_id):
     except:
         return False
 async def to(e):
-    'target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)'
-    reply = await e.get_reply_message()
-    target = e.pattern_match.group(1)
-    if reply:
-        return reply
-    if not (target or reply):
-        return None
-    if (target or e.pattern_match.group(2)) and target.isdigit() or int(e.pattern_match.group(2)):
-        return int(target)
-    if target and target.startswith('@'):
-        target = target[1:]
-    elif target.startswith('https://t.me/'):
-        target = target.replace('https://t.me/', '')
     try:
-        entity = await ABH.get_entity(target)
-        return entity
+        reply = await e.get_reply_message()
+        args = e.pattern_match.group(1)
+        target = args.strip() if args else None
+        if target and target.isdigit():
+            return int(target)
+        if target:
+            if target.startswith('@'):
+                target = target[1:]
+            elif target.startswith('https://t.me/'):
+                target = target.replace('https://t.me/', '')
+            try:
+                entity = await ABH.get_entity(target)
+                return entity
+            except Exception as ex:
+                await hint(f"❌ خطأ أثناء جلب المستخدم: {ex}")
+                return None
+        if reply:
+            return reply
+        return None
     except Exception as ex:
-        await hint(f"❌ خطأ أثناء جلب المعرّف: {ex}")
+        await hint(f"⚠️ حدث خطأ أثناء معالجة الهدف: {ex}")
         return None
 async def auth(event, x=False):
     chat_id = event.chat_id
