@@ -16,14 +16,11 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-async def to(e, use_reply=False):
+async def to(e):
     try:
         reply = await e.get_reply_message()
-        target = e.pattern_match.group(1)
-        await hint(str(target))
-        if use_reply:
-            if reply:
-                return reply
+        args = e.pattern_match.group(1)
+        target = args.strip() if args else None
         if target and target.isdigit():
             return int(target)
         if target:
@@ -39,7 +36,6 @@ async def to(e, use_reply=False):
                 return None
         if reply:
             return reply
-        await hint("⚠️ لم يتم تحديد هدف (آيدي، منشن، أو رد).")
         return None
     except Exception as ex:
         await hint(f"⚠️ حدث خطأ أثناء معالجة الهدف: {ex}")
