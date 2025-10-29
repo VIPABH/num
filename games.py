@@ -118,9 +118,10 @@ async def guess_number(e):
             found = True
             if int(guess) == info["number"]:
                 await e.reply(
-                    f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح",
+                    f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح \n تم اضافة عشر ملايين لفلوسك",
                     parse_mode='html'
                 )
+                add_points(e.sender_id,str(event.chat_id),points,amount=10000000)
                 del data[group_id]
                 if group_id in data and not data[group_id]:
                     del data[group_id]
