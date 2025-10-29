@@ -26,7 +26,7 @@ async def savemymone(e):
         return await chs(e, "فلوسك لازم تكون اكثر من 10 مليون")
     t = int(time.time())
     saved = create("saveme.json")
-    x = saved[uid] = t
+    x = saved[str(uid)] = t
     save_json("saveme.json", x)
 @ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
 async def myrank(e):
