@@ -17,7 +17,7 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
-@ABH.on(events.NewMessage(pattern=r"^مخفي احميني$")
+@ABH.on(events.NewMessage(pattern=r"^مخفي احميني$"))
 async def savemymone(e):
     create("saveme.json")
     uid = e.sender_id
