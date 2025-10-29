@@ -167,6 +167,14 @@ def save_json(filename, data):
     str_data = {str(k): v for k, v in data.items()}
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(str_data, f, ensure_ascii=False, indent=4)
+def save_list(filename, uid, value):
+    create(filenane)
+    uid = int(uid)
+    if uid not in data:
+        data[uid] = []
+    data[uid].append(value)
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 async def res(e=None, x=None):
     create('res.json')
     with open('res.json', 'r', encoding='utf-8') as file:
