@@ -135,12 +135,12 @@ async def restrict_user(event):
         await chs(event, "🙂")
         return
     x, a = await auth(event), await auth(event, x=True)
-    if a:
-        await chs(event, f"عذرا بس ماتكدر تقيد {a}")
-        return
     if not x or text == "تقييد ميم":
         await react(event, '👍🏾')
         await notAssistantres(event)
+        return
+    if a:
+        await chs(event, f"عذرا بس ماتكدر تقيد {a}")
         return
     await event.delete()
     name = await ment(ف)
