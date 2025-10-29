@@ -123,12 +123,12 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
+    text = event.text
     if text == "تقييد ميم":
         await react(event, '👍🏾')
         await notAssistantres(event)
         return
     chat_id = event.chat_id
-    text = event.text
     await auth(event)
     ف = await to(event)
     target = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
