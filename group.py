@@ -21,10 +21,9 @@ from telethon.tl.types import (
 async def savemymone(e):
     create("saveme.json")
     uid = e.sender_id
-    m = points[str(uid)]
-    print(uid in points)
-    if not uid in points or m < 10000000:
+    if not str(uid) in points or m < 10000000:
         return await chs(e, "فلوسك لازم تكون اكثر من 10 مليون")
+    m = points[str(uid)]
     t = int(time.time())
     saved = create("saveme.json")
     x = saved[int(uid)] = t
