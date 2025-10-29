@@ -17,7 +17,7 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
-@ABH.on(events.NewMessage(pattern=r"^مخفي احميني$"))
+#@ABH.on(events.NewMessage(pattern=r"^مخفي احميني$"))
 async def savemymone(e):
     create("saveme.json")
     uid = e.sender_id
@@ -27,7 +27,7 @@ async def savemymone(e):
     t = int(time.time())
     saved = create("saveme.json")
     x = saved[int(uid)] = t
-    save_json("saveme.json", x)
+    save_list("saveme.json", x)
     await chs(e, "بحمايتي انت منا وغاد😎")
 @ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
 async def myrank(e):
