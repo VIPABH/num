@@ -21,12 +21,12 @@ from telethon.tl.types import (
 async def savemymone(e):
     create("saveme.json")
     uid = e.sender_id
-    m = points[uid]
+    m = points[str(uid)]
     if not uid in points or m < 10000000:
         return await chs(e, "فلوسك لازم تكون اكثر من 10 مليون")
     t = int(time.time())
     saved = create("saveme.json")
-    x = saved[str(uid)] = t
+    x = saved[int(uid)] = t
     save_json("saveme.json", x)
 @ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
 async def myrank(e):
