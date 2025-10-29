@@ -123,6 +123,10 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
+    if text == "تقييد ميم":
+        await react(event, '👍🏾')
+        await notAssistantres(event)
+        return
     chat_id = event.chat_id
     text = event.text
     await auth(event)
@@ -135,10 +139,6 @@ async def restrict_user(event):
         await chs(event, "🙂")
         return
     x, a = await auth(event), await auth(event, x=True)
-    if text == "تقييد ميم":
-        await react(event, '👍🏾')
-        await notAssistantres(event)
-        return
     if a:
         await chs(event, f"عذرا بس ماتكدر تقيد {a}")
         return
