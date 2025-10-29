@@ -125,7 +125,7 @@ async def restrict_user(event):
         return
     text = event.text
     if text == "تقييد ميم":
-        await react(event, '👍🏾')
+        await react(event, '👍')
         await notAssistantres(event)
         return
     chat_id = event.chat_id
