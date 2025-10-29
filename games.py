@@ -10,20 +10,6 @@ from other import *
 NUM_FILE = 'NUM.json'
 active_sessions = {}
 game = {}
-def create(filename):
-    if not os.path.exists(filename):
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-    with open(filename, 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-            return {int(k): v for k, v in data.items()}
-        except json.JSONDecodeError:
-            return {}
-def save_json(filename, data):
-    str_data = {str(k): v for k, v in data.items()}
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(str_data, f, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern="حذف (رقم|الرقم)"))
 async def delnumber(e):
     a = await auth(e)
