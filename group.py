@@ -22,6 +22,7 @@ async def savemymone(e):
     create("saveme.json")
     uid = e.sender_id
     m = points[str(uid)]
+    print(uid in points)
     if not uid in points or m < 10000000:
         return await chs(e, "فلوسك لازم تكون اكثر من 10 مليون")
     t = int(time.time())
