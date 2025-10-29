@@ -28,6 +28,7 @@ async def savemymone(e):
     saved = create("saveme.json")
     x = saved[int(uid)] = t
     save_json("saveme.json", x)
+    await chs(e, "بحمايتي انت منا وغاد😎"))
 @ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
 async def myrank(e):
     reply_msg=await e.get_reply_message()
