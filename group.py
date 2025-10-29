@@ -17,6 +17,17 @@ from telethon.tl.types import (
     DocumentAttributeVideo, DocumentAttributeAnimated,
     MessageMediaPoll, MessageExtendedMedia,
 )
+@ABH.on(events.NewMessage(pattern=r"^مخفي احميني$")
+async def savemymone(e):
+    create("saveme.json")
+    uid = e.sender_id
+    m = points[uid]
+    if not uid in points or m < 10000000:
+        return await chs(e, "فلوسك لازم تكون اكثر من 10 مليون")
+    t = int(time.time())
+    saved = create("saveme.json")
+    x = saved[uid] = t
+    save_json("saveme.json", x)
 @ABH.on(events.NewMessage(pattern=r"^(رتبتي|رتبت(ه|ة))$"))
 async def myrank(e):
     reply_msg=await e.get_reply_message()
