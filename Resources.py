@@ -10,6 +10,20 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time, re
 import google.generativeai as genai
 from ABH import ABH
+ignore_phrases = [
+    "مخفي احميني",
+    "مخفي اعفطلة",
+    "مخفي اعفطله",
+    "مخفي قيده",
+    "مخفي قيدة",
+    "مخفي طكة زيج",
+    "مخفي اطلع",
+    "مخفي غادر",
+    "مخفي نزلني",
+    "مخفي نزلة",
+    "مخفي نزله",
+    "مخفي اختار"
+]
 async def is_owner(chat_id, user_id):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
