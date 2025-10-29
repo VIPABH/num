@@ -333,7 +333,6 @@ def ask_ai(q:str)->str:
 async def ai_handler(event):
     user_q=event.pattern_match.group(1)
     x=event.text
-    ignore_phrases=["مخفي اعفطلة","مخفي اعفطله","مخفي قيده","مخفي قيدة","مخفي طكة زيج","مخفي اطلع","مخفي غادر","مخفي نزلني","مخفي نزلة","مخفي نزله","مخفي اختار"]
     if not user_q or x in ignore_phrases or x.startswith("مخفي اختار"):
         return
     msg_type="ai"
