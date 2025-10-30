@@ -5,7 +5,7 @@ from Resources import *
 from ABH import ABH
 import json
 wfffp = 1910015590
-lit = [6498922948, 7176263278, 8218147835, 6520830528, 49820009]
+lit = []
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
