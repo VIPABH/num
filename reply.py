@@ -289,7 +289,7 @@ async def anymous(event):
     await botuse(type)
     vipabh = random.choice(abh)
     await chs(event, vipabh)
-@ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
+@ABH.on(events.NewMessage(pattern=r'ابن هاشم'))
 async def ABN_HASHEM(event):
     type = "ابن هاشم"
     await botuse(type)
