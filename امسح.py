@@ -18,10 +18,10 @@ def save_media_messages():
         json.dump(media_messages, f, ensure_ascii=False, indent=2)
 async def delete_media(chat_id, event=None):
     deleted_count = 0
-    a = await auth(event)
-    if a and len(media_messages[chat_id]) <= 50 and a == "المعاون":
-        await chs(event, f"ما اكدر انظف لان عدد الميديا قليل ( 50 / {len(media_messages[chat_id])} ) 📦")
-        return
+    if event:
+        a = await auth(event)
+        if len(media_messages[chat_id]) <= 50 and a == "المعاون":
+            return await chs(event, f"ما اكدر انظف لان عدد الميديا قليل ( 50 / {len(media_messages[chat_id])} ) 📦")
     if chat_id in media_messages and media_messages[chat_id]:
         try:
             for msg_id in media_messages[chat_id]:
