@@ -129,20 +129,6 @@ async def guess_number(e):
                 e,
                 f"⚠️ لازم ترد على {ء} الأصلية حتى يتم التخمين\n"
             )
-@ABH.on(events.NewMessage(pattern="حذف (الرقم|رقم)"))
-async def delNum(e):
-    a = await auth(e)
-    if not a or a == "المعاون":
-        await chs(e, "عذرا بس الامر يخص المطور ثانوي وفوك")
-        return
-    if group_id in data and not data[group_id]:
-        del data[group_id]
-        save_json(NUM_FILE, data)
-        await chs(e, "تم حذف الرقم المخزن")
-        return
-    else:
-        await chs(e, "المجموعة مابيها رقم مخزن مسبقا")
-        return
 x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
