@@ -69,8 +69,16 @@ async def auth(event, x=False):
     if await is_owner(chat_id, user_id):
         return "المالك"
     devers = save(None, "secondary_devs.json")
-    if str(user_id) in devers.get(str(chat_id), []):
-        return "المطور الثانوي"
+    x = str(user_id) in devers.get(str(chat_id), [])
+    if x:
+        participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
+        if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+            mention_text = await mention(event)
+            await event.reply(f"📉 تم تنزيل {mention_text} من قائمة المطورين الثانويين \n⚠️ السبب: ليس لديه صلاحيات مشرف.")
+            devers[str(chat_id)].remove(str(user_id))
+            save(devers, "secondary_devs.json")
+        else:
+            return "المطور الثانوي"
     if is_assistant(chat_id, user_id):
         participant = await ABH(GetParticipantRequest(channel=int(chat_id), participant=int(user_id)))
         if not isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
