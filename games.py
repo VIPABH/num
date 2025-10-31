@@ -83,7 +83,8 @@ async def receive_number(e):
             data[group_id] = {}
         data[group_id][user_id] = {
             "number": int(session["number"]),
-            "msg_id": int(session["command_msg_id"])
+            "msg_id": int(session["command_msg_id"]), 
+            "owner": int(session["user_id"])
         }
         save_json(NUM_FILE, data)
         await ev.reply(f" تم حفظ الرقم: {ev.text}")
@@ -102,6 +103,10 @@ async def guess_number(e):
             if not r or r.id != info["msg_id"]:
                 continue
             found = True
+            if e.sender_id == info["owner"]:
+                await chs(e, "ماتكدر تخمن الرقم لان انت الي عينته🙂")
+                await react(e, "🤣")
+                return
             if int(guess) == info["number"]:
                 await e.reply(
                     f"🎉 مبارك <a href='tg://user?id={e.sender_id}'>عزيزي</a> الرقم {guess} هو الصحيح \n تم اضافة مئة مليون لفلوسك",
