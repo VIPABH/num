@@ -136,7 +136,7 @@ async def add_secondary_dev(event):
     if chat_id in x and user_id in x[chat_id]:
         await chs(event, f"عزيزي {mmm} هذا مطور ثانوي بالفعل.")
         return
-    if chat_id in x and len(x[chat_id]) >= 5:
+    if chat_id in x and len(x[chat_id]) >= 6:
         await chs(event, "المجموعه تحتوي على 5 مطوريين اساسيين لا يمكن الرفع.")
         return
     dev = f"{event.chat_id}:{entity.id}"
