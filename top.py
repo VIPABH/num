@@ -5,7 +5,7 @@ from Resources import *
 from ABH import ABH
 import json
 wfffp = 1910015590
-lit = []
+lit = [0]
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -68,12 +68,7 @@ async def add_money(event):
     await botuse(type)
     r = await event.get_reply_message()
     uid = event.sender_id
-    x = save(None, 'secondary_devs.json')
-    chat = str(event.chat_id)
-    if not (wfffp == uid or uid in lit):
-        return
-    if (r.sender_id == event.sender_id and uid != wfffp):
-        await event.reply("هههههه")
+    if not (wfffp == uid):
         return
     p = int(event.pattern_match.group(1))
     gid = event.chat_id
@@ -84,16 +79,13 @@ async def add_money(event):
 async def add_money(event):
     if not event.is_group:
         return
-    if not (wfffp == uid or uid in lit):
-        return
     type = "حذف فلوس"
     r = await event.get_reply_message()
     await botuse(type)
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     chat = str(event.chat_id)
-    if (r.sender_id == event.sender_id and uid != wfffp):
-        await event.reply("هههههه")
+    if not (wfffp == uid):
         return
     p = int(event.pattern_match.group(1))
     gid = event.chat_id
@@ -108,12 +100,7 @@ async def add_money(event):
     type = "تصفير"
     await botuse(type)
     uid = event.sender_id
-    x = save(None, 'secondary_devs.json')
-    chat = str(event.chat_id)
-    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
-        return
-    if (r.sender_id == event.sender_id and uid != wfffp):
-        await event.reply("هههههه")
+    if not (wfffp == uid):
         return
     uid = str(r.sender_id)
     gid = str(event.chat_id)
