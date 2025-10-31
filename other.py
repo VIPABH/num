@@ -328,7 +328,7 @@ def ask_ai(q:str)->str:
     except requests.exceptions.Timeout:
         return"⏳ السيرفر تأخر بالرد، جرب بعدين."
     except Exception as e:
-        return f"⚠️ صار خطأ أثناء الاتصال: {e}"
+        return await hint(f"⚠️ صار خطأ أثناء الاتصال: {e}")
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
     user_q=event.pattern_match.group(1)
