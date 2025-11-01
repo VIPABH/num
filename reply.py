@@ -73,6 +73,7 @@ async def set_my_reply(event):
         })
         r.set(user_reply_key, reply_name)
         await event.reply(f"👍🏾 تم حفظ الرد باسم **{reply_name}**")
+        await send(event, f'تم اضافة رد عادي \n اسم ~ ( {reply_name} )\n بواسطة ~ ( {await mention(event)} ) \n الرابط ~ ( {await link(event)} )')
     except Exception as e:
         await event.reply(f"حدث خطأ أثناء إعداد الرد: {e}")
 @ABH.on(events.NewMessage(pattern='^حذف ردي$'))
@@ -181,6 +182,7 @@ async def handle_reply(event):
                 'match': 'startswith' if reply_type == 'special' else 'exact'
             })
         await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
+        await send(event, f'تم اضافة رد ب \n اسم ~ ( {reply_name} ) \n نوعة ~ ( {"مميز" if reply_type == "special" else "عادي"} ) \n بواسطة ~ ( {await mention(event)} ) \n الرابط ~ ( {await link(event)} )')
         del session[user_id]
         return
     chat_id = event.chat_id
@@ -241,6 +243,7 @@ async def delete_reply(event):
     if r.exists(key):
         r.delete(key)
         await event.reply(f"🗑️ تم حذف الرد **{reply_name}**")
+        await send(event, f'حذف رد \n اسم ~ ( {reply_name} ) \n بواسطة ~ ( {await mention(event)} ) \n الرابط ~ ( {await link(event)} )')
     else:
         await event.reply(" الرد غير موجود.")
 @ABH.on(events.NewMessage(pattern='^حذف الردود$'))
@@ -261,6 +264,7 @@ async def delete_all_replies(event):
     if keys:
         r.delete(*keys)
         await event.reply("🗑️ تم حذف جميع الردود.")
+        await send(event, f'حذف ردود \n بواسطة ~ ( {await mention(event)} ) \n الرابط ~ ( {await link(event)} )')
     else:
         await event.reply(" لا توجد ردود لحذفها.")
 @ABH.on(events.NewMessage(pattern='^الغاء$'))
