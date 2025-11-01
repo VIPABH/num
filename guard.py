@@ -523,8 +523,7 @@ async def warnssit(e):
         النوع, target_id, chat_id = parts
         target_id = int(target_id)
         chat_id = int(chat_id)
-        print(await auth(e))
-        if await auth(e):
+        if not await auth(e):
             return await e.answer("🚫 هذا الأمر خاص بالمعاونين وما فوك.", alert=True)
         msg = await e.get_message()
         name, user_id = extract_warn_info(msg.text)
