@@ -257,46 +257,6 @@ async def show_money(event):
         await event.answer(f"فلوسك {user_points} دينار", alert=True)
     else:
         await event.answer("ليس لديك نقاط.", alert=True)
-user_state = {}
-@ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
-async def answer_football(event):
-    if not event.is_group:
-        return
-    type = "/football"
-    await botuse(type)
-    sender = await event.get_sender()
-    a = event.id
-    user_id = sender.id
-    r = random.choice(football)
-    user_state[user_id] = {'answer': r['answer']
-    }
-    message_id = int(r['photo'].split("/")[-1])
-    message = await ABH.get_messages("LANBOT2", ids=message_id)
-    if message and message.media:
-        file_path = await ABH.download_media(message.media)
-        await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=a)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-@ABH.on(events.NewMessage)
-async def answer_handler(event):
-    sender = await event.get_sender()
-    user_id = sender.id if sender else event.sender_id
-    msg = event.raw_text.strip()
-    if msg.startswith('/') or msg == 'كرة قدم':
-        return
-    if user_id in user_state:
-        correct_answer = user_state[user_id]['answer']
-        if msg == correct_answer:
-            amount = 2500
-            await event.reply(f"اجابة صحيحة ربحت ↢ `{amount}`")
-            await react(event, '🎉')
-            user_id = event.sender_id
-            gid = event.chat_id
-            add_points(user_id, gid, points, amount=amount)
-        else:
-            await event.reply("اجابة خاطئة!")
-            await react(event, '💔')
-        del user_state[user_id]
 WIN_VALUES = {
     "🎲": 6,
     "🎯": 6,
