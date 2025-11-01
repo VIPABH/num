@@ -13,13 +13,12 @@ async def set_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     user_id = event.sender_id
-    chat = event.chat_id
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
     a = await auth(event)
     if not a:
-         await chs(event, 'عذرا الامر خاص بالمعاونين وفوك🤭')
+         await chs(event, قفل("المعاونين وفوك"))
          return
     type = "وضع رد"
     await botuse(type)
