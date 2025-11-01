@@ -111,96 +111,6 @@ async def logout(e):
        await ABH(LeaveChannelRequest(e.chat_id))
     else:
         await e.respond(file='https://t.me/recoursec/21', reply_to=e.id)
-@ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
-async def add_secondary_dev(event):
-    chat = await event.get_chat()
-    c = chat.title if hasattr(chat, "title") else "خاص"
-    arg = event.pattern_match.group(1)
-    entity = None
-    reply = await event.get_reply_message()
-    if reply and not arg:
-        entity = await ABH.get_entity(reply.sender_id)
-    elif arg and arg.startswith("@"):
-        entity = await ABH.get_entity(arg)
-    elif arg and arg.isdigit():
-        entity = await ABH.get_entity(int(arg))
-    if not entity:
-        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
-        return
-    if entity.id == wfffp:
-        return
-    x = save(None, filename="secondary_devs.json")
-    chat_id = str(event.chat_id)
-    user_id = str(entity.id)
-    mmm = await mention(event)
-    if chat_id in x and user_id in x[chat_id]:
-        await chs(event, f"عزيزي {mmm} هذا مطور ثانوي بالفعل.")
-        return
-    if chat_id in x and len(x[chat_id]) >= 6:
-        await chs(event, "المجموعه تحتوي على 5 مطوريين اساسيين لا يمكن الرفع.")
-        return
-    dev = f"{event.chat_id}:{entity.id}"
-    save(dev, filename="secondary_devs.json")
-    try:
-        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
-    except Exception as e:
-        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
-    m = await ment(entity)
-    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
-    await send(
-        event,
-    f"#رفع_مطور_ثانوي\n"
-    f"✅ تم رفع المستخدم: {m} (`{entity.id}`)\n"
-    f"👤 بواسطة: {mmm} (`{event.sender_id}`)"
-)
-@ABH.on(events.NewMessage(pattern=r"^تنزيل مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
-async def remove_secondary_dev(event):
-    chat = await event.get_chat()
-    c = chat.title if hasattr(chat, "title") else "خاص"
-    arg = event.pattern_match.group(1)
-    entity = None
-    reply = await event.get_reply_message()
-    if reply and not arg:
-        entity = await ABH.get_entity(reply.sender_id)
-    elif arg and arg.startswith("@"):
-        entity = await ABH.get_entity(arg)
-    elif arg and arg.isdigit():
-        entity = await ABH.get_entity(int(arg))
-    if not entity:
-        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
-        return
-    if entity.id == wfffp:
-        return
-    m = await ment(entity)
-    mmm = await mention(event)
-    x = save(None, filename="secondary_devs.json")
-    chat_id = str(event.chat_id)
-    user_id = str(entity.id)
-    if not chat_id in x and not user_id in x[chat_id]:
-        await chs(event, f"عزيزي {mmm} هذا مو مطور ثانوي .")
-        return
-    dev = f"{event.chat_id}:{entity.id}"
-    delsave(dev, filename="secondary_devs.json")
-    try:
-        await ABH.send_message(entity, f"تم تنزيلك من المطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
-    except Exception as e:
-        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
-        await send(
-            event,
-    f"#تنزيل_مطور_ثانوي\n"
-    f"✅ تم تنزيل المستخدم: {m} (`{entity.id}`)\n"
-    f"👤 بواسطة: {mmm} (`{event.sender_id}`)"
-)
-    await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
-@ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
-async def list_secondary_devs(event):
-    x = save(None, filename="secondary_devs.json")
-    chat_id = str(event.chat_id)
-    if chat_id not in x or not x[chat_id]:
-        await chs(event, "لا يوجد مطورين ثانويين في هذه المجموعة.")
-        return
-    devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
-    await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
 lol = {}
 async def som(e):
     g = str(e.chat_id)
@@ -440,7 +350,6 @@ async def show_channel(event):
 async def stats_handler(event):
     if event.sender_id != wfffp:
         return
-    await event.delete()
     try:
         with open('use.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
