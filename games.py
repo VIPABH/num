@@ -130,37 +130,41 @@ async def guess_number(e):
                 f"⚠️ لازم ترد على {ء} الأصلية حتى يتم التخمين\n"
             )
 x_arsessions = {}
+# @ABH.on(events.NewMessage(pattern='(اعلام|/flags|/flag)'))
+@ABH.on(events.NewMessage)
 async def xargame(e):
     if not e.is_group:
         return
     t = e.text
     id = e.sender_id
     chat_id = e.chat_id
-    if t not  in ("اعلام", '/flag'):
-        return
-    type = "اعلام"
-    await botuse(type)
-    b = Button.inline("تجديد السؤال", f"flag|{chat_id}|{id}")
-    if chat_id in x_arsessions and id in x_arsessions[chat_id]:
-        await e.reply(f"شنو اسم هاي الدولة ( {x_arsessions[chat_id][id]} )", buttons=b)
-        return
-    if not chat_id in x_arsessions or id not in x_arsessions[chat_id]:
-        emoji, name = random.choice(list(x_ar.items()))
-        x_arsessions.setdefault(chat_id, {})[id] = name
-        a = await e.reply(f'{emoji}')
-        await asyncio.sleep(3)
-        await a.edit(f"شنو اسم هاي الدولة؟")
-        await asyncio.sleep(60)
-        if chat_id in x_arsessions and id in x_arsessions[chat_id]:
+    r = chat_id in x_arsessions and id in x_arsessions[chat_id]
+    if t in ["اعلام", "/flags", "/flag"]:
+        if not (r):
+            emoji, name = random.choice(list(x_ar.items()))
+            x_arsessions.setdefault(chat_id, {})[id] = emoji, name
+            a = await e.reply(f'{emoji}')
+            await asyncio.sleep(3)
+            await a.edit('شنو اسم هاي الدولة؟')
+            await asyncio.sleep(60)
+            if chat_id in x_arsessions and id in x_arsessions[chat_id]:
+                del x_arsessions[chat_id][id]
+            return
+        else:
+            emoji, name = x_arsessions[chat_id][id]
+            await e.reply(f"شنو اسم هاي الدولة ( {emoji} )")
+            return
+    if r and t not in ["اعلام", "/flags", "/flag"]:
+        emoji, name = x_arsessions[chat_id][id]
+        if t != name:
+            await react(e, '💔')
             del x_arsessions[chat_id][id]
-    if str(t) == str(x_arsessions[chat_id][id]) and chat_id in x_arsessions and id in x_arsessions[chat_id]:
-        p = random.choice([1000, 5000])
-        user_id = e.sender_id
-        gid = e.chat_id
-        add_points(user_id, gid, points, amount=p)
-        await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
-        await react(e, '🎉')
-        del x_arsessions[chat_id][id]
+        else:
+            await react(e, '🎉')
+            await chs(e, f"اجابة صحيحة 🎉 \n ربحت 5000 دينار.")
+            add_points(id, chat_id, points, amount=5000)
+            del x_arsessions[chat_id][id]
+            return
 math_sessions = {}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
