@@ -10,6 +10,8 @@ from telethon.tl.types import ReactionEmoji
 import pytz, os, json, asyncio, time, re
 import google.generativeai as genai
 from ABH import ABH
+def قفل(x):
+    return f"عذرا بس الامر ل {x}"
 ignore_phrases = [
     "مخفي احميني",
     "مخفي اعفطلة",
@@ -416,7 +418,7 @@ async def react(event, x):
             peer=event.chat_id,
             msg_id=event.id,
             reaction=[ReactionEmoji(emoticon=f'{x}')],
-            big=True
+            big=False
         ))
     except Exception as e:
         await ABH(SendReactionRequest(
