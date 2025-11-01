@@ -130,9 +130,9 @@ async def guess_number(e):
                 f"⚠️ لازم ترد على {ء} الأصلية حتى يتم التخمين\n"
             )
 x_arsessions = {}
-# async def xargame(e):
-#     if not e.is_group:
-#         return
+async def xargame(e):
+    if not e.is_group:
+        return
 #     t = e.text
 #     chat_id = e.chat_id
 #     if t in ("اعلام", '/flags') and chat_id not in x_arsessions:
