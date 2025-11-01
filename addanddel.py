@@ -1,6 +1,5 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
-from top import points, save_points#type: ignore
 from other import * #type: ignore
 from Program import chs #type: ignore
 from telethon import events, Button
@@ -264,16 +263,17 @@ async def demote_admin(event):
         if done:
             await chs(e, "تم تنزيلك من المشرفين")
             return
+        return
     r = await event.get_reply_message()
     if not r:
-        await chs(event, 'لازم تسوي رد لشخص علمود انزله من المشرفين')
+        await chs(event, 'لازم تسوي رد على مشرف علمود انزله من المشرفين')
         await react(event, "🤔")
         return
     chat_id = event.chat_id
     target_user_id = r.sender_id
     a = await auth(event)
     if not a or a == "المعاون":
-        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
+        await chs(event, 'الامر يخص المطورين الثانويين وفوك')
         await react(event, "💔")
         return
     try:
