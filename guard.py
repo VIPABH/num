@@ -502,8 +502,9 @@ async def warn_user(event):
         await event.reply(f'تم تحذير المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n⚠️ عدد التحذيرات: (3/{w})', buttons=b)
         await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
     await botuse("تحذير مستخدمين")
-    await try_forward(r)
-    await r.delete()
+    if r:
+        await try_forward(r)
+        await r.delete()
     await event.delete()
 def extract_warn_info(text: str):
     text = text.strip()
