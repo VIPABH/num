@@ -134,26 +134,28 @@ async def xargame(e):
     if not e.is_group:
         return
     t = e.text
+    id = e.sender_id
     chat_id = e.chat_id
     if t in ("اعلام", '/flag'):
         type = "اعلام"
         await botuse(type)
-        if not chat_id in x_arsessions:
+        if not chat_id in x_arsessions or id not in x_arsessions[chat_id]:
             emoji, name = random.choice(list(x_ar.items()))
-            x_arsessions[chat_id] = name
+            x_arsessions[chat_id][id] = name
             a = await e.reply(f'{emoji}')
             await asyncio.sleep(3)
             await a.edit(f"ما اسم هذه الدولة؟")
             await asyncio.sleep(60)
-            del x_arsessions[chat_id]
-    if chat_id in x_arsessions and t == x_arsessions[chat_id]:
+            if chat_id in x_arsessions and id in x_arsessions[chat_id]:
+                del x_arsessions[chat_id][id]
+    if chat_id in x_arsessions and id in x_arsessions[chat_id] and t == x_arsessions[chat_id][id]:
         p = random.choice([1000, 5000])
         user_id = e.sender_id
         gid = e.chat_id
         add_points(user_id, gid, points, amount=p)
         await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
         await react(e, '🎉')
-        del x_arsessions[chat_id]
+        del x_arsessions[chat_id][id]
 math_sessions = {}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
