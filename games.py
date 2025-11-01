@@ -141,9 +141,9 @@ async def xargame(e):
         if not chat_id in x_arsessions:
             emoji, name = random.choice(list(x_ar.items()))
             x_arsessions[chat_id] = name
-            await e.reply(f'{emoji}')
+            a = await e.reply(f'{emoji}')
             await asyncio.sleep(3)
-            await e.edit(f"ما اسم هذه الدولة؟")
+            await a.edit(f"ما اسم هذه الدولة؟")
             await asyncio.sleep(60)
             del x_arsessions[chat_id]
     if chat_id in x_arsessions and t == x_arsessions[chat_id]:
