@@ -474,12 +474,12 @@ async def warn_user(event):
     if not event.is_group:
         return
     chat_id = event.chat_id
-    auth = await auth(event)
+    auth1 = await auth(event)
     auth2 = await auth(event, True)
-    if not auth:
+    if not auth1:
         await chs(event, 'شني خالي كبينه ')
         return
-    if auth and auth2:
+    if auth1 and auth2:
         await chs(event, f'غراب يكول لغراب وجهك اسود')
         return
     if auth2:
@@ -502,13 +502,13 @@ async def warn_user(event):
         now = int(time.time())
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         await event.reply(f'تم تقييد المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n🔒 مدة التقييد: 15 دقيقة', buttons=b)
-        await send(event, f"#تحذير \n تم تقييد المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
+        await send(event, f"#تحذير \n تم تقييد المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
         if not await is_admin(chat_id, target_id):
             rights = ChatBannedRights(until_date=now + restriction_duration, send_messages=True)
             await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
     else:
         المحذر = await mention(event)
-        await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
+        await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
     await botuse("تحذير مستخدمين")
 def extract_warn_info(text: str):
     text = text.strip()
