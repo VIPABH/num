@@ -152,8 +152,9 @@ async def xargame(e):
                 del x_arsessions[chat_id][id]
             return
         else:
+            b = Button.inline("تجديد السؤال", f"flag|{chat_id}|{id}")
             emoji, name = x_arsessions[chat_id][id]
-            await e.reply(f"شنو اسم هاي الدولة ( {emoji} )")
+            await e.reply(f"شنو اسم هاي الدولة ( {emoji} )", buttons=b)
             return
     if r and t not in ["اعلام", "/flags", "/flag"]:
         emoji, name = x_arsessions[chat_id][id]
