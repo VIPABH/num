@@ -486,7 +486,7 @@ async def warn_user(event):
     target_id = getattr(t, "sender_id", None) or getattr(t, "id", None)
     x = await ment(t)
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
-    res = [Button.inline("الغاء التقييد", data=f"delres|{target_id}:{chat_id}")]
+    res = [Button.inline("الغاء التقييد", data=f"delres:{target_id}:{chat_id}")]
     l = await link(event)
     restriction_duration = 900
     w = add_warning(str(target_id), str(chat_id))
@@ -515,27 +515,49 @@ def extract_warn_info(text: str):
     id_match = re.search(id_pattern, text)
     user_id = id_match.group(1).strip() if id_match else None
     return name, user_id
-@ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery(pattern=r'^(zerowarn|delwarn|delres):(\d+):(-?\d+)$'))
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
     parts = data.split(':')
     if len(parts) == 3:
-        if not is_assistant(e.chat_id, e.sender_id):
-            return await e.answer('🌚')
         النوع, target_id, chat_id = parts
+        target_id = int(target_id)
+        chat_id = int(chat_id)
+        if not await is_assistant(e.chat_id, e.sender_id):
+            return await e.answer("🚫 هذا الأمر خاص بالمعاونين وما فوق.", alert=True)
         msg = await e.get_message()
-        t = msg.text
-        name, user_id = extract_warn_info(t)
+        name, user_id = extract_warn_info(msg.text)
         m = await mention(e)
         n = f"[{name}](tg://user?id={user_id})"
         if النوع == "zerowarn":
             zerowarn(target_id, chat_id)
-            await e.edit(f"المستخدم ( {n} ) \n ايديه: ( {user_id} ) \n ( 3/0 ) تم تصفير تحذيراته \n ")
-            await send(e, f'تم تصفير تحذيرات \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
-        elif النوع == 'delwarn':
+            await e.edit(
+                f"🧾 المستخدم: {n}\n🆔 الايدي: `{user_id}`\n📉 (3/0) تم تصفير التحذيرات ✅"
+            )
+            await send(
+                e,
+                f"🔄 تم تصفير تحذيرات {n} (`{user_id}`)\nبواسطة: {m} (`{e.sender_id}`)"
+            )
+        elif النوع == "delwarn":
             d = del_warning(target_id, chat_id)
-            await send(e, f'تم الغاء التحذير \n ( {name} ) ~ ( `{user_id}` ) \nبواسطة: ( {m} ) ~ ( `{e.sender_id}` )')
-            await e.edit(f"المستخدم ( {name} ) \n ايديه: ( {user_id} ) \n ( 3/{d} ) تم تصفير تحذيراته \n ")
+            await e.edit(
+                f"🧾 المستخدم: {n}\n🆔 الايدي: `{user_id}`\n📊 (3/{d}) تم حذف تحذير ⚠️"
+            )
+            await send(
+                e,
+                f"🗑️ تم حذف تحذير من {n} (`{user_id}`)\nبواسطة: {m} (`{e.sender_id}`)"
+            )
+        elif النوع == "delres":
+            rights = ChatBannedRights(until_date=None, send_messages=False)
+            await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
+
+            await e.edit(
+                f"👤 المستخدم: {n}\n🆔 الايدي: `{user_id}`\n✅ تم رفع التقييد عنه بنجاح."
+            )
+            await send(
+                e,
+                f"🔓 تم رفع التقييد عن {n} (`{user_id}`)\nبواسطة: {m} (`{e.sender_id}`)"
+            )
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
