@@ -1,12 +1,12 @@
-from top import *
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
-from Resources import *
 from faker import Faker
+from Resources import *
 from Program import*
 from other import *
+from top import *
 NUM_FILE = 'NUM.json'
 active_sessions = {}
 game = {}
@@ -133,27 +133,27 @@ x_arsessions = {}
 async def xargame(e):
     if not e.is_group:
         return
-    # t = e.text
-    # chat_id = e.chat_id
-    # if t == "اعلام":
-    #     type = "اعلام"
-    #     await botuse(type)
-    #     if not chat_id in x_arsessions:
-    #         value, key = random.choice(list(x_ar.items()))
-    #         x_arsessions[chat_id] = key
-    #         await chs(e, f'{value}')
-    #         await asyncio.sleep(3)
-    #         await e.edit(f"ما اسم هذه الدولة؟")
-    #         await asyncio.sleep(60)
-    #         del x_arsessions[chat_id]
-    # elif t == x_arsessions[chat_id]:
-    #     p = random.choice([1000, 5000])
-    #     user_id = e.sender_id
-    #     gid = e.chat_id
-    #     add_points(user_id, gid, points, amount=p)
-    #     await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
-    #     await react(e, '🎉')
-    #     del x_arsessions[chat_id]
+    t = e.text
+    chat_id = e.chat_id
+    if t in ("اعلام", '/flags') and chat_id not in x_arsessions:
+        type = "اعلام"
+        await botuse(type)
+        if not chat_id in x_arsessions:
+            value, key = random.choice(list(x_ar.items()))
+            x_arsessions[chat_id] = key
+            await chs(e, f'{value}')
+            await asyncio.sleep(3)
+            await e.edit(f"ما اسم هذه الدولة؟")
+            await asyncio.sleep(60)
+            del x_arsessions[chat_id]
+    elif t == x_arsessions[chat_id]:
+        p = random.choice([1000, 5000])
+        user_id = e.sender_id
+        gid = e.chat_id
+        add_points(user_id, gid, points, amount=p)
+        await e.reply(f"اجابة صحيحة 🎉 \n ربحت {p} دينار.")
+        await react(e, '🎉')
+        del x_arsessions[chat_id]
 math_sessions = {}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
@@ -1187,3 +1187,25 @@ async def announce_winner(chat_id):
     )
     add_points(winner_id, chat_id, points, amount=x)
     reset_game(chat_id)
+@ABH.on(events.NewMessage(pattern=r'^(اوامر الالعاب| الالعاب|العاب)'))
+async def games_help(event):
+    if not event.is_group:
+        return
+    type = "اوامر الالعاب"
+    await botuse(type)
+    help_text = '''
+اوامر الالعاب كالاتي 
+1 - /num
+2 - /rings
+3 - /quist
+4 - /xo 
+5 - /setNUM
+6 - /sport
+7 - /math
+8 - /rock
+9 - /faster
+10 - /vagueness
+11 - /flag
+12 - `كتويت`
+'''
+    await event.reply(help_text)
