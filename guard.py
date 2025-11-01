@@ -523,7 +523,7 @@ async def warnssit(e):
         النوع, target_id, chat_id = parts
         target_id = int(target_id)
         chat_id = int(chat_id)
-        if not await is_assistant(e.chat_id, e.sender_id):
+        if not is_assistant(e.chat_id, e.sender_id):
             return await e.answer("🚫 هذا الأمر خاص بالمعاونين وما فوق.", alert=True)
         msg = await e.get_message()
         name, user_id = extract_warn_info(msg.text)
@@ -550,7 +550,6 @@ async def warnssit(e):
         elif النوع == "delres":
             rights = ChatBannedRights(until_date=None, send_messages=False)
             await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
-
             await e.edit(
                 f"👤 المستخدم: {n}\n🆔 الايدي: `{user_id}`\n✅ تم رفع التقييد عنه بنجاح."
             )
