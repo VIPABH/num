@@ -167,6 +167,15 @@ async def xargame(e):
             add_points(id, chat_id, points, amount=5000)
             del x_arsessions[chat_id][id]
             return
+@ABH.on(events.CallbackQuery(pattern=r'flag\|(\-?\d+)\|(\d+)'))
+async def flag_callback(event):
+    chat_id = int(event.pattern_match.group(1))
+    user_id = int(event.pattern_match.group(2))
+    if chat_id not in x_arsessions or user_id not in x_arsessions[chat_id]:
+        return
+    emoji, name = random.choice(list(x_ar.items()))
+    x_arsessions[chat_id][user_id] = emoji, name
+    await event.edit(f'شنو اسم هاي الدولة ( {emoji} )')
 math_sessions = {}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
