@@ -475,7 +475,7 @@ async def warn_user(event):
         return
     chat_id = event.chat_id
     auth1 = await auth(event)
-    auth2 = await auth(event, True)
+    auth2 = await auth(event, False)
     if not auth1:
         await chs(event, 'شني خالي كبينه ')
         return
