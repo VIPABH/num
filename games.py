@@ -135,7 +135,7 @@ async def xargame(e):
         return
     t = e.text
     chat_id = e.chat_id
-    if t in ("اعلام", '/flags'):
+    if t in ("اعلام", '/flag'):
         type = "اعلام"
         await botuse(type)
         if not chat_id in x_arsessions:
