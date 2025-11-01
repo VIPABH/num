@@ -20,7 +20,6 @@ async def litsin_to_all(e):
   await answer_handler(e)
   await faster_result(e)
   await guess_number(e)
-  await faster_result(e)
   await check_quist(e)
   await check_sport(e)
   await som(e)
