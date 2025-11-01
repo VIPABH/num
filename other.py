@@ -101,74 +101,6 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'(?i)^(حذف|مسح) المعاونين$'))
-async def delassistant(e):
-    a = await auth(e)
-    if not a or a == "المعاون":
-        await chs(e, "عذراً، الأمر يخص المطورين الثانويين والمالك")
-        return
-    c = str(e.chat_id)
-    data = load_auth()
-    if c not in data:
-        await chs(e, "المجموعة ما بيها معاونين أصلاً")
-        return
-    del data[c]
-    save_auth(data)
-    await chs(e, "تم حذف المعاونين.")
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
-async def add_assistant(event):
-    if not event.is_group:
-        return
-    sm = await mention(event)
-    x = await auth(event)
-    if not x or x == "المعاون":
-        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
-        return
-    sm = await mention(event)
-    type = "رفع معاون"
-    await botuse(type)
-    ف = await to(event)
-    target_id = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
-    if not ف:
-        await chs(event, f"اكتب يوزر او ايدي الشخص او سويه عليه رد")
-        return
-    chat_id = str(event.chat_id)
-    rm = await ment(ف)
-    data = load_auth()
-    if chat_id not in data:
-        data[chat_id] = []
-    if target_id not in data[chat_id]:
-        data[chat_id].append(target_id)
-        save_auth(data)
-        await chs(event, f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
-    else:
-        await chs(event, f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
-@ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
-async def remove_assistant(event):
-    if not event.is_group:
-        return
-    sm = await mention(event)
-    x = await auth(event)
-    if not x or x == "المعاون":
-        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
-        return
-    user_id = event.sender_id
-    chat_id = str(event.chat_id)
-    reply = await event.get_reply_message()
-    if not reply:
-        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
-    target_id = reply.sender_id
-    data = load_auth()
-    e = await reply.get_sender()
-    rm = await ment(e)
-    if chat_id in data and target_id in data[chat_id]:
-        data[chat_id].remove(target_id)
-        save_auth(data)
-        await chs(event, f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
-    else:
-        await chs(event, f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
-    type = "تنزيل معاون"
-    await botuse(type)
 async def m(user_id):
     try:
         user = await ABH.get_entity(user_id)
@@ -176,23 +108,6 @@ async def m(user_id):
         return f"[{name}](tg://user?id={user.id})"
     except:
         return f"`{user_id}`"
-@ABH.on(events.NewMessage(pattern='^المعاونين$'))
-async def show_assistants(event):
-    type = "المعاونين"
-    await botuse(type)
-    if not event.is_group:
-        return
-    chat_id = str(event.chat_id)
-    data = load_auth()
-    msg = ''
-    if chat_id in data and data[chat_id]:
-        msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
-        for idx, user_id in enumerate(data[chat_id], start=1):
-            mention_text = await m(user_id)
-            msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
-    else:
-        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
-    await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
     type = "اسمي"
@@ -548,7 +463,6 @@ async def take_screenshot(url, device="pc"):
         finally:
             await browser.close()
     return screenshot_path
-
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين(?:\s*(.*))?'))
 async def screen_shot(event):
     type = "سكرين"
