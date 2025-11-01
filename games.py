@@ -153,7 +153,7 @@ async def xargame(e):
         await asyncio.sleep(60)
         if chat_id in x_arsessions and id in x_arsessions[chat_id]:
             del x_arsessions[chat_id][id]
-    if chat_id in x_arsessions and id in x_arsessions[chat_id] and t == x_arsessions[chat_id][id]:
+    if chat_id in x_arsessions and id in x_arsessions[chat_id] and str(t) == str(x_arsessions[chat_id][id]):
         p = random.choice([1000, 5000])
         user_id = e.sender_id
         gid = e.chat_id
