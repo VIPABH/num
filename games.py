@@ -139,15 +139,19 @@ async def xargame(e):
     if t in ("اعلام", '/flag'):
         type = "اعلام"
         await botuse(type)
-        if not chat_id in x_arsessions or id not in x_arsessions[chat_id]:
-            emoji, name = random.choice(list(x_ar.items()))
-            x_arsessions.setdefault(chat_id, {})[id] = name
-            a = await e.reply(f'{emoji}')
-            await asyncio.sleep(3)
-            await a.edit(f"ما اسم هذه الدولة؟")
-            await asyncio.sleep(60)
-            if chat_id in x_arsessions and id in x_arsessions[chat_id]:
-                del x_arsessions[chat_id][id]
+    b = Button.inline("تجديد السؤال", f"flag|{chat_id}|{id}")
+    if chat_id in x_arsessions and id in x_arsessions[chat_id]:
+        await e.reply(f"شنو اسم هاي الدولة ( {x_arsessions[chat_id][id]} )", buttons=b)
+        return
+    if not chat_id in x_arsessions or id not in x_arsessions[chat_id]:
+        emoji, name = random.choice(list(x_ar.items()))
+        x_arsessions.setdefault(chat_id, {})[id] = name
+        a = await e.reply(f'{emoji}')
+        await asyncio.sleep(3)
+        await a.edit(f"شنو اسم هاي الدولة؟")
+        await asyncio.sleep(60)
+        if chat_id in x_arsessions and id in x_arsessions[chat_id]:
+            del x_arsessions[chat_id][id]
     if chat_id in x_arsessions and id in x_arsessions[chat_id] and t == x_arsessions[chat_id][id]:
         p = random.choice([1000, 5000])
         user_id = e.sender_id
