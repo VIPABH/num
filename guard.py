@@ -495,16 +495,15 @@ async def warn_user(event):
     await try_forward(r)
     await r.delete()
     await event.delete()
+    المحذر = await mention(event)
     if w == 3:
         now = int(time.time())
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         await event.reply(f'تم تقييد المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n🔒 مدة التقييد: 15 دقيقة', buttons=b)
         await send(event, f"#تحذير \n تم تقييد المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
         if not await is_admin(chat_id, target_id):
             rights = ChatBannedRights(until_date=now + restriction_duration, send_messages=True)
             await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
     else:
-        المحذر = await mention(event)
         await event.reply(f'تم تحذير المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n⚠️ عدد التحذيرات: (3/{w})', buttons=b)
         await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
     await botuse("تحذير مستخدمين")
