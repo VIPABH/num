@@ -33,8 +33,10 @@ async def delete_media(chat_id, event=None):
             return
         if event:
             await chs(event, f'تم حذف {deleted_count} ب نجاح 🗑️')
+            await send(event, f'#التنظيف\nتم حذف ( {deleted_count} )\n بواسطة ( {await mention(event)} ) \n الرابط ( {await link(event)} ) 🧹')
         else:
             await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹')
+            await send(event, f'#التنظيف_تلقائي\nتم حذف {deleted_count} تلقائيًا 🧹')
 async def store_media_messages(event):
     if event.message.dice or not event.is_group:
         return
@@ -56,7 +58,7 @@ async def store_media_messages(event):
             if len(media_messages[chat_id]) >= 150:
                 await delete_media(chat_id)
                 return
-@ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
+@ABH.on(events.NewMessage(pattern='^(امسح|تنظيف)$'))
 async def delete_stored_media(event):
     if not event.is_group:
         return
@@ -105,6 +107,7 @@ async def undel(event):
         media_messages[chat_id].remove(msg_id)
         save_media_messages()
         await chs(event,"👌 تم استثناء هذه الرسالة من الحذف.")
+        await send(event, f'#تخطي_المسح\nتم استثناء الرسالة ( {msg_id} ) من الحذف\n بواسطة ( {await mention(event)} ) \n الرابط ( {await link(event)} ) 🧹')
     else:
         await chs(event, "الرسالة هاي بالاصل ما مسجلة ```ما تنحذف يمي```")
 @ABH.on(events.NewMessage(pattern='^تفريغ$'))
@@ -120,3 +123,4 @@ async def delalmedia_message(event):
     chat_id = str(event.chat_id)
     media_messages[chat_id].clear()
     await chs(event, 'تم مسح قائمة التنظيف👍🏾👍🏾')
+    await send(event, f'#تفريغ_قائمة_التنظيف\nتم تفريغ قائمة التنظيف\n بواسطة ( {await mention(event)} ) \n الرابط ( {await link(event)} ) 🧹')
