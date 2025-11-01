@@ -11,7 +11,7 @@ actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف']
 async def toggle_feature(event):
     a = await auth(event)
     if not a:
-        await event.reply('شني خالي كبينه انت مو معاون')
+        await event.reply((قفل("المعاونين وفوق")))
         return
     feature, action = event.pattern_match.groups()
     if feature not in actions:
@@ -19,10 +19,12 @@ async def toggle_feature(event):
     lock_key = f"lock:{event.chat_id}:{feature}"    
     if action == "تفعيل":
         r.set(lock_key, "True")
-        await chs(event, f'تم تفعيل ال{feature}  تدلل حبيبي')
+        await chs(event, f"تم تفعيل ال{feature} ")
+        await send(event, f"#القفل_والفتح\nتم تفعيل ال{feature} \n بواسطة ( {await mention(event)} ) \n الرابط (  {await link(event)} )")
     else:
         r.set(lock_key, "False")
-        await chs(event, f'تم تعطيل ال{feature} تدلل حبيبي')
+        await chs(event, f'تم تعطيل ال{feature}')
+        await send(event, f"#القفل_والفتح\nتم تعطيل ال{feature} \n بواسطة ( {await mention(event)} ) \n الرابط (  {await link(event)} )")
 COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
@@ -120,8 +122,7 @@ async def download_audio(event):
             for m_id in msg_ids:
                 try:
                     await event.client.edit_message(event.chat_id, m_id, f'جاري تنزيل {query}')
-                except Exception as e:
-                    await hint(f"خطأ في تحديث الرسالة: {str(e)}")
+                except:
                     pass
         else:
             await event.reply(f'جاري تنزيل {query}')
