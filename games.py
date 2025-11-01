@@ -142,6 +142,7 @@ async def xargame(e):
     if t in ["اعلام", "/flags", "/flag"]:
         if not (r):
             emoji, name = random.choice(list(x_ar.items()))
+            print(name)
             x_arsessions.setdefault(chat_id, {})[id] = emoji, name
             a = await e.reply(f'{emoji}')
             await asyncio.sleep(3)
