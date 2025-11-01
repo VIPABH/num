@@ -261,7 +261,7 @@ async def demote_admin(event):
     if event.text == "مخفي نزلني":
         done = await dodemote(event)
         if done:
-            await chs(e, "تم تنزيلك من المشرفين")
+            await chs(event, "تم تنزيلك من المشرفين")
             return
         return
     r = await event.get_reply_message()
