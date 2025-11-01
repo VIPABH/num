@@ -337,12 +337,12 @@ banned_words = [
     "تيز", "التيز", "الديوث", "كسمج", "بلبولك", "صدرج", "كسعرضك" , "الخنيث", "انزعو", "انزعوا",
     "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", "خرب ابربك", 
     "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين", "مدوده",
-    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
     "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", "دوده", 'دودة',
-    "نيچني", "نودز", "نتلاوط", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
+    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
     "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", "منيوك",
     "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
     "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
+    "نيچني", "نودز", "نتلاوط", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
 ]
 def normalize_arabic(text):
     text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
@@ -397,8 +397,8 @@ async def handler_res(event):
     if not event.is_group or not event.raw_text or not x:
         return
     x = contains_banned_word(message_text)
-    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}:{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}:{user_id}')]
-    الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
+    b = [Button.inline("الغاء التحذير", data=f"delwarn:{user_id}:{chat}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{user_id}:{chat}")]
+    الغاء = [Button.inline("الغاء التقييد", data=f"delres:{user_id}:{chat}")]
     xx = await event.get_sender()
     ء = await ment(xx)
     l = await link(event)
@@ -469,6 +469,25 @@ async def handler_res(event):
         )
         await try_forward(event)
         await event.delete()
+@ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
+async def showwarns(e):
+    t = e.text
+    chat = e.chat_id
+    target_id = None
+    if t == 'تحذيراتي':
+        target_id = e.sender_id
+    else:
+        r = await e.get_reply_message()
+        if not r:
+            await chs(e, "⚠️ لازم ترد على رسالة الشخص")
+            return
+        target_id = r.sender_id
+    معاون = await auth(e)
+    if معاون:
+        await chs(e, "لك شمعة ماكو تحذيرات")
+        return
+    w = count_warnings(int(target_id), int(chat))
+    await chs(e, f' ( 3/{w} )')
 @ABH.on(events.NewMessage(pattern = r'^تحذير(?:\s+|@)?(\S+)?$'))
 async def warn_user(event):
     if not event.is_group:
@@ -557,22 +576,3 @@ async def warnssit(e):
                 e,
                 f"🔓 تم رفع التقييد عن {n} (`{user_id}`)\nبواسطة: {m} (`{e.sender_id}`)"
             )
-@ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
-async def showwarns(e):
-    t = e.text
-    chat = e.chat_id
-    target_id = None
-    if t == 'تحذيراتي':
-        target_id = e.sender_id
-    else:
-        r = await e.get_reply_message()
-        if not r:
-            await chs(e, "⚠️ لازم ترد على رسالة الشخص")
-            return
-        target_id = r.sender_id
-    معاون = await auth(e)
-    if معاون:
-        await chs(e, "لك شمعة ماكو تحذيرات")
-        return
-    w = count_warnings(int(target_id), int(chat))
-    await chs(e, f' ( 3/{w} )')
