@@ -505,6 +505,7 @@ async def warn_user(event):
             await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
     else:
         المحذر = await mention(event)
+        await event.reply(f'تم تحذير المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n⚠️ عدد التحذيرات: (3/{w})', buttons=b)
         await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
     await botuse("تحذير مستخدمين")
 def extract_warn_info(text: str):
