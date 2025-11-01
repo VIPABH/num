@@ -17,10 +17,9 @@ async def set_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    x = save(None, "secondary_devs.json")
-    i = await is_owner(chat, user_id)
-    if not (is_assistant(event.chat_id, event.sender_id) or user_id == wfffp or str(chat) in x and user_id in x[str(chat)] or i):
-         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
+    a = await auth(event)
+    if not a:
+         await chs(event, 'عذرا الامر خاص بالمعاونين وفوك🤭')
          return
     type = "وضع رد"
     await botuse(type)
@@ -33,15 +32,16 @@ async def set_special_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.chat_id, event.sender_id):
-         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-         return
+    a = await auth(event)
+    if not a:
+        await chs(event, 'عذرا الامر خاص بالمعاونين وفوك🤭')
+        return
     type = "وضع رد مميز"
     await botuse(type)
     user_id = event.sender_id
     session[user_id] = {'step': 'waiting_for_reply_name', 'type': 'special', 'chat_id': event.chat_id}
     await event.reply('📝 أرسل اسم الرد الآن')
-@ABH.on(events.NewMessage(pattern=r'^وضع ردي (.+)$'))
+@ABH.on(events.NewMessage(pattern=r'^وضع ردي(?:\s+(.*))?$'))
 async def set_my_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
@@ -207,9 +207,9 @@ async def handle_reply(event):
                     await send_saved_media(event, file_id_json)
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
-    if not is_assistant(event.chat_id, event.sender_id):
-         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-         return
+    if not await auth(event):
+        await chs(event, 'عذرا الامر خاص بالمعاونين وفوك')
+        return
     type = "عرض الردود"
     await botuse(type)
     chat_id = event.chat_id
@@ -227,9 +227,9 @@ async def delete_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.chat_id, event.sender_id):
-         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-         return
+    if not await auth(event):
+        await chs(event, 'عذرا الامر خاص بالمعاونين وفوك')
+        return
     type = "حذف رد"
     await botuse(type)
     chat_id = event.chat_id
@@ -250,9 +250,9 @@ async def delete_all_replies(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.chat_id, event.sender_id):
-         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-         return
+    if not await auth(event):
+        await chs(event, 'عذرا الامر خاص بالمعاونين وفوك')
+        return
     type = "حذف الردود"
     await botuse(type)
     chat_id = event.chat_id
@@ -265,12 +265,12 @@ async def delete_all_replies(event):
         await event.reply(" لا توجد ردود لحذفها.")
 @ABH.on(events.NewMessage(pattern='^الغاء$'))
 async def cancel(event):
-    type = "الغاء اضافه رد"
-    await botuse(type)
     id = event.sender_id
     if id in session:
         del session[id]
         await event.reply('تم الغاء اضافه رد')
+        type = "الغاء اضافه رد"
+        await botuse(type)
     else:
         return
 abh = [
@@ -278,7 +278,12 @@ abh = [
     "تفظل",
     "كول",
     "اسمعك",
+    "هل نحن هنا",
     "شرايد",
+    "اهلاا",
+    "راح يحمظ عليه",
+    "لا هلا ولا مرحبا",
+    "👀",
     "خلصني"
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
@@ -288,7 +293,7 @@ async def anymous(event):
     type = "مخفي"
     await botuse(type)
     vipabh = random.choice(abh)
-    await chs(event, vipabh)
+    await event.reply(vipabh)
 @ABH.on(events.NewMessage(pattern=r'ابن هاشم'))
 async def ABN_HASHEM(event):
     type = "ابن هاشم"
