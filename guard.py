@@ -488,17 +488,15 @@ async def warn_user(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = getattr(t, "sender_id", None) or getattr(t, "id", None)
     x = await ment(t)
-    b = [Button.inline("الغاء التقييد", data=f"delres|{target_id}:{chat_id}")]
+    b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
+    res = [Button.inline("الغاء التقييد", data=f"delres|{target_id}:{chat_id}")]
     l = await link(event)
     restriction_duration = 900
     w = add_warning(str(target_id), str(chat_id))
-    await try_forward(r)
-    await r.delete()
-    await event.delete()
     المحذر = await mention(event)
     if w == 3:
         now = int(time.time())
-        await event.reply(f'تم تقييد المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n🔒 مدة التقييد: 15 دقيقة', buttons=b)
+        await event.reply(f'تم تقييد المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n🔒 مدة التقييد: 15 دقيقة', buttons=res)
         await send(event, f"#تحذير \n تم تقييد المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
         if not await is_admin(chat_id, target_id):
             rights = ChatBannedRights(until_date=now + restriction_duration, send_messages=True)
@@ -507,6 +505,9 @@ async def warn_user(event):
         await event.reply(f'تم تحذير المستخدم اسمه: {x}\nايديه: ( `{target_id}` )\n⚠️ عدد التحذيرات: (3/{w})', buttons=b)
         await send(event, f"#تحذير \n تم تحذير المستخدم \n اسمه: ( {x} ) \n🆔 ايديه: `{target_id}`\n👤 بواسطة {auth1} \n اسمه: ( {المحذر} ) \n ايديه: ( `{event.sender_id}` ) \n🔗 الرابط: {l}")
     await botuse("تحذير مستخدمين")
+    await try_forward(r)
+    await r.delete()
+    await event.delete()
 def extract_warn_info(text: str):
     text = text.strip()
     name_pattern = r'اسمه[:：]?\s*([^\n]+?)\s+ايديه'
