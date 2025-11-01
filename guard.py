@@ -479,9 +479,6 @@ async def warn_user(event):
     if not auth1:
         await chs(event, 'شني خالي كبينه ')
         return
-    if auth2:
-        await chs(event, f'هييييييه متكدر تحذر {auth2}')
-        return
     t = await to(event)
     r = await event.get_reply_message()
     if not t:
