@@ -296,3 +296,178 @@ async def demote_admin(event):
     if ء:
         await chs(event, "تم التنزيل ب نجاح.")
         return
+@ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
+async def add_secondary_dev(event):
+    chat = await event.get_chat()
+    c = chat.title if hasattr(chat, "title") else "خاص"
+    arg = event.pattern_match.group(1)
+    entity = None
+    reply = await event.get_reply_message()
+    if reply and not arg:
+        entity = await ABH.get_entity(reply.sender_id)
+    elif arg and arg.startswith("@"):
+        entity = await ABH.get_entity(arg)
+    elif arg and arg.isdigit():
+        entity = await ABH.get_entity(int(arg))
+    if not entity:
+        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
+        return
+    if entity.id == wfffp:
+        return
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    user_id = str(entity.id)
+    mmm = await mention(event)
+    if chat_id in x and user_id in x[chat_id]:
+        await chs(event, f"عزيزي {mmm} هذا مطور ثانوي بالفعل.")
+        return
+    if chat_id in x and len(x[chat_id]) >= 6:
+        await chs(event, "المجموعه تحتوي على 5 مطوريين اساسيين لا يمكن الرفع.")
+        return
+    dev = f"{event.chat_id}:{entity.id}"
+    save(dev, filename="secondary_devs.json")
+    try:
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
+    except Exception as e:
+        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
+    m = await ment(entity)
+    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
+    await send(
+        event,
+    f"#رفع_مطور_ثانوي\n"
+    f"✅ تم رفع المستخدم: {m} (`{entity.id}`)\n"
+    f"👤 بواسطة: {mmm} (`{event.sender_id}`)"
+)
+@ABH.on(events.NewMessage(pattern=r"^تنزيل مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
+async def remove_secondary_dev(event):
+    chat = await event.get_chat()
+    c = chat.title if hasattr(chat, "title") else "خاص"
+    arg = event.pattern_match.group(1)
+    entity = None
+    reply = await event.get_reply_message()
+    if reply and not arg:
+        entity = await ABH.get_entity(reply.sender_id)
+    elif arg and arg.startswith("@"):
+        entity = await ABH.get_entity(arg)
+    elif arg and arg.isdigit():
+        entity = await ABH.get_entity(int(arg))
+    if not entity:
+        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
+        return
+    if entity.id == wfffp:
+        return
+    m = await ment(entity)
+    mmm = await mention(event)
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    user_id = str(entity.id)
+    if not chat_id in x and not user_id in x[chat_id]:
+        await chs(event, f"عزيزي {mmm} هذا مو مطور ثانوي .")
+        return
+    dev = f"{event.chat_id}:{entity.id}"
+    delsave(dev, filename="secondary_devs.json")
+    try:
+        await ABH.send_message(entity, f"تم تنزيلك من المطور ثانوي \n في مجموعة {c}\n بواسطة {mmm}")
+    except Exception as e:
+        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
+        await send(
+            event,
+    f"#تنزيل_مطور_ثانوي\n"
+    f"✅ تم تنزيل المستخدم: {m} (`{entity.id}`)\n"
+    f"👤 بواسطة: {mmm} (`{event.sender_id}`)"
+)
+    await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
+@ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
+async def list_secondary_devs(event):
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    if chat_id not in x or not x[chat_id]:
+        await chs(event, "لا يوجد مطورين ثانويين في هذه المجموعة.")
+        return
+    devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
+    await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
+@ABH.on(events.NewMessage(pattern=r'(?i)^(حذف|مسح) المعاونين$'))
+async def delassistant(e):
+    a = await auth(e)
+    if not a or a == "المعاون":
+        await chs(e, "عذراً، الأمر يخص المطورين الثانويين والمالك")
+        return
+    c = str(e.chat_id)
+    data = load_auth()
+    if c not in data:
+        await chs(e, "المجموعة ما بيها معاونين أصلاً")
+        return
+    del data[c]
+    save_auth(data)
+    await chs(e, "تم حذف المعاونين.")
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.*))?$'))
+async def add_assistant(event):
+    if not event.is_group:
+        return
+    sm = await mention(event)
+    x = await auth(event)
+    if not x or x == "المعاون":
+        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
+        return
+    sm = await mention(event)
+    type = "رفع معاون"
+    await botuse(type)
+    ف = await to(event)
+    target_id = getattr(ف, "sender_id", None) or getattr(ف, "id", None)
+    if not ف:
+        await chs(event, f"اكتب يوزر او ايدي الشخص او سويه عليه رد")
+        return
+    chat_id = str(event.chat_id)
+    rm = await ment(ف)
+    data = load_auth()
+    if chat_id not in data:
+        data[chat_id] = []
+    if target_id not in data[chat_id]:
+        data[chat_id].append(target_id)
+        save_auth(data)
+        await chs(event, f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
+    else:
+        await chs(event, f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+@ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
+async def remove_assistant(event):
+    if not event.is_group:
+        return
+    sm = await mention(event)
+    x = await auth(event)
+    if not x or x == "المعاون":
+        await chs(event, f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
+        return
+    user_id = event.sender_id
+    chat_id = str(event.chat_id)
+    reply = await event.get_reply_message()
+    if not reply:
+        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
+    target_id = reply.sender_id
+    data = load_auth()
+    e = await reply.get_sender()
+    rm = await ment(e)
+    if chat_id in data and target_id in data[chat_id]:
+        data[chat_id].remove(target_id)
+        save_auth(data)
+        await chs(event, f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
+    else:
+        await chs(event, f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+    type = "تنزيل معاون"
+    await botuse(type)
+@ABH.on(events.NewMessage(pattern='^المعاونين$'))
+async def show_assistants(event):
+    type = "المعاونين"
+    await botuse(type)
+    if not event.is_group:
+        return
+    chat_id = str(event.chat_id)
+    data = load_auth()
+    msg = ''
+    if chat_id in data and data[chat_id]:
+        msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
+        for idx, user_id in enumerate(data[chat_id], start=1):
+            mention_text = await m(user_id)
+            msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
+    else:
+        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
+    await event.reply(msg, parse_mode="md")
