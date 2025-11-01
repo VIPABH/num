@@ -479,10 +479,6 @@ async def warn_user(event):
     if not auth1:
         await chs(event, 'شني خالي كبينه ')
         return
-    print(auth1, auth2)
-    if auth1 == auth2:
-        await chs(event, f'غراب يكول لغراب وجهك اسود')
-        return
     if auth2:
         await chs(event, f'هييييييه متكدر تحذر {auth2}')
         return
