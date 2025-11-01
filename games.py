@@ -141,7 +141,7 @@ async def xargame(e):
         await botuse(type)
         if not chat_id in x_arsessions or id not in x_arsessions[chat_id]:
             emoji, name = random.choice(list(x_ar.items()))
-            x_arsessions[chat_id][id] = name
+            x_arsessions.setdefault(chat_id, {})[id] = name
             a = await e.reply(f'{emoji}')
             await asyncio.sleep(3)
             await a.edit(f"ما اسم هذه الدولة؟")
